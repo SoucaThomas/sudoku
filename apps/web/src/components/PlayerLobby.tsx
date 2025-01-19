@@ -15,8 +15,10 @@ import { Tabs } from "../components/ui/tabs";
 import { Separator } from "../components/ui/separator";
 import CreateRoomDialog from "../components/CreateRoomDialog";
 import { GameTypes } from "@repo/socket.io-types";
+import { useState } from "react";
 
 export default function PlayerLobby() {
+    const [username, setUsername] = useState<string>(localStorage.getItem("username") || "");
     return (
         <Card className="h-full w-full">
             <Tabs defaultValue={GameTypes.SUDOKU} className="h-full w-full">
@@ -31,14 +33,26 @@ export default function PlayerLobby() {
                                 <CardTitle>Profile</CardTitle>
                             </CardHeader>
                             <CardDescription className="sm:flex sm:items-center sm:justify-between sm:gap-2">
-                                <Input placeholder="Enter your username" />
+                                <Input
+                                    placeholder="Enter your username"
+                                    value={username ? username : ""}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                />
                                 <Button variant={"default"} className="hidden sm:block">
                                     <UserPen className="h-6 w-6" />
                                 </Button>
                             </CardDescription>
                             <CardFooter className="h-fit py-4">
                                 <CreateRoomDialog className="mx-auto mt-2 text-lg">
-                                    <Button variant={"default"}>Create a Room!</Button>
+                                    <Button
+                                        onClick={() => {
+                                            if (!username) return;
+                                            localStorage.setItem("username", username);
+                                        }}
+                                        variant={"default"}
+                                    >
+                                        Create a Room!
+                                    </Button>
                                 </CreateRoomDialog>
                             </CardFooter>
                         </div>
