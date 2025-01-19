@@ -3,10 +3,11 @@ import http from "http";
 import cors from "cors";
 import { Socket } from "socket.io";
 import { Server } from "socket.io";
-import { CreateRoomData, SocketActionTypes } from "@repo/socket.io-types";
+import { CreateRoomData, GameRoom, SocketActionTypes } from "@repo/socket.io-types";
 
 const app = express();
-const rooms = new Map<string, CreateRoomData>(); //! TODO move to a database
+
+const rooms = new Map<string, GameRoom>(); //! TODO move to a database
 
 app.use(cors());
 const server = http.createServer(app);
@@ -24,16 +25,18 @@ io.on("connection", (socket: Socket) => {
     console.log("New client connected");
 
     socket.on(SocketActionTypes.create, (data: CreateRoomData) => {
-        if (rooms.has(socket.id)) {
-            socket.emit(
-                SocketActionTypes.createFailed,
-                "You have already created a room. Try joining it instead."
-            );
-            return;
-        }
+        const roomData = {
+            roomId: socket.id,
+            roomName: data.name,
+            roomPassword: data.password,
+            roomGame: data.type,
+            roomDifficulty: data.difficulty,
 
-        rooms.set(socket.id, data);
-        console.log(rooms);
+            isRoomPublic: data.public,
+            roomHost: data.hostId,
+            roomUsers: [],
+        };
+        rooms.set(socket.id, roomData);
         socket.emit("room created", socket.id);
     });
 
@@ -42,3 +45,14 @@ io.on("connection", (socket: Socket) => {
 
 const port = process.env.PORT || 4001;
 server.listen(port, () => console.log(`Listening on port ${port}`));
+
+app.get("/api/room/:id", (req, res) => {
+    const roomId = req.params.id as string;
+    const room = rooms.get(roomId);
+    console.log(roomId);
+    if (room) {
+        res.status(200).send(room);
+    } else {
+        res.status(200).send({ error: "Room not found" });
+    }
+});

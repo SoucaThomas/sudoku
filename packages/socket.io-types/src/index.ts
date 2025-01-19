@@ -15,6 +15,7 @@ export interface CreateRoomData {
     public: boolean;
     type: GameTypes;
     difficulty: GameDifficulties;
+    hostId: string;
 }
 
 export enum SocketActionTypes {
@@ -24,4 +25,15 @@ export enum SocketActionTypes {
     joinFailed = "room join failed",
     leave = "leave room",
     leaveFailed = "room leave failed",
+}
+
+export interface GameRoom {
+    roomId: string;
+    roomName: string;
+    roomPassword: string;
+    roomGame: GameTypes;
+    roomDifficulty: GameDifficulties;
+    isRoomPublic: boolean;
+    roomHost: string;
+    roomUsers: string[];
 }

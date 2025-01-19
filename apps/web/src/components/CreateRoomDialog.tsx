@@ -20,7 +20,7 @@ import {
     SocketActionTypes,
 } from "@repo/socket.io-types";
 import io from "socket.io-client";
-import { revalidatePath } from "next/cache";
+import { v4 as uuidv4 } from "uuid";
 
 const socket = io("http://localhost:4001", {
     withCredentials: true,
@@ -44,13 +44,19 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
     const { toast } = useToast();
 
     const createRoom = (data: CreateRoomData) => {
+        const userId = localStorage.getItem("userId") || uuidv4();
+
         socket.emit(SocketActionTypes.create, {
-            roomName: data.name,
-            roomPassword: data.password,
-            privateGame: !data.public,
-            gameType: data.type,
-            gameDifficulty: data.difficulty,
-        });
+            name: data.name,
+            password: data.password,
+            public: data.public,
+            type: data.type,
+            difficulty: data.difficulty,
+            hostId: userId,
+        } as CreateRoomData);
+
+        localStorage.setItem("userId", userId);
+        console.log("userId", userId);
 
         socket.on("room created", (roomId: string) => {
             window.location.href = `/room/${roomId}`;
@@ -160,6 +166,7 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
                                     public: !privateGame,
                                     type: gameType,
                                     difficulty: gameDifficulty,
+                                    hostId: "",
                                 };
                                 createRoom(data);
 
