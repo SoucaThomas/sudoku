@@ -1,8 +1,9 @@
 {
-  "extends": "@repo/typescript-config/react-library.json",
-  "compilerOptions": {
-    "outDir": "dist"
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@repo/socket.io-types": ["packages/socket.io-types/src"]
+        }
+    },
+    "include": ["apps/**/*.ts", "packages/**/*.ts"]
 }
