@@ -15,8 +15,15 @@ import { Tabs } from "../components/ui/tabs";
 import { Separator } from "../components/ui/separator";
 import CreateRoomDialog from "../components/CreateRoomDialog";
 import { GameTypes } from "@repo/socket.io-types";
+import { useEffect, useState } from "react";
 
 export default function PlayerLobby() {
+    const [userName, setUserName] = useState("");
+
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        setUserName(user.userName);
+    }, []);
     return (
         <Card className="h-full w-full">
             <Tabs defaultValue={GameTypes.SUDOKU} className="h-full w-full">
@@ -31,7 +38,18 @@ export default function PlayerLobby() {
                                 <CardTitle>Profile</CardTitle>
                             </CardHeader>
                             <CardDescription className="sm:flex sm:items-center sm:justify-between sm:gap-2">
-                                <Input placeholder="Enter your username" />
+                                <Input
+                                    placeholder="Enter your username"
+                                    value={userName}
+                                    onChange={(e) => {
+                                        setUserName(e.target.value);
+                                        const user = JSON.parse(
+                                            localStorage.getItem("user") || "{}"
+                                        );
+                                        user.userName = e.target.value;
+                                        localStorage.setItem("user", JSON.stringify(user));
+                                    }}
+                                />
                                 <Button variant={"default"} className="hidden sm:block">
                                     <UserPen className="h-6 w-6" />
                                 </Button>

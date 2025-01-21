@@ -13,21 +13,9 @@ import MySelector from "./ui/mySelector";
 import { Button } from "./ui/button";
 import { LockKeyhole, LockKeyholeOpen } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
-import {
-    GameTypes,
-    GameDifficulties,
-    CreateRoomData,
-    SocketActionTypes,
-} from "@repo/socket.io-types";
-import io from "socket.io-client";
+import { GameTypes, GameDifficulties, CreateRoomData, User } from "@repo/socket.io-types";
+import { createRoom } from "../actions/room";
 import { v4 as uuidv4 } from "uuid";
-
-const socket = io("http://localhost:4001", {
-    withCredentials: true,
-    extraHeaders: {
-        "my-custom-header": "abcd",
-    },
-});
 
 interface CreateRoomDialogProps {
     children: ReactNode;
@@ -43,33 +31,15 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const { toast } = useToast();
 
-    const createRoom = (data: CreateRoomData) => {
-        const userId = localStorage.getItem("userId") || uuidv4();
+    const user = JSON.parse(localStorage.getItem("user") || "null") as User | null;
+    if (!user) {
+        const userId = uuidv4();
+        const userName = "Player";
 
-        socket.emit(SocketActionTypes.create, {
-            name: data.name,
-            password: data.password,
-            public: data.public,
-            type: data.type,
-            difficulty: data.difficulty,
-            hostId: userId,
-        } as CreateRoomData);
-
-        localStorage.setItem("userId", userId);
-        console.log("userId", userId);
-
-        socket.on("room created", (roomId: string) => {
-            window.location.href = `/room/${roomId}`;
-        });
-
-        socket.on("room creation failed", (error: string) => {
-            toast({
-                variant: "destructive",
-                title: "Uh oh! Something went wrong.",
-                description: `Room creation failed: ${error}`,
-            });
-        });
-    };
+        localStorage.setItem("user", JSON.stringify({ userId, userName }));
+    } else {
+        localStorage.setItem("user", JSON.stringify(user));
+    }
 
     return (
         <div className={className}>
@@ -159,16 +129,14 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
                                     });
                                     return;
                                 }
-
-                                const data: CreateRoomData = {
-                                    name: roomName,
-                                    password: roomPassword,
-                                    public: !privateGame,
-                                    type: gameType,
-                                    difficulty: gameDifficulty,
-                                    hostId: "",
-                                };
-                                createRoom(data);
+                                createRoom({
+                                    roomName: roomName,
+                                    roomPassword: roomPassword,
+                                    roomGame: gameType,
+                                    roomDifficulty: gameDifficulty,
+                                    isRoomPublic: privateGame,
+                                    roomHost: user,
+                                } as CreateRoomData);
 
                                 setRoomName("");
                                 setRoomPassword("");

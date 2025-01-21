@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { checkRoom } from "../../../actions/room";
+import { joinRoom } from "../../../actions/room";
 import { useToast } from "../../../hooks/use-toast";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -19,16 +19,7 @@ const Room = () => {
     useEffect(() => {
         if (!isMounted && !router) return;
 
-        checkRoom(id).then((data) => {
-            if (data instanceof Error) {
-                router.push("/");
-                toast({
-                    variant: "destructive",
-                    title: "Uh oh! Something went wrong.",
-                    description: `Room not found.`,
-                });
-            }
-        });
+        joinRoom(id);
     }, [id, isMounted, router, toast]);
 
     return (
