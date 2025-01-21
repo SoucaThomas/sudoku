@@ -19,8 +19,15 @@ const Room = () => {
     useEffect(() => {
         if (!isMounted && !router) return;
 
-        joinRoom(id);
-    }, [id, isMounted, router, toast]);
+        joinRoom(id).catch((error) => {
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: `Room join failed: ${error}`,
+            });
+            router.push("/");
+        });
+    }, []);
 
     return (
         <div>

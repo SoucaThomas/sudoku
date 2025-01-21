@@ -51,7 +51,7 @@ io.on("connection", (socket: Socket) => {
             socket.to(roomId).emit(SocketActionTypes.newJoined, user);
         }
         socket.join(roomId);
-        socket.emit(SocketActionTypes.join, room); //! we should send the board and stuff like that
+        socket.emit(SocketActionTypes.join); //! we should send the board and stuff like that
     });
 
     socket.on("disconnect", () => console.log("Client disconnected"));

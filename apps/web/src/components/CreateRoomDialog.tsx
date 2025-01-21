@@ -129,14 +129,17 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
                                     });
                                     return;
                                 }
-                                createRoom({
-                                    roomName: roomName,
-                                    roomPassword: roomPassword,
-                                    roomGame: gameType,
-                                    roomDifficulty: gameDifficulty,
-                                    isRoomPublic: privateGame,
-                                    roomHost: user,
-                                } as CreateRoomData);
+                                createRoom(
+                                    {
+                                        roomName: roomName,
+                                        roomPassword: roomPassword,
+                                        roomGame: gameType,
+                                        roomDifficulty: gameDifficulty,
+                                        isRoomPublic: privateGame,
+                                        roomHost: user,
+                                    } as CreateRoomData,
+                                    toast
+                                );
 
                                 setRoomName("");
                                 setRoomPassword("");
