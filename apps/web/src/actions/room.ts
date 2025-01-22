@@ -30,6 +30,8 @@ export const createRoom = (data: CreateRoomData, toast: ReturnType<typeof useToa
             title: "Uh oh! Something went wrong.",
             description: `Room creation failed: ${error}`,
         });
+
+        socket.off(SocketActionTypes.create);
     });
 };
 

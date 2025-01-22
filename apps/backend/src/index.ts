@@ -20,7 +20,7 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket: Socket) => {
-    console.log("New client connected");
+    console.log("+", socket.id);
 
     socket.on(SocketActionTypes.create, (data: CreateRoomData) => {
         const roomId = uu4id();
@@ -49,7 +49,6 @@ io.on("connection", (socket: Socket) => {
     });
 
     socket.on(SocketActionTypes.join, async (roomId: string, user: User) => {
-        console.log("Joining room", roomId);
         const room = await rooms.get(roomId);
         if (!room) {
             socket.emit(SocketActionTypes.joinFailed, "Room not found");
@@ -67,7 +66,7 @@ io.on("connection", (socket: Socket) => {
         }
         socket.join(roomId);
         socket.emit(SocketActionTypes.join, room); //! we should send the board and stuff like that
-        console.info("User joined room", user);
+        console.log(socket.rooms);
     });
 
     socket.on(
@@ -89,11 +88,12 @@ io.on("connection", (socket: Socket) => {
                 room.roomUsers.push(user);
                 socket.join(roomId);
                 socket.to(roomId).emit(SocketActionTypes.newJoined, user);
+                console.log(socket.rooms);
             }
         }
     );
 
-    socket.on("disconnect", () => console.log("Client disconnected"));
+    socket.on("disconnect", () => console.log("-", socket.id));
 });
 
 const port = process.env.PORT || 4001;

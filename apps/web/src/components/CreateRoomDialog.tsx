@@ -63,25 +63,35 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
                                         variant="outline"
                                         onClick={() => {
                                             setIsRoomPublic(!isRoomPublic);
-                                            console.log(isRoomPublic);
                                         }}
                                         type="button"
                                     >
-                                        <LockKeyhole className={isRoomPublic ? "hidden" : ""} />
-                                        <LockKeyholeOpen className={isRoomPublic ? "" : "hidden"} />
+                                        <LockKeyhole className={!isRoomPublic ? "hidden" : ""} />
+                                        <LockKeyholeOpen
+                                            className={!isRoomPublic ? "" : "hidden"}
+                                        />
                                     </Button>
                                 </div>
                             </div>
 
                             <div className={`mt-3`}>
                                 <DialogTitle>Room Password</DialogTitle>
-                                <Input
-                                    type={"password"}
-                                    className="mt-3"
-                                    placeholder="Enter a room password"
-                                    onChange={(e) => setRoomPassword(e.target.value)}
-                                    disabled={isRoomPublic}
-                                />
+                                <div className="relative">
+                                    <Input
+                                        type={"password"}
+                                        className="mt-3"
+                                        placeholder="Enter a room password"
+                                        onChange={(e) => setRoomPassword(e.target.value)}
+                                        disabled={isRoomPublic}
+                                    />
+                                    {isRoomPublic && (
+                                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 select-none">
+                                            <span className="text-sm text-gray-500">
+                                                Room is public, no password needed
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                             <div className="mt-6 flex flex-col justify-between gap-6 sm:flex-row sm:gap-0">
                                 <div>
