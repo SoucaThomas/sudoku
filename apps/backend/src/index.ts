@@ -35,7 +35,17 @@ io.on("connection", (socket: Socket) => {
             roomUsers: [],
         });
 
-        socket.emit("room created", roomId);
+        console.log("Room created", {
+            roomId: roomId,
+            roomName: data.roomName,
+            roomPassword: data.roomPassword,
+            roomGame: data.roomGame,
+            roomDifficulty: data.roomDifficulty,
+            isRoomPublic: data.isRoomPublic,
+            roomHost: data.roomHost,
+            roomUsers: [],
+        });
+        socket.emit(SocketActionTypes.create, roomId);
     });
 
     socket.on(SocketActionTypes.join, async (roomId: string, user: User) => {
@@ -46,13 +56,42 @@ io.on("connection", (socket: Socket) => {
             return;
         }
 
+        if (!room.isRoomPublic) {
+            socket.emit(SocketActionTypes.roomPrivate);
+            return;
+        }
+
         if (!room.roomUsers.find((u) => u.userId === user.userId)) {
             room.roomUsers.push(user);
             socket.to(roomId).emit(SocketActionTypes.newJoined, user);
         }
         socket.join(roomId);
-        socket.emit(SocketActionTypes.join); //! we should send the board and stuff like that
+        socket.emit(SocketActionTypes.join, room); //! we should send the board and stuff like that
+        console.info("User joined room", user);
     });
+
+    socket.on(
+        SocketActionTypes.joinWithPassword,
+        (roomId: string, user: User, password: string) => {
+            const room = rooms.get(roomId);
+            if (!room) {
+                socket.emit(SocketActionTypes.joinFailed);
+                return;
+            }
+
+            console.log("Joining room with password", room?.roomPassword, password);
+            if (room.roomPassword !== password) {
+                socket.emit(SocketActionTypes.joinFailed, "Invalid password");
+                return;
+            }
+
+            if (!room.roomUsers.find((u) => u.userId === user.userId)) {
+                room.roomUsers.push(user);
+                socket.join(roomId);
+                socket.to(roomId).emit(SocketActionTypes.newJoined, user);
+            }
+        }
+    );
 
     socket.on("disconnect", () => console.log("Client disconnected"));
 });

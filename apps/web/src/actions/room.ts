@@ -1,4 +1,4 @@
-import { CreateRoomData, SocketActionTypes, User } from "@repo/socket.io-types";
+import { CreateRoomData, GameRoom, SocketActionTypes, User } from "@repo/socket.io-types";
 import io from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 import { useToast } from "../hooks/use-toast";
@@ -19,8 +19,9 @@ export const createRoom = (data: CreateRoomData, toast: ReturnType<typeof useToa
 
     localStorage.setItem("userId", userId);
 
-    socket.on("room created", (roomId: string) => {
+    socket.on(SocketActionTypes.create, (roomId: string) => {
         window.location.href = `/room/${roomId}`;
+        socket.off(SocketActionTypes.create);
     });
 
     socket.on("room creation failed", (error: string) => {
@@ -32,20 +33,65 @@ export const createRoom = (data: CreateRoomData, toast: ReturnType<typeof useToa
     });
 };
 
-export const joinRoom = async (id: string) => {
-    const response = new Promise((resolve, reject) => {
+export const joinRoom = async (id: string, requestPassword: () => Promise<string>) => {
+    return new Promise<GameRoom>((resolve, reject) => {
         const user = JSON.parse(localStorage.getItem("user") || "{}") as User;
+
         socket.emit(SocketActionTypes.join, id, user);
 
-        socket.on(SocketActionTypes.join, (room) => {
-            console.log("joined room", room);
+        const onJoinSuccess = (room: GameRoom) => {
+            cleanup();
             resolve(room);
-        });
+        };
 
-        socket.on(SocketActionTypes.joinFailed, (error: string) => {
+        const onRoomPrivate = async () => {
+            cleanup();
+            try {
+                let passwordAccepted = false;
+
+                while (!passwordAccepted) {
+                    const password = await requestPassword();
+                    socket.emit(SocketActionTypes.joinWithPassword, id, user, password);
+
+                    const onPasswordAccepted = (room: GameRoom) => {
+                        passwordAccepted = true;
+                        onJoinSuccess(room);
+                    };
+
+                    const onPasswordRejected = (error: string) => {
+                        reject(error);
+                    };
+
+                    socket.once(SocketActionTypes.join, onPasswordAccepted);
+                    socket.once(SocketActionTypes.joinFailed, onPasswordRejected);
+
+                    await new Promise<void>((resolve) => {
+                        socket.once(SocketActionTypes.join, resolve);
+                        socket.once(SocketActionTypes.joinFailed, resolve);
+                    });
+
+                    socket.off(SocketActionTypes.join, onPasswordAccepted);
+                    socket.off(SocketActionTypes.joinFailed, onPasswordRejected);
+                }
+            } catch {
+                console.error("Password required but not provided.");
+                reject("Password required but not provided.");
+            }
+        };
+
+        const onJoinFailed = (error: string) => {
+            cleanup();
             reject(error);
-        });
-    });
+        };
 
-    return response;
+        socket.on(SocketActionTypes.join, onJoinSuccess);
+        socket.on(SocketActionTypes.joinFailed, onJoinFailed);
+        socket.on(SocketActionTypes.roomPrivate, onRoomPrivate);
+
+        const cleanup = () => {
+            socket.off(SocketActionTypes.join, onJoinSuccess);
+            socket.off(SocketActionTypes.roomPrivate, onRoomPrivate);
+            socket.off(SocketActionTypes.joinFailed, onJoinFailed);
+        };
+    });
 };

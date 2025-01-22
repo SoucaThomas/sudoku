@@ -25,7 +25,7 @@ interface CreateRoomDialogProps {
 export default function CreateRoomDialog({ children, className }: CreateRoomDialogProps) {
     const [roomName, setRoomName] = useState("");
     const [roomPassword, setRoomPassword] = useState("");
-    const [privateGame, setPrivateGame] = useState(false);
+    const [isRoomPublic, setIsRoomPublic] = useState(true);
     const [gameType, setGameType] = useState(GameTypes.SUDOKU);
     const [gameDifficulty, setGameDifficulty] = useState(GameDifficulties.EASY);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -61,22 +61,26 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
                                     />
                                     <Button
                                         variant="outline"
-                                        onClick={() => setPrivateGame(!privateGame)}
+                                        onClick={() => {
+                                            setIsRoomPublic(!isRoomPublic);
+                                            console.log(isRoomPublic);
+                                        }}
                                         type="button"
                                     >
-                                        <LockKeyhole className={privateGame ? "hidden" : ""} />
-                                        <LockKeyholeOpen className={!privateGame ? "hidden" : ""} />
+                                        <LockKeyhole className={isRoomPublic ? "hidden" : ""} />
+                                        <LockKeyholeOpen className={isRoomPublic ? "" : "hidden"} />
                                     </Button>
                                 </div>
                             </div>
 
-                            <div className={`mt-3 ${privateGame ? "" : "hidden"}`}>
+                            <div className={`mt-3`}>
                                 <DialogTitle>Room Password</DialogTitle>
                                 <Input
                                     type={"password"}
                                     className="mt-3"
                                     placeholder="Enter a room password"
                                     onChange={(e) => setRoomPassword(e.target.value)}
+                                    disabled={isRoomPublic}
                                 />
                             </div>
                             <div className="mt-6 flex flex-col justify-between gap-6 sm:flex-row sm:gap-0">
@@ -120,7 +124,7 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
                                     return;
                                 }
 
-                                if (privateGame && !roomPassword) {
+                                if (!isRoomPublic && !roomPassword) {
                                     toast({
                                         variant: "destructive",
                                         title: "Uh oh! Something went wrong.",
@@ -135,7 +139,7 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
                                         roomPassword: roomPassword,
                                         roomGame: gameType,
                                         roomDifficulty: gameDifficulty,
-                                        isRoomPublic: privateGame,
+                                        isRoomPublic: isRoomPublic, //! some bug here TODO
                                         roomHost: user,
                                     } as CreateRoomData,
                                     toast
@@ -143,7 +147,7 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
 
                                 setRoomName("");
                                 setRoomPassword("");
-                                setPrivateGame(false);
+                                setIsRoomPublic(false);
                                 setGameDifficulty(GameDifficulties.EASY);
                                 setGameType(GameTypes.SUDOKU);
                                 setIsDialogOpen(false);

@@ -24,6 +24,8 @@ export enum SocketActionTypes {
     join = "join room",
     joinFailed = "room join failed",
     newJoined = "new user joined",
+    roomPrivate = "room is private",
+    joinWithPassword = "room join with password",
     leave = "leave room",
     leaveFailed = "room leave failed",
 }
