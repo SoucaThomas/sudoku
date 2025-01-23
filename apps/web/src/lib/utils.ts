@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { v4 as uuidv4 } from "uuid";
-import { User, MessageType } from "@repo/socket.io-types";
+import { User, MessageType, Colors } from "@repo/socket.io-types";
 import { create } from "zustand";
 
 export function cn(...inputs: ClassValue[]) {
@@ -32,10 +32,13 @@ export class UserProvider {
     }
 
     public createUser() {
+        console.log("Creating user");
         const userId = uuidv4();
         const userName = "";
+        const colorValues = Object.values(Colors);
+        const color = colorValues[Math.floor(Math.random() * colorValues.length)];
 
-        localStorage.setItem("user", JSON.stringify({ userId, userName }));
+        localStorage.setItem("user", JSON.stringify({ userId, userName, color }));
     }
 }
 
@@ -44,8 +47,6 @@ export const useChatStore = create<{
     addMessage: (newMessage: MessageType) => void;
 }>((set) => ({
     messages: [] as MessageType[],
-    addMessage: (newMessage: MessageType) => {
-        console.log("New message added:", newMessage);
-        set((state) => ({ messages: [...state.messages, newMessage] }));
-    },
+    addMessage: (newMessage: MessageType) =>
+        set((state) => ({ messages: [...state.messages, newMessage] })),
 }));
