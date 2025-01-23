@@ -5,46 +5,73 @@ import { Message } from "../components/Message";
 import { Input } from "../components/ui/input";
 import { Send } from "lucide-react";
 import { useState } from "react";
+import { MessageType } from "@repo/socket.io-types";
+import { UserProvider, useChatScroll } from "../lib/utils";
+import { create } from "zustand";
+import { Card } from "./ui/card";
+import { ScrollArea } from "./ui/scroll-area";
+
+const useChatStore = create<{
+    messages: MessageType[];
+    addMessage: (newMessage: MessageType) => void;
+}>((set) => ({
+    messages: [] as MessageType[],
+    addMessage: (newMessage: MessageType) =>
+        set((state) => ({ messages: [...state.messages, newMessage] })),
+}));
 
 export default function Chat() {
-    const [chat, setChat] = useState([]);
-    const [message, setMessage] = useState("");
+    const [message, setMessage] = useState<string>("");
+    const user = new UserProvider().user;
+    const { messages, addMessage } = useChatStore();
+    const ref = useChatScroll(messages);
 
     const sendMessage = () => {
         const mesage = {
-            user: "user",
+            user: user,
             message: message,
             time: new Date().toLocaleTimeString(),
-        };
-
-        setChat([...chat, mesage]);
+            messageType: "message",
+        } as MessageType;
+        addMessage(mesage);
+        setMessage("");
     };
 
     return (
-        <div className="flex flex-col h-full">
-            <div className="flex justify-between items-center">
+        <Card className="flex flex-col h-full">
+            <div className="flex justify-between items-center p-3">
                 <h1>Rooms</h1>
                 <p>Players:</p>
             </div>
             <Separator />
-            <div className="flex-1 overflow-y-auto">
+            <ScrollArea
+                ref={ref}
+                className="flex-1 overflow-y-auto flex p-3 flex-col"
+                id="chat-container"
+            >
                 {/* Chat messages will go here */}
-                {chat.map((message, index) => (
+                {messages.map((message, index) => (
                     <Message key={index} message={message} />
                 ))}
-            </div>
+            </ScrollArea>
             <Separator />
-            <div className="p-2 mt-2 flex items-center">
+            <div className="p-4  flex items-center">
                 <Input
                     placeholder="Type a message..."
                     onChange={(e) => {
                         setMessage(e.target.value);
                     }}
+                    value={message}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            sendMessage();
+                        }
+                    }}
                 />
-                <Button variant="default" className="ml-2" onClick={sendMessage}>
+                <Button variant="default" className="ml-2" onClick={sendMessage} type="submit">
                     <Send color="white" />
                 </Button>
             </div>
-        </div>
+        </Card>
     );
 }

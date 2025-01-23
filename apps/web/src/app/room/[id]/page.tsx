@@ -79,7 +79,7 @@ const Room = () => {
                 <div className="bg-red-500/20 m-2 max-md:h-1/2 md:row-span-3 md:col-span-4">
                     game
                 </div>
-                <div className="bg-blue-400/20 m-2 hidden md:block md:row-span-3 md:col-span-2">
+                <div className="m-2 hidden md:block md:row-span-3 md:col-span-2">
                     <Chat />
                 </div>
                 <div className="bg-blue-400/20 m-2 h-1/5 md:hidden"> controls for mobile</div>

@@ -1,7 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { v4 as uuidv4 } from "uuid";
-import { User } from "@repo/socket.io-types";
+import { User, MessageType } from "@repo/socket.io-types";
+import { BehaviorSubject } from "rxjs";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -37,3 +38,29 @@ export class UserProvider {
         localStorage.setItem("user", JSON.stringify({ userId, userName }));
     }
 }
+
+export class ChatProvider {
+    private chatSubject = new BehaviorSubject<MessageType[]>([]);
+    chat$ = this.chatSubject.asObservable();
+
+    constructor() {
+        this.chatSubject.next([]);
+    }
+
+    public addMessage(message: MessageType) {
+        const currentChat = this.chatSubject.getValue();
+        this.chatSubject.next([...currentChat, message]);
+    }
+}
+
+import React from "react";
+
+export const useChatScroll = <T>(dep: T): React.MutableRefObject<HTMLDivElement> => {
+    const ref = React.useRef<HTMLDivElement>();
+    React.useEffect(() => {
+        if (ref.current) {
+            ref.current.scrollTop = ref.current.scrollHeight;
+        }
+    }, [dep]);
+    return ref;
+};

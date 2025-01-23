@@ -45,3 +45,10 @@ export interface User {
     userId: string;
     userName: string;
 }
+
+export interface MessageType {
+    user: User;
+    message: string;
+    time: string;
+    messageType: "message" | "system";
+}
