@@ -3,7 +3,13 @@ import http from "http";
 import cors from "cors";
 import { Socket } from "socket.io";
 import { Server } from "socket.io";
-import { CreateRoomData, GameRoom, SocketActionTypes, User } from "@repo/socket.io-types";
+import {
+    CreateRoomData,
+    GameRoom,
+    SocketActionTypes,
+    User,
+    MessageType,
+} from "@repo/socket.io-types";
 import { v4 as uu4id } from "uuid";
 
 const app = express();
@@ -95,6 +101,10 @@ io.on("connection", (socket: Socket) => {
             }
         }
     );
+
+    socket.on(SocketActionTypes.message, (message: MessageType) => {
+        socket.to(message.roomId).emit(SocketActionTypes.message, message);
+    });
 
     socket.on("disconnect", () => console.log("-", socket.id));
 });

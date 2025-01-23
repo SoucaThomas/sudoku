@@ -1,39 +1,49 @@
 "use client";
+
 import { Separator } from "../components/ui/separator";
 import { Button } from "../components/ui/button";
 import { Message } from "../components/Message";
 import { Input } from "../components/ui/input";
 import { Send } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MessageType } from "@repo/socket.io-types";
-import { UserProvider, useChatScroll } from "../lib/utils";
-import { create } from "zustand";
+import { UserProvider, useChatStore } from "../lib/utils";
 import { Card } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
+import { socketMessage, listenForMessages, closeMessageListener } from "../actions/room";
 
-const useChatStore = create<{
-    messages: MessageType[];
-    addMessage: (newMessage: MessageType) => void;
-}>((set) => ({
-    messages: [] as MessageType[],
-    addMessage: (newMessage: MessageType) =>
-        set((state) => ({ messages: [...state.messages, newMessage] })),
-}));
+interface ChatProps {
+    roomId: string;
+}
 
-export default function Chat() {
+export default function Chat({ roomId }: ChatProps) {
     const [message, setMessage] = useState<string>("");
     const user = new UserProvider().user;
     const { messages, addMessage } = useChatStore();
-    const ref = useChatScroll(messages);
+
+    useEffect(() => {
+        listenForMessages(addMessage);
+
+        return () => {
+            // Cleanup
+            closeMessageListener();
+        };
+    }, []);
 
     const sendMessage = () => {
-        const mesage = {
+        if (message === "") {
+            return;
+        }
+
+        const messageObject = {
             user: user,
             message: message,
             time: new Date().toLocaleTimeString(),
             messageType: "message",
+            roomId: roomId,
         } as MessageType;
-        addMessage(mesage);
+        addMessage(messageObject);
+        socketMessage(messageObject);
         setMessage("");
     };
 
@@ -44,11 +54,7 @@ export default function Chat() {
                 <p>Players:</p>
             </div>
             <Separator />
-            <ScrollArea
-                ref={ref}
-                className="flex-1 overflow-y-auto flex p-3 flex-col"
-                id="chat-container"
-            >
+            <ScrollArea className="flex-1 overflow-y-auto flex p-3 flex-col" id="chat-container">
                 {/* Chat messages will go here */}
                 {messages.map((message, index) => (
                     <Message key={index} message={message} />

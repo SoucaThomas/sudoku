@@ -1,16 +1,25 @@
-import { CreateRoomData, GameRoom, SocketActionTypes, User } from "@repo/socket.io-types";
-import io from "socket.io-client";
-import { v4 as uuidv4 } from "uuid";
+import {
+    CreateRoomData,
+    GameRoom,
+    SocketActionTypes,
+    User,
+    MessageType,
+} from "@repo/socket.io-types";
+import { io, Socket } from "socket.io-client";
 import { UserProvider } from "../lib/utils";
 
-const socket = io("http://localhost:4001");
+let socket: Socket;
 
-socket.on(SocketActionTypes.newJoined, (user: User) => {
-    console.log("new user joined", user);
-});
+const getSocket = () => {
+    if (!socket) {
+        socket = io("http://localhost:4001");
+    }
+    return socket;
+};
 
 export const createRoom = (data: CreateRoomData) => {
     const user = new UserProvider().user;
+    socket = getSocket();
 
     return new Promise<string>((resolve, reject) => {
         socket.emit(SocketActionTypes.create, { ...data, roomHost: user } as CreateRoomData);
@@ -31,6 +40,7 @@ export const createRoom = (data: CreateRoomData) => {
 };
 
 export const joinRoom = async (id: string, requestPassword: () => Promise<string>) => {
+    socket = getSocket();
     return new Promise<GameRoom>((resolve, reject) => {
         const user = JSON.parse(localStorage.getItem("user") || "{}") as User;
 
@@ -91,4 +101,21 @@ export const joinRoom = async (id: string, requestPassword: () => Promise<string
             socket.off(SocketActionTypes.joinFailed, onJoinFailed);
         };
     });
+};
+
+export const socketMessage = (messageObject: MessageType) => {
+    socket = getSocket();
+    socket.emit(SocketActionTypes.message, messageObject);
+};
+
+export const listenForMessages = (onMessage: (message: MessageType) => void) => {
+    socket = getSocket();
+    socket.on(SocketActionTypes.message, (message: MessageType) => {
+        onMessage(message);
+    });
+};
+
+export const closeMessageListener = () => {
+    socket = getSocket();
+    socket.off(SocketActionTypes.message);
 };

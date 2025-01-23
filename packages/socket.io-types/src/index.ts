@@ -28,6 +28,8 @@ export enum SocketActionTypes {
     joinWithPassword = "room join with password",
     leave = "leave room",
     leaveFailed = "room leave failed",
+
+    message = "message",
 }
 
 export interface GameRoom {
@@ -51,4 +53,5 @@ export interface MessageType {
     message: string;
     time: string;
     messageType: "message" | "system";
+    roomId: string;
 }

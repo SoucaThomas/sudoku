@@ -80,7 +80,7 @@ const Room = () => {
                     game
                 </div>
                 <div className="m-2 hidden md:block md:row-span-3 md:col-span-2">
-                    <Chat />
+                    <Chat roomId={id} />
                 </div>
                 <div className="bg-blue-400/20 m-2 h-1/5 md:hidden"> controls for mobile</div>
             </div>
@@ -90,7 +90,7 @@ const Room = () => {
                     <MessageCircleMore />
                 </PopoverTrigger>
                 <PopoverContent className="w-[80dvw] h-[60dvh]">
-                    <Chat />
+                    <Chat roomId={id} />
                 </PopoverContent>
             </Popover>
 
