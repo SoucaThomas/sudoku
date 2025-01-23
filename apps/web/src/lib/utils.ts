@@ -11,7 +11,7 @@ export class UserProvider {
     user: User;
 
     constructor(user?: User) {
-        if (localStorage.getItem("user") !== null) {
+        if (typeof localStorage !== "undefined" && localStorage.getItem("user") !== null) {
             this.user = JSON.parse(localStorage.getItem("user") as string) as User;
         } else {
             this.createUser();
