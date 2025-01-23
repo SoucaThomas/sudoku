@@ -20,7 +20,6 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket: Socket) => {
-    // console.log("+", socket.id);
     console.log("Number of connected sockets:", io.engine.clientsCount);
 
     socket.on(SocketActionTypes.create, (data: CreateRoomData) => {
@@ -51,6 +50,10 @@ io.on("connection", (socket: Socket) => {
 
     socket.on(SocketActionTypes.join, async (roomId: string, user: User) => {
         const room = await rooms.get(roomId);
+        if (user.userName === "") {
+            user.userName = "Guest";
+        }
+
         if (!room) {
             socket.emit(SocketActionTypes.joinFailed, "Room not found");
             return;

@@ -15,7 +15,7 @@ import { LockKeyhole, LockKeyholeOpen } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 import { GameTypes, GameDifficulties, CreateRoomData, User } from "@repo/socket.io-types";
 import { createRoom } from "../actions/room";
-import { v4 as uuidv4 } from "uuid";
+import { UserProvider } from "../lib/utils";
 
 interface CreateRoomDialogProps {
     children: ReactNode;
@@ -31,15 +31,16 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const { toast } = useToast();
 
-    const user = JSON.parse(localStorage.getItem("user") || "null") as User | null;
-    if (!user) {
-        const userId = uuidv4();
-        const userName = "Player";
+    // const user = JSON.parse(localStorage.getItem("user") || "null") as User | null;
+    // if (!user) {
+    //     const userId = uuidv4();
+    //     const userName = "Player";
 
-        localStorage.setItem("user", JSON.stringify({ userId, userName }));
-    } else {
-        localStorage.setItem("user", JSON.stringify(user));
-    }
+    //     localStorage.setItem("user", JSON.stringify({ userId, userName }));
+    // } else {
+    //     localStorage.setItem("user", JSON.stringify(user));
+    // }
+    const user = new UserProvider().user;
 
     return (
         <div className={className}>
@@ -148,7 +149,7 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
                                     roomPassword: roomPassword,
                                     roomGame: gameType,
                                     roomDifficulty: gameDifficulty,
-                                    isRoomPublic: isRoomPublic, //! some bug here TODO
+                                    isRoomPublic: isRoomPublic,
                                     roomHost: user,
                                 } as CreateRoomData)
                                     .then((roomId: string) => {

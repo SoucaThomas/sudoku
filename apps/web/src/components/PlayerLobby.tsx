@@ -16,12 +16,13 @@ import { Separator } from "../components/ui/separator";
 import CreateRoomDialog from "../components/CreateRoomDialog";
 import { GameTypes } from "@repo/socket.io-types";
 import { useEffect, useState } from "react";
+import { UserProvider } from "../lib/utils";
 
 export default function PlayerLobby() {
     const [userName, setUserName] = useState("");
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        const user = new UserProvider().getUser();
         setUserName(user.userName);
     }, []);
     return (
