@@ -143,17 +143,24 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
                                     });
                                     return;
                                 }
-                                createRoom(
-                                    {
-                                        roomName: roomName,
-                                        roomPassword: roomPassword,
-                                        roomGame: gameType,
-                                        roomDifficulty: gameDifficulty,
-                                        isRoomPublic: isRoomPublic, //! some bug here TODO
-                                        roomHost: user,
-                                    } as CreateRoomData,
-                                    toast
-                                );
+                                createRoom({
+                                    roomName: roomName,
+                                    roomPassword: roomPassword,
+                                    roomGame: gameType,
+                                    roomDifficulty: gameDifficulty,
+                                    isRoomPublic: isRoomPublic, //! some bug here TODO
+                                    roomHost: user,
+                                } as CreateRoomData)
+                                    .then((roomId: string) => {
+                                        window.location.href = `/room/${roomId}`;
+                                    })
+                                    .catch((error: string) => {
+                                        toast({
+                                            variant: "destructive",
+                                            title: "Uh oh! Something went wrong.",
+                                            description: `Room creation failed: ${error}`,
+                                        });
+                                    });
 
                                 setRoomName("");
                                 setRoomPassword("");

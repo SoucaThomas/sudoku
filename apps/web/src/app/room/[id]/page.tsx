@@ -13,6 +13,11 @@ import {
     DialogFooter,
     DialogTitle,
 } from "../../../components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover";
+import { MessageCircleMore } from "lucide-react";
+import { Input } from "../../../components/ui/input";
+import { Button } from "../../../components/ui/button";
+import Chat from "../../../components/Chat";
 
 const Room = () => {
     const { toast } = useToast();
@@ -22,26 +27,25 @@ const Room = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [password, setPassword] = useState("");
     const [passwordResolve, setPasswordResolve] = useState<((value: string) => void) | null>(null);
+    const [room, setRoom] = useState<GameRoom | null>(null);
     const router = useRouter();
 
     useEffect(() => {
-        setIsMounted(true); // Ensure we're in the client-side context
+        setIsMounted(true);
     }, []);
 
-    // Function to request the password
     const requestPassword = () => {
         return new Promise<string>((resolve) => {
-            setPasswordResolve(() => resolve); // Save the resolver
-            setDialogOpen(true); // Open the dialog
+            setPasswordResolve(() => resolve);
+            setDialogOpen(true);
         });
     };
 
-    // Handle password submission
     const handlePasswordSubmit = () => {
         if (passwordResolve) {
-            passwordResolve(password); // Resolve the promise with the password
-            setPassword(""); // Clear the password field
-            setDialogOpen(false); // Close the dialog
+            passwordResolve(password);
+            setPassword("");
+            setDialogOpen(false);
         }
     };
 
@@ -51,7 +55,7 @@ const Room = () => {
         setIsJoining(true);
         joinRoom(id, requestPassword)
             .then((room: GameRoom) => {
-                console.log("Successfully joined room:", room);
+                setRoom(room);
                 setIsJoining(false);
             })
             .catch((error) => {
@@ -69,16 +73,33 @@ const Room = () => {
     }, [isMounted, router, id]);
 
     return (
-        <div>
-            <h1>Room ID: {id}</h1>
+        <section className="w-5/6 md:w-3/4 max-w-7xl mx-auto my-10">
+            <div className="h-12 w-full bg-zinc-400">tooltip</div>
+            <div className="h-full md:grid md:grid-cols-6 md:grid-rows-6 lg:grid ">
+                <div className="bg-red-500/20 m-2 max-md:h-1/2 md:row-span-3 md:col-span-4">
+                    game
+                </div>
+                <div className="bg-blue-400/20 m-2 hidden md:block md:row-span-3 md:col-span-2">
+                    <Chat />
+                </div>
+                <div className="bg-blue-400/20 m-2 h-1/5 md:hidden"> controls for mobile</div>
+            </div>
 
-            {/* Password Dialog */}
+            <Popover>
+                <PopoverTrigger className="fixed bottom-4 right-4 z-10 border border-white p-3 md:hidden rounded-full shadow-lg">
+                    <MessageCircleMore />
+                </PopoverTrigger>
+                <PopoverContent className="w-[80dvw] h-[60dvh]">
+                    <Chat />
+                </PopoverContent>
+            </Popover>
+
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Enter Password</DialogTitle>
                     </DialogHeader>
-                    <input
+                    <Input
                         type="password"
                         placeholder="Password"
                         value={password}
@@ -86,16 +107,16 @@ const Room = () => {
                         className="mt-4 border rounded px-4 py-2 w-full"
                     />
                     <DialogFooter>
-                        <button
+                        <Button
                             onClick={handlePasswordSubmit}
                             className="bg-blue-500 text-white px-4 py-2 rounded"
                         >
                             Submit
-                        </button>
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+        </section>
     );
 };
 

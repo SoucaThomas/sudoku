@@ -20,7 +20,8 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket: Socket) => {
-    console.log("+", socket.id);
+    // console.log("+", socket.id);
+    console.log("Number of connected sockets:", io.engine.clientsCount);
 
     socket.on(SocketActionTypes.create, (data: CreateRoomData) => {
         const roomId = uu4id();

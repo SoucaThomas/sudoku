@@ -9,29 +9,29 @@ socket.on(SocketActionTypes.newJoined, (user: User) => {
     console.log("new user joined", user);
 });
 
-export const createRoom = (data: CreateRoomData, toast: ReturnType<typeof useToast>["toast"]) => {
+export const createRoom = (data: CreateRoomData) => {
     const userId = localStorage.getItem("userId") || uuidv4();
     const userName = localStorage.getItem("userName") || "Host";
 
     const host = { userId: userId, userName: userName } as User;
 
-    socket.emit(SocketActionTypes.create, { ...data, roomHost: host } as CreateRoomData);
-
     localStorage.setItem("userId", userId);
 
-    socket.on(SocketActionTypes.create, (roomId: string) => {
-        window.location.href = `/room/${roomId}`;
-        socket.off(SocketActionTypes.create);
-    });
+    return new Promise<string>((resolve, reject) => {
+        socket.emit(SocketActionTypes.create, { ...data, roomHost: host } as CreateRoomData);
 
-    socket.on("room creation failed", (error: string) => {
-        toast({
-            variant: "destructive",
-            title: "Uh oh! Something went wrong.",
-            description: `Room creation failed: ${error}`,
+        socket.on(SocketActionTypes.create, (roomId: string) => {
+            // window.location.href = `/room/${roomId}`;
+            resolve(roomId);
+
+            socket.off(SocketActionTypes.create);
         });
 
-        socket.off(SocketActionTypes.create);
+        socket.on(SocketActionTypes.createFailed, (error: string) => {
+            reject(error);
+
+            socket.off(SocketActionTypes.createFailed);
+        });
     });
 };
 
