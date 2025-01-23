@@ -1,7 +1,7 @@
 import { CreateRoomData, GameRoom, SocketActionTypes, User } from "@repo/socket.io-types";
 import io from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
-import { useToast } from "../hooks/use-toast";
+import { UserProvider } from "../lib/utils";
 
 const socket = io("http://localhost:4001");
 
@@ -10,15 +10,10 @@ socket.on(SocketActionTypes.newJoined, (user: User) => {
 });
 
 export const createRoom = (data: CreateRoomData) => {
-    const userId = localStorage.getItem("userId") || uuidv4();
-    const userName = localStorage.getItem("userName") || "Host";
-
-    const host = { userId: userId, userName: userName } as User;
-
-    localStorage.setItem("userId", userId);
+    const user = new UserProvider().user;
 
     return new Promise<string>((resolve, reject) => {
-        socket.emit(SocketActionTypes.create, { ...data, roomHost: host } as CreateRoomData);
+        socket.emit(SocketActionTypes.create, { ...data, roomHost: user } as CreateRoomData);
 
         socket.on(SocketActionTypes.create, (roomId: string) => {
             // window.location.href = `/room/${roomId}`;

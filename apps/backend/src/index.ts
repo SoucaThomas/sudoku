@@ -92,7 +92,6 @@ io.on("connection", (socket: Socket) => {
                 room.roomUsers.push(user);
                 socket.join(roomId);
                 socket.to(roomId).emit(SocketActionTypes.newJoined, user);
-                console.log(socket.rooms);
             }
         }
     );
