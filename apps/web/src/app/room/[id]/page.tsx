@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { joinRoom } from "../../../actions/room";
+import { joinRoom, leaveRoom } from "../../../actions/room";
 import { useToast } from "../../../hooks/use-toast";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -23,7 +23,7 @@ import { useRoomStore } from "../../../lib/utils";
 const Room = () => {
     const { toast } = useToast();
     const { id } = useParams() as { id: string };
-    const { room, setRoom } = useRoomStore();
+    const { setRoom } = useRoomStore();
     const [isMounted, setIsMounted] = useState(false);
     const [isJoining, setIsJoining] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -33,6 +33,16 @@ const Room = () => {
 
     useEffect(() => {
         setIsMounted(true);
+
+        const handleBeforeUnload = () => {
+            leaveRoom();
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
     }, []);
 
     const requestPassword = () => {

@@ -22,11 +22,11 @@ export default function Chat() {
     const [message, setMessage] = useState<string>("");
     const user = new UserProvider().user;
     const { messages, addMessage } = useChatStore();
-    const { room, addUser } = useRoomStore();
+    const { room, addUser, removeUser } = useRoomStore();
 
     useEffect(() => {
         listenForMessages(addMessage);
-        ListenForUsers(addUser);
+        ListenForUsers(addUser, removeUser);
 
         return () => {
             closeMessageListener();

@@ -95,6 +95,19 @@ io.on("connection", (socket: Socket) => {
         socket.to(message.roomId).emit(SocketActionTypes.message, message);
     });
 
+    socket.on(SocketActionTypes.leave, (roomId: string, userId: string) => {
+        console.log("leave", roomId, userId);
+        const room = rooms.get(roomId);
+        if (!room) {
+            socket.emit(SocketActionTypes.leaveFailed);
+            return;
+        }
+
+        room.roomUsers = room.roomUsers.filter((u) => u.userId !== userId);
+        socket.to(roomId).emit(SocketActionTypes.leave, userId);
+        socket.leave(roomId);
+    });
+
     socket.on("disconnect", () => console.log("-", socket.id));
 });
 

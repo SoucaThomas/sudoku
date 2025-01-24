@@ -120,13 +120,21 @@ export const closeMessageListener = () => {
     socket.off(SocketActionTypes.message);
 };
 
-export const ListenForUsers = (addUser: (newUser: User) => void) => {
+export const ListenForUsers = (
+    addUser: (newUser: User) => void,
+    removeUser: (userId: string) => void
+) => {
     socket = getSocket();
     const handleNewUser = (user: User) => {
         addUser(user);
     };
 
+    const handleLeaveUser = (userId: string) => {
+        removeUser(userId);
+    };
+
     socket.on(SocketActionTypes.newJoined, handleNewUser);
+    socket.on(SocketActionTypes.leave, handleLeaveUser);
 
     return () => {
         socket.off(SocketActionTypes.newJoined, handleNewUser);
@@ -136,4 +144,13 @@ export const ListenForUsers = (addUser: (newUser: User) => void) => {
 export const closeUserListener = () => {
     socket = getSocket();
     socket.off(SocketActionTypes.newJoined);
+};
+
+export const leaveRoom = () => {
+    socket = getSocket();
+    socket.emit(
+        SocketActionTypes.leave,
+        useRoomStore.getState().room.roomId,
+        new UserProvider().user.userId
+    );
 };
