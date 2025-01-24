@@ -59,7 +59,6 @@ export default function Chat() {
             </div>
             <Separator />
             <ScrollArea className="flex-1 overflow-y-auto flex p-3 flex-col" id="chat-container">
-                {/* Chat messages will go here */}
                 {messages.map((message, index) => (
                     <Message key={index} message={message} />
                 ))}

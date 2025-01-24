@@ -30,6 +30,9 @@ export enum SocketActionTypes {
     leaveFailed = "room leave failed",
 
     message = "message",
+
+    askRooms = "ask rooms",
+    roomUpdate = "room update",
 }
 
 export interface GameRoom {

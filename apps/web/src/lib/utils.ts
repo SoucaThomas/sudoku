@@ -87,3 +87,21 @@ export const useRoomStore = create<{
         });
     },
 }));
+
+export const useDiscoverStore = create<{
+    rooms: GameRoom[];
+    setRooms: (rooms: GameRoom[]) => void;
+    addRoom: (room: GameRoom) => void;
+}>((set) => ({
+    rooms: [] as GameRoom[],
+    setRooms: (rooms: GameRoom[]) => {
+        set((state) => {
+            return { ...state, rooms };
+        });
+    },
+    addRoom: (room: GameRoom) => {
+        set((state) => {
+            return { ...state, rooms: [...state.rooms, room] };
+        });
+    },
+}));

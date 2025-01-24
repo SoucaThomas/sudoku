@@ -169,3 +169,30 @@ export const leaveRoom = () => {
         new UserProvider().user
     );
 };
+
+export const askRooms = () => {
+    return new Promise<GameRoom[]>((resolve) => {
+        socket = getSocket();
+
+        socket.emit(SocketActionTypes.askRooms);
+
+        socket.on(SocketActionTypes.askRooms, (rooms: GameRoom[]) => {
+            resolve(rooms);
+
+            socket.off(SocketActionTypes.askRooms);
+        });
+    });
+};
+
+export const listenForRooms = (setRooms: (room: GameRoom[]) => void) => {
+    socket = getSocket();
+
+    socket.on(SocketActionTypes.roomUpdate, (rooms: GameRoom[]) => {
+        setRooms(rooms);
+    });
+};
+
+export const closeListenForRooms = () => {
+    socket = getSocket();
+    socket.off(SocketActionTypes.roomUpdate);
+};

@@ -42,6 +42,7 @@ io.on("connection", (socket: Socket) => {
         });
 
         socket.emit(SocketActionTypes.create, roomId);
+        socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values()));
     });
 
     socket.on(SocketActionTypes.join, async (roomId: string, user: User) => {
@@ -66,6 +67,7 @@ io.on("connection", (socket: Socket) => {
         }
         socket.join(roomId);
         socket.emit(SocketActionTypes.join, room); //! we should send the board and stuff like that
+        socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values()));
     });
 
     socket.on(
@@ -86,6 +88,7 @@ io.on("connection", (socket: Socket) => {
                 room.roomUsers.push(user);
                 socket.join(roomId);
                 socket.to(roomId).emit(SocketActionTypes.newJoined, user);
+                socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values()));
             }
         }
     );
@@ -103,8 +106,18 @@ io.on("connection", (socket: Socket) => {
         }
 
         room.roomUsers = room.roomUsers.filter((u) => u.userId !== user.userId);
+
+        if (room.roomUsers.length === 0) {
+            rooms.delete(roomId);
+        }
+
         socket.to(roomId).emit(SocketActionTypes.leave, user);
         socket.leave(roomId);
+        socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values()));
+    });
+
+    socket.on(SocketActionTypes.askRooms, () => {
+        socket.emit(SocketActionTypes.askRooms, Array.from(rooms.values()));
     });
 
     socket.on("disconnect", () => console.log("-", socket.id));
