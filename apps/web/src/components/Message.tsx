@@ -9,7 +9,6 @@ interface MessageProps {
 
 export const Message = ({ message }: MessageProps) => {
     const { theme } = useTheme();
-    console.log(ColorValues[message.user.color]?.dark);
     return (
         <Card className="p-4 flex flex-col mt-3">
             {/* Top Row */}
@@ -21,8 +20,8 @@ export const Message = ({ message }: MessageProps) => {
                         style={{
                             color:
                                 theme === "dark"
-                                    ? ColorValues[message.user.color]?.light
-                                    : ColorValues[message.user.color]?.dark,
+                                    ? ColorValues[message.user.color].dark
+                                    : ColorValues[message.user.color].light,
                         }}
                     >
                         {message.user?.userName ? message.user.userName : "Guest"}

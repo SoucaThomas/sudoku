@@ -38,7 +38,9 @@ export class UserProvider {
         const colorValues = Object.values(Colors);
         const color = colorValues[Math.floor(Math.random() * colorValues.length)];
 
-        localStorage.setItem("user", JSON.stringify({ userId, userName, color }));
+        if (typeof localStorage !== "undefined") {
+            localStorage.setItem("user", JSON.stringify({ userId, userName, color }));
+        }
     }
 }
 

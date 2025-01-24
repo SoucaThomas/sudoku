@@ -74,7 +74,6 @@ export enum Colors {
     LIME = "lime",
     PINK = "pink",
     TEAL = "teal",
-    NAVY = "navy",
 }
 
 export const ColorValues: { [key in Colors]: { [key in ColorShades]: string } } = {
@@ -83,19 +82,19 @@ export const ColorValues: { [key in Colors]: { [key in ColorShades]: string } } 
         [ColorShades.DARK]: "#990000",
     },
     [Colors.GREEN]: {
-        [ColorShades.LIGHT]: "#CCFFCC",
+        [ColorShades.LIGHT]: "#AADDAA",
         [ColorShades.DARK]: "#006600",
     },
     [Colors.BLUE]: {
         [ColorShades.LIGHT]: "#CCCCFF",
-        [ColorShades.DARK]: "#000066",
+        [ColorShades.DARK]: "#333399",
     },
     [Colors.YELLOW]: {
-        [ColorShades.LIGHT]: "#FFFFCC",
+        [ColorShades.LIGHT]: "#DDDDAA",
         [ColorShades.DARK]: "#999900",
     },
     [Colors.CYAN]: {
-        [ColorShades.LIGHT]: "#CCFFFF",
+        [ColorShades.LIGHT]: "#AADDDD",
         [ColorShades.DARK]: "#009999",
     },
     [Colors.MAGENTA]: {
@@ -111,7 +110,7 @@ export const ColorValues: { [key in Colors]: { [key in ColorShades]: string } } 
         [ColorShades.DARK]: "#4B0082",
     },
     [Colors.LIME]: {
-        [ColorShades.LIGHT]: "#CCFFCC",
+        [ColorShades.LIGHT]: "#AADDAA",
         [ColorShades.DARK]: "#009900",
     },
     [Colors.PINK]: {
@@ -119,11 +118,7 @@ export const ColorValues: { [key in Colors]: { [key in ColorShades]: string } } 
         [ColorShades.DARK]: "#CC0066",
     },
     [Colors.TEAL]: {
-        [ColorShades.LIGHT]: "#CCFFFF",
+        [ColorShades.LIGHT]: "#AADDDD",
         [ColorShades.DARK]: "#006666",
-    },
-    [Colors.NAVY]: {
-        [ColorShades.LIGHT]: "#CCCCFF",
-        [ColorShades.DARK]: "#000033",
     },
 };
