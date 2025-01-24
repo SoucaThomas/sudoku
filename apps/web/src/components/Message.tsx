@@ -11,7 +11,6 @@ export const Message = ({ message }: MessageProps) => {
     const { theme } = useTheme();
     return (
         <Card className="p-4 flex flex-col mt-3">
-            {/* Top Row */}
             <div className="flex items-start">
                 <CircleUser className="h-6 w-6 flex-shrink-0" />
                 <div className="ml-2 flex flex-col">

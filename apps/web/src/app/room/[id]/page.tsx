@@ -18,16 +18,17 @@ import { MessageCircleMore } from "lucide-react";
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import Chat from "../../../components/Chat";
+import { useRoomStore } from "../../../lib/utils";
 
 const Room = () => {
     const { toast } = useToast();
     const { id } = useParams() as { id: string };
-    const [isMounted, setIsMounted] = useState(false); // Client-side check state
+    const { room, setRoom } = useRoomStore();
+    const [isMounted, setIsMounted] = useState(false);
     const [isJoining, setIsJoining] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [password, setPassword] = useState("");
     const [passwordResolve, setPasswordResolve] = useState<((value: string) => void) | null>(null);
-    const [room, setRoom] = useState<GameRoom | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -80,7 +81,7 @@ const Room = () => {
                     game
                 </div>
                 <div className="m-2 hidden md:block md:row-span-3 md:col-span-2">
-                    <Chat roomId={id} />
+                    <Chat />
                 </div>
                 <div className="bg-blue-400/20 m-2 h-1/5 md:hidden"> controls for mobile</div>
             </div>
@@ -90,7 +91,7 @@ const Room = () => {
                     <MessageCircleMore />
                 </PopoverTrigger>
                 <PopoverContent className="w-[80dvw] h-[60dvh]">
-                    <Chat roomId={id} />
+                    <Chat />
                 </PopoverContent>
             </Popover>
 

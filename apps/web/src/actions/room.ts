@@ -6,7 +6,7 @@ import {
     MessageType,
 } from "@repo/socket.io-types";
 import { io, Socket } from "socket.io-client";
-import { UserProvider } from "../lib/utils";
+import { UserProvider, useRoomStore } from "../lib/utils";
 
 let socket: Socket;
 
@@ -118,4 +118,22 @@ export const listenForMessages = (onMessage: (message: MessageType) => void) => 
 export const closeMessageListener = () => {
     socket = getSocket();
     socket.off(SocketActionTypes.message);
+};
+
+export const ListenForUsers = (addUser: (newUser: User) => void) => {
+    socket = getSocket();
+    const handleNewUser = (user: User) => {
+        addUser(user);
+    };
+
+    socket.on(SocketActionTypes.newJoined, handleNewUser);
+
+    return () => {
+        socket.off(SocketActionTypes.newJoined, handleNewUser);
+    };
+};
+
+export const closeUserListener = () => {
+    socket = getSocket();
+    socket.off(SocketActionTypes.newJoined);
 };

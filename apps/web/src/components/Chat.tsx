@@ -7,26 +7,30 @@ import { Input } from "../components/ui/input";
 import { Send } from "lucide-react";
 import { useState, useEffect } from "react";
 import { MessageType } from "@repo/socket.io-types";
-import { UserProvider, useChatStore } from "../lib/utils";
+import { UserProvider, useChatStore, useRoomStore } from "../lib/utils";
 import { Card } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
-import { socketMessage, listenForMessages, closeMessageListener } from "../actions/room";
+import {
+    socketMessage,
+    listenForMessages,
+    closeMessageListener,
+    ListenForUsers,
+    closeUserListener,
+} from "../actions/room";
 
-interface ChatProps {
-    roomId: string;
-}
-
-export default function Chat({ roomId }: ChatProps) {
+export default function Chat() {
     const [message, setMessage] = useState<string>("");
     const user = new UserProvider().user;
     const { messages, addMessage } = useChatStore();
+    const { room, addUser } = useRoomStore();
 
     useEffect(() => {
         listenForMessages(addMessage);
+        ListenForUsers(addUser);
 
         return () => {
-            // Cleanup
             closeMessageListener();
+            closeUserListener();
         };
     }, []);
 
@@ -40,7 +44,7 @@ export default function Chat({ roomId }: ChatProps) {
             message: message,
             time: new Date().toLocaleTimeString(),
             messageType: "message",
-            roomId: roomId,
+            roomId: room.roomId,
         } as MessageType;
         addMessage(messageObject);
         socketMessage(messageObject);
@@ -51,7 +55,7 @@ export default function Chat({ roomId }: ChatProps) {
         <Card className="flex flex-col h-full">
             <div className="flex justify-between items-center p-3">
                 <h1>Rooms</h1>
-                <p>Players:</p>
+                <p>Players: {room.roomUsers ? room.roomUsers.length : "n"}</p>
             </div>
             <Separator />
             <ScrollArea className="flex-1 overflow-y-auto flex p-3 flex-col" id="chat-container">

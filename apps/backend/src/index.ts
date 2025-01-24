@@ -41,16 +41,6 @@ io.on("connection", (socket: Socket) => {
             roomUsers: [],
         });
 
-        console.log("Room created", {
-            roomId: roomId,
-            roomName: data.roomName,
-            roomPassword: data.roomPassword,
-            roomGame: data.roomGame,
-            roomDifficulty: data.roomDifficulty,
-            isRoomPublic: data.isRoomPublic,
-            roomHost: data.roomHost,
-            roomUsers: [],
-        });
         socket.emit(SocketActionTypes.create, roomId);
     });
 
@@ -76,7 +66,7 @@ io.on("connection", (socket: Socket) => {
         }
         socket.join(roomId);
         socket.emit(SocketActionTypes.join, room); //! we should send the board and stuff like that
-        console.log(socket.rooms);
+        socket.to(roomId).emit(SocketActionTypes.newJoined, user);
     });
 
     socket.on(
@@ -88,7 +78,6 @@ io.on("connection", (socket: Socket) => {
                 return;
             }
 
-            console.log("Joining room with password", room?.roomPassword, password);
             if (room.roomPassword !== password) {
                 socket.emit(SocketActionTypes.joinFailed, "Invalid password");
                 return;
