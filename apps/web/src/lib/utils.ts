@@ -59,7 +59,7 @@ export const useChatStore = create<{
 export const useRoomStore = create<{
     room: GameRoom;
     setRoom: (room: GameRoom) => void;
-    removeUser: (userId: string) => void;
+    removeUser: (user: User) => void;
     addUser: (user: User) => void;
 }>((set) => ({
     room: {} as GameRoom,
@@ -68,22 +68,22 @@ export const useRoomStore = create<{
             return { ...state, room };
         });
     },
-    removeUser: (userId: string) => {
+    removeUser: (user: User) => {
+        console.log("remove");
         set((state) => {
-            const newUsers = state.room.roomUsers.filter((u) => u.userId !== userId);
-            return { ...state, room: { ...state.room, roomUsers: newUsers } };
+            const newUsers = state.room.roomUsers.filter((u) => u.userId !== user.userId);
+            return {
+                ...state,
+                room: { ...state.room, roomUsers: newUsers },
+            };
         });
     },
     addUser: (user: User) => {
         set((state) => {
-            const userExists = state.room.roomUsers.some((u) => u.userId === user.userId);
-            if (!userExists) {
-                return {
-                    ...state,
-                    room: { ...state.room, roomUsers: [...state.room.roomUsers, user] },
-                };
-            }
-            return state;
+            return {
+                ...state,
+                room: { ...state.room, roomUsers: [...(state.room?.roomUsers || []), user] },
+            };
         });
     },
 }));

@@ -14,7 +14,7 @@ import {
     socketMessage,
     listenForMessages,
     closeMessageListener,
-    ListenForUsers,
+    listenForUsers,
     closeUserListener,
 } from "../actions/room";
 
@@ -26,7 +26,7 @@ export default function Chat() {
 
     useEffect(() => {
         listenForMessages(addMessage);
-        ListenForUsers(addUser, removeUser);
+        listenForUsers(room, addUser, removeUser, addMessage);
 
         return () => {
             closeMessageListener();
@@ -55,7 +55,7 @@ export default function Chat() {
         <Card className="flex flex-col h-full">
             <div className="flex justify-between items-center p-3">
                 <h1>Rooms</h1>
-                <p>Players: {room.roomUsers ? room.roomUsers.length : "n"}</p>
+                <p>Players: {room && room?.roomUsers ? room.roomUsers.length : "n"}</p>
             </div>
             <Separator />
             <ScrollArea className="flex-1 overflow-y-auto flex p-3 flex-col" id="chat-container">

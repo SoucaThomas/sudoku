@@ -66,7 +66,6 @@ io.on("connection", (socket: Socket) => {
         }
         socket.join(roomId);
         socket.emit(SocketActionTypes.join, room); //! we should send the board and stuff like that
-        socket.to(roomId).emit(SocketActionTypes.newJoined, user);
     });
 
     socket.on(
@@ -95,16 +94,16 @@ io.on("connection", (socket: Socket) => {
         socket.to(message.roomId).emit(SocketActionTypes.message, message);
     });
 
-    socket.on(SocketActionTypes.leave, (roomId: string, userId: string) => {
-        console.log("leave", roomId, userId);
+    socket.on(SocketActionTypes.leave, (roomId: string, user: User) => {
+        console.log("leave", roomId, user);
         const room = rooms.get(roomId);
         if (!room) {
             socket.emit(SocketActionTypes.leaveFailed);
             return;
         }
 
-        room.roomUsers = room.roomUsers.filter((u) => u.userId !== userId);
-        socket.to(roomId).emit(SocketActionTypes.leave, userId);
+        room.roomUsers = room.roomUsers.filter((u) => u.userId !== user.userId);
+        socket.to(roomId).emit(SocketActionTypes.leave, user);
         socket.leave(roomId);
     });
 

@@ -120,30 +120,45 @@ export const closeMessageListener = () => {
     socket.off(SocketActionTypes.message);
 };
 
-export const ListenForUsers = (
+export const listenForUsers = (
+    room: GameRoom,
     addUser: (newUser: User) => void,
-    removeUser: (userId: string) => void
+    removeUser: (user: User) => void,
+    addMessage: (message: MessageType) => void
 ) => {
     socket = getSocket();
-    const handleNewUser = (user: User) => {
-        addUser(user);
+    const handleNewUser = (newUser: User) => {
+        addUser(newUser);
+        const messageObject = {
+            user: newUser,
+            message: `joined`,
+            time: new Date().toLocaleTimeString(),
+            messageType: "system",
+            roomId: room.roomId,
+        } as MessageType;
+        addMessage(messageObject);
     };
 
-    const handleLeaveUser = (userId: string) => {
-        removeUser(userId);
+    const handleLeaveUser = (user: User) => {
+        removeUser(user);
+        const messageObject = {
+            user: user,
+            message: `left the room`,
+            time: new Date().toLocaleTimeString(),
+            messageType: "system",
+            roomId: room.roomId,
+        } as MessageType;
+        addMessage(messageObject);
     };
 
     socket.on(SocketActionTypes.newJoined, handleNewUser);
     socket.on(SocketActionTypes.leave, handleLeaveUser);
-
-    return () => {
-        socket.off(SocketActionTypes.newJoined, handleNewUser);
-    };
 };
 
 export const closeUserListener = () => {
     socket = getSocket();
     socket.off(SocketActionTypes.newJoined);
+    socket.off(SocketActionTypes.leave);
 };
 
 export const leaveRoom = () => {
@@ -151,6 +166,6 @@ export const leaveRoom = () => {
     socket.emit(
         SocketActionTypes.leave,
         useRoomStore.getState().room.roomId,
-        new UserProvider().user.userId
+        new UserProvider().user
     );
 };
