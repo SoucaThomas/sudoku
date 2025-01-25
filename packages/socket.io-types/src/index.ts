@@ -46,7 +46,7 @@ export interface GameRoom {
     roomGame: GameTypes;
     roomDifficulty: GameDifficulties;
     isRoomPublic: boolean;
-    roomHost: User;
+    roomHost?: User;
     roomUsers: User[];
 
     isPlaying: boolean;

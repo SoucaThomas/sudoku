@@ -64,13 +64,19 @@ io.on("connection", (socket: Socket) => {
             socket.emit(SocketActionTypes.roomPrivate);
             return;
         }
-
         if (!room.roomUsers.find((u) => u.userId === user.userId)) {
             room.roomUsers.push(user);
             socket.to(roomId).emit(SocketActionTypes.newJoined, user);
         }
+
         socket.join(roomId);
-        socket.emit(SocketActionTypes.join, room); //! we should send the board and stuff like that
+
+        const roomData = {
+            ...room,
+            roomHost: room.roomHost?.userId === user.userId ? room.roomHost : undefined,
+        };
+
+        socket.emit(SocketActionTypes.join, roomData); //! we should send the board and stuff like that
         socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values()));
     });
 
@@ -92,6 +98,12 @@ io.on("connection", (socket: Socket) => {
                 room.roomUsers.push(user);
                 socket.to(roomId).emit(SocketActionTypes.newJoined, user);
             }
+
+            const roomData = {
+                ...room,
+                roomHost: room.roomHost?.userId === user.userId ? room.roomHost : undefined,
+            };
+
             socket.join(roomId);
             socket.emit(SocketActionTypes.join, room); //! we should send the board and stuff like that
             socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values()));

@@ -1,13 +1,11 @@
 "use client";
 
-import React, { use, useEffect } from "react";
-import { Card, CardContent, CardTitle } from "./ui/card";
-import { Home, Menu, Pause, Timer, Play } from "lucide-react";
-import { Button } from "./ui/button";
-import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
-import {} from "@radix-ui/react-popover";
+import React, { useEffect } from "react";
+import { Card, CardContent } from "./ui/card";
+import { Play, Pause, Timer } from "lucide-react";
 import { useRoomStore } from "../lib/utils";
-import { closeListenForGameUpdate, listenForGameUpdate } from "../actions/room";
+import { listenForGameUpdate } from "../actions/room";
+import { Button } from "./ui/button";
 
 export default function Tooltip() {
     const { room, startStopGame, setRoom } = useRoomStore();
@@ -37,38 +35,16 @@ export default function Tooltip() {
     }, [room]);
     return (
         <Card className="h-full w-full select-none overflow-hidden p-0 m-0">
-            <CardContent className="flex flex-row p-0 px-6 h-full items-center justify-center sm:justify-between">
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant="outline" className="mr-4 ">
-                            <Menu></Menu>
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent side="bottom" align="center">
-                        <Card className="flex flex-col items-center  space-y-4">
-                            <div className="w-full p-3 flex flex-row justify-between items-center">
-                                <CardTitle>Menu</CardTitle>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => {
-                                        window.location.href = "/";
-                                    }}
-                                >
-                                    <Home size={24} />
-                                </Button>
-                            </div>
-                            <Button
-                                variant="outline"
-                                onClick={() => {
-                                    startStopGame();
-                                }}
-                            >
-                                {room.isPlaying ? <Pause size={24} /> : <Play size={24} />}
-                            </Button>
-                        </Card>
-                    </PopoverContent>
-                </Popover>
+            <CardContent className="flex flex-row p-0 px-6 h-full items-center justify-center space-x-6">
                 <div className="flex flex-row items-center space-x-6">
+                    <Button
+                        variant="outline"
+                        onClick={() => {
+                            startStopGame();
+                        }}
+                    >
+                        {room.isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                    </Button>
                     <p className="flex flex-col items-center space-y-1 sm:flex-row sm:space-x-4 sm:space-y-0">
                         Mistakes <span>3</span>
                     </p>
