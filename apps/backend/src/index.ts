@@ -86,10 +86,11 @@ io.on("connection", (socket: Socket) => {
 
             if (!room.roomUsers.find((u) => u.userId === user.userId)) {
                 room.roomUsers.push(user);
-                socket.join(roomId);
                 socket.to(roomId).emit(SocketActionTypes.newJoined, user);
-                socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values()));
             }
+            socket.join(roomId);
+            socket.emit(SocketActionTypes.join, room); //! we should send the board and stuff like that
+            socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values()));
         }
     );
 

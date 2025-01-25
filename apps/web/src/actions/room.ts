@@ -108,16 +108,26 @@ export const socketMessage = (messageObject: MessageType) => {
     socket.emit(SocketActionTypes.message, messageObject);
 };
 
-export const listenForMessages = (onMessage: (message: MessageType) => void) => {
+export const listenForMessages = (addMessage: (message: MessageType) => void) => {
     socket = getSocket();
     socket.on(SocketActionTypes.message, (message: MessageType) => {
-        onMessage(message);
+        addMessage(message);
+    });
+
+    socket.on(SocketActionTypes.join, () => {
+        addMessage({
+            user: { userName: "System" },
+            message: "Welcome to the chat!",
+            time: new Date().toLocaleTimeString(),
+            messageType: "system",
+        } as MessageType);
     });
 };
 
 export const closeMessageListener = () => {
     socket = getSocket();
     socket.off(SocketActionTypes.message);
+    socket.off(SocketActionTypes.join);
 };
 
 export const listenForUsers = (

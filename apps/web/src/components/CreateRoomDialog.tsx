@@ -59,6 +59,7 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
                                         type="text"
                                         placeholder="Enter a room name"
                                         onChange={(e) => setRoomName(e.target.value)}
+                                        autoComplete="off"
                                     />
                                     <Button
                                         variant="outline"
@@ -84,6 +85,7 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
                                         placeholder="Enter a room password"
                                         onChange={(e) => setRoomPassword(e.target.value)}
                                         disabled={isRoomPublic}
+                                        autoComplete="off"
                                     />
                                     {isRoomPublic && (
                                         <div className="absolute inset-y-0 right-0 flex items-center pr-3 select-none">
