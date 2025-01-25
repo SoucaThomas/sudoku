@@ -33,6 +33,10 @@ export enum SocketActionTypes {
 
     askRooms = "ask rooms",
     roomUpdate = "room update",
+
+    update = "update",
+
+    startStop = "start stop",
 }
 
 export interface GameRoom {
@@ -44,6 +48,10 @@ export interface GameRoom {
     isRoomPublic: boolean;
     roomHost: User;
     roomUsers: User[];
+
+    isPlaying: boolean;
+    totalPlayTime: number;
+    lastTimeStarted: Date;
 }
 
 export interface User {

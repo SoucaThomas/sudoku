@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { v4 as uuidv4 } from "uuid";
 import { User, MessageType, Colors, GameRoom } from "@repo/socket.io-types";
 import { create } from "zustand";
+import { startStop } from "../actions/room";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -61,7 +62,9 @@ export const useRoomStore = create<{
     setRoom: (room: GameRoom) => void;
     removeUser: (user: User) => void;
     addUser: (user: User) => void;
+    startStopGame: () => void;
 }>((set) => ({
+    isPlaying: false,
     room: {} as GameRoom,
     setRoom: (room: GameRoom) => {
         set((state) => {
@@ -84,6 +87,12 @@ export const useRoomStore = create<{
                 ...state,
                 room: { ...state.room, roomUsers: [...(state.room?.roomUsers || []), user] },
             };
+        });
+    },
+    startStopGame: () => {
+        set((state) => {
+            startStop(state.room.roomId);
+            return { ...state, room: { ...state.room, isPlaying: !state.room.isPlaying } };
         });
     },
 }));

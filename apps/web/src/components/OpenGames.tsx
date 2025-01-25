@@ -18,7 +18,6 @@ export default function OpenGames() {
         askRooms()
             .then((rooms: GameRoom[]) => {
                 setRooms(rooms);
-                console.log(rooms);
                 setLoading(false);
             })
             .catch((error) => {

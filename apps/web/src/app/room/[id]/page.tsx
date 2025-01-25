@@ -19,6 +19,7 @@ import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import Chat from "../../../components/Chat";
 import { useRoomStore } from "../../../lib/utils";
+import Tooltip from "../../../components/Tooltip";
 
 const Room = () => {
     const { toast } = useToast();
@@ -85,7 +86,9 @@ const Room = () => {
 
     return (
         <section className="w-5/6 md:w-3/4 max-w-7xl mx-auto my-10">
-            <div className="h-12 w-full bg-zinc-400">tooltip</div>
+            <div className="h-16 w-full">
+                <Tooltip></Tooltip>
+            </div>
             <div className="h-full md:grid md:grid-cols-6 md:grid-rows-6 lg:grid ">
                 <div className="bg-red-500/20 m-2 max-md:h-1/2 md:row-span-3 md:col-span-4">
                     game

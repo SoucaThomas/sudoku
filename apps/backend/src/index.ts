@@ -39,6 +39,10 @@ io.on("connection", (socket: Socket) => {
             isRoomPublic: data.isRoomPublic,
             roomHost: data.roomHost,
             roomUsers: [],
+
+            isPlaying: false,
+            totalPlayTime: 0,
+            lastTimeStarted: new Date(),
         });
 
         socket.emit(SocketActionTypes.create, roomId);
@@ -99,7 +103,6 @@ io.on("connection", (socket: Socket) => {
     });
 
     socket.on(SocketActionTypes.leave, (roomId: string, user: User) => {
-        console.log("leave", roomId, user);
         const room = rooms.get(roomId);
         if (!room) {
             socket.emit(SocketActionTypes.leaveFailed);
@@ -114,11 +117,31 @@ io.on("connection", (socket: Socket) => {
 
         socket.to(roomId).emit(SocketActionTypes.leave, user);
         socket.leave(roomId);
+        socket.emit(SocketActionTypes.update, room);
         socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values()));
     });
 
     socket.on(SocketActionTypes.askRooms, () => {
         socket.emit(SocketActionTypes.askRooms, Array.from(rooms.values()));
+    });
+
+    socket.on(SocketActionTypes.startStop, (roomId: string) => {
+        const room = rooms.get(roomId);
+        if (!room) {
+            return;
+        }
+
+        room.isPlaying = !room.isPlaying;
+        const date = new Date();
+        if (room.isPlaying) {
+            room.lastTimeStarted = date;
+        } else {
+            room.totalPlayTime += date.getTime() - room.lastTimeStarted.getTime();
+        }
+        rooms.set(roomId, room);
+
+        socket.to(roomId).emit(SocketActionTypes.update, room);
+        socket.emit(SocketActionTypes.update, room);
     });
 
     socket.on("disconnect", () => console.log("-", socket.id));

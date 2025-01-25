@@ -206,3 +206,20 @@ export const closeListenForRooms = () => {
     socket = getSocket();
     socket.off(SocketActionTypes.roomUpdate);
 };
+
+export const startStop = (roomId: string) => {
+    socket = getSocket();
+    socket.emit(SocketActionTypes.startStop, roomId);
+};
+
+export const listenForGameUpdate = (setRoom: (room: GameRoom) => void) => {
+    socket = getSocket();
+    socket.on(SocketActionTypes.update, (room: GameRoom) => {
+        setRoom(room);
+    });
+};
+
+export const closeListenForGameUpdate = () => {
+    socket = getSocket();
+    socket.off(SocketActionTypes.update);
+};
