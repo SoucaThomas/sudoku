@@ -117,7 +117,7 @@ export const listenForMessages = (addMessage: (message: MessageType) => void) =>
     socket.on(SocketActionTypes.join, () => {
         addMessage({
             user: { userName: "System" },
-            message: "Welcome to the chat!",
+            message: "- Welcome to the chat!",
             time: new Date().toLocaleTimeString(),
             messageType: "system",
         } as MessageType);
