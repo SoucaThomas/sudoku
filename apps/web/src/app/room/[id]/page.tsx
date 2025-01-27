@@ -18,8 +18,9 @@ import { MessageCircleMore } from "lucide-react";
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import Chat from "../../../components/Chat";
-import { useRoomStore } from "../../../lib/utils";
+import Game from "../../../components/Game";
 import Tooltip from "../../../components/Tooltip";
+import { useRoomStore } from "../../../lib/utils";
 
 const Room = () => {
     const { toast } = useToast();
@@ -90,8 +91,8 @@ const Room = () => {
                 <Tooltip></Tooltip>
             </div>
             <div className="h-full md:grid md:grid-cols-6 md:grid-rows-6 lg:grid ">
-                <div className="bg-red-500/20 m-2 max-md:h-1/2 md:row-span-3 md:col-span-4">
-                    game
+                <div className="m-2 max-md:h-1/2 md:row-span-3 md:col-span-4">
+                    <Game />
                 </div>
                 <div className="m-2 hidden md:block md:row-span-3 md:col-span-2">
                     <Chat />
