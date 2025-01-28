@@ -1,33 +1,17 @@
 import { Card, CardContent } from "./ui/card";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useBoardStore } from "../lib/utils";
 
 export default function Game() {
-    const board =
-        "301086504046521070500000001400800002080347900009050038004090200008734090007208103";
+    const { grid, selected, setGrid, setSelected, handleMovement } = useBoardStore();
 
-    const grid = board.split("").map((cell) => parseInt(cell));
-    const [selected, setSelected] = useState<number | null>(null);
-
-    const sameValue = "bg-[hsl(var(--primary))]/60";
-    const selectedCell = "bg-[hsl(var(--primary))]/90 border border-[hsl(var(--foreground))]";
+    const sameValue = "bg-[hsl(var(--primary))]/70";
+    const selectedCell = "bg-[hsl(var(--primary))]/90 border-2 border-[hsl(var(--foreground))]";
     const sameRowCol = "bg-[hsl(var(--primary))]/30";
 
-    const handleMovement = (e: KeyboardEvent) => {
-        switch (e.key) {
-            case "ArrowUp":
-                setSelected((prev) => (prev < 9 ? prev : prev - 9));
-                break;
-            case "ArrowDown":
-                setSelected((prev) => (prev > 71 ? prev : prev + 9));
-                break;
-            case "ArrowLeft":
-                setSelected((prev) => (prev % 9 === 0 ? prev : prev - 1));
-                break;
-            case "ArrowRight":
-                setSelected((prev) => (prev % 9 === 8 ? prev : prev + 1));
-                break;
-        }
-    };
+    useEffect(() => {
+        console.log(grid);
+    }, [grid]);
 
     useEffect(() => {
         window.addEventListener("keydown", handleMovement, true);
@@ -55,19 +39,17 @@ export default function Game() {
                                 return (
                                     <Card
                                         className={`rounded-none select-none 
-                                            ${grid[selected] === grid[i] && grid[selected] != 0 ? sameValue : ""}
+                                            border border-[hsl(var(--foreground))]/30
+                                            ${grid[selected] === grid[i] && grid[selected] != "0" ? sameValue : ""}
                                             ${selected !== null && selected % 9 === i % 9 ? sameRowCol : ""}
                                             ${Math.floor(selected / 9) === Math.floor(i / 9) && selected !== null ? sameRowCol : ""}
-                                            ${Math.floor(selected / 27) === Math.floor(i / 27) && Math.floor((selected % 9) / 3) === Math.floor((i % 9) / 3) ? sameRowCol : ""}
+                                            ${Math.floor(selected / 27) === Math.floor(i / 27) && Math.floor((selected % 9) / 3) === Math.floor((i % 9) / 3) && selected !== null ? sameRowCol : ""}
                                             ${selected === i ? selectedCell : ""}
                                         `}
                                         key={i}
-                                        onClick={() => {
-                                            setSelected(i);
-                                            console.log(selected);
-                                        }}
+                                        onClick={() => setSelected(i)}
                                     >
-                                        {grid[i] === 0 ? "" : grid[i]}
+                                        {grid[i] === "0" ? "" : grid[i]}
                                     </Card>
                                 );
                             })}

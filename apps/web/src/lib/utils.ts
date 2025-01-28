@@ -114,3 +114,81 @@ export const useDiscoverStore = create<{
         });
     },
 }));
+
+export const useBoardStore = create<{
+    serverBoard: string;
+    grid: string[];
+    selected: number | null;
+    sameValue: string;
+    selectedCell: string;
+    sameRowCol: string;
+    setGrid: (grid: string[]) => void;
+    setSelected: (selected: number | null) => void;
+    handleMovement: (e: KeyboardEvent) => void;
+}>((set) => ({
+    serverBoard:
+        "096200831300084070000603040600000000001409003003560900002740096507190084964802000",
+    grid: "096200831300084070000603040600000000001409003003560900002740096507190084964802000".split(
+        ""
+    ),
+    selected: null,
+    sameValue: "",
+    selectedCell: "",
+    sameRowCol: "",
+    setGrid: (grid: string[]) => set({ grid }),
+    setSelected: (selected: number | null) => set({ selected }),
+    handleMovement: (e: KeyboardEvent) => {
+        //! TODO make this more generic (so it should be callable for the mobile movement)
+        switch (e.key) {
+            case "ArrowUp":
+                set((state) => ({
+                    selected:
+                        state.selected !== null && state.selected < 9
+                            ? state.selected
+                            : state.selected - 9,
+                }));
+                break;
+            case "ArrowDown":
+                set((state) => ({
+                    selected:
+                        state.selected !== null && state.selected > 71
+                            ? state.selected
+                            : state.selected + 9,
+                }));
+                break;
+            case "ArrowLeft":
+                set((state) => ({
+                    selected:
+                        state.selected !== null && state.selected % 9 === 0
+                            ? state.selected
+                            : state.selected - 1,
+                }));
+                break;
+            case "ArrowRight":
+                set((state) => ({
+                    selected:
+                        state.selected !== null && state.selected % 9 === 8
+                            ? state.selected
+                            : state.selected + 1,
+                }));
+                break;
+        }
+        if (e.key === "Backspace" || e.key === "Delete") {
+            set((state) => {
+                if (state.selected !== null) {
+                    state.grid[state.selected] = "0";
+                }
+                return { grid: state.grid };
+            });
+        }
+
+        if (e.key.match(/[1-9]/)) {
+            set((state) => {
+                if (state.selected !== null && state.serverBoard[state.selected] === "0") {
+                    state.grid[state.selected] = e.key;
+                }
+                return { grid: state.grid };
+            });
+        }
+    },
+}));
