@@ -201,16 +201,16 @@ io.on("connection", (socket: Socket) => {
 
             if (value === "0") {
                 board.clientBoard[index] = value;
-                socket.to(roomId).emit(SocketActionTypes.move, board.clientBoard);
+                io.in(roomId).emit(SocketActionTypes.move, board.clientBoard);
             }
             if (board.solution[index] !== value) {
-                socket.emit(SocketActionTypes.badMove, {
+                io.in(roomId).emit(SocketActionTypes.badMove, {
                     mistakes: 1,
                     clientBoard: board.clientBoard,
                 });
             } else {
                 board.clientBoard[index] = value;
-                socket.emit(SocketActionTypes.goodMove, board.clientBoard);
+                io.in(roomId).emit(SocketActionTypes.goodMove, board.clientBoard);
             }
         }
     );

@@ -6,7 +6,7 @@ import {
     MessageType,
 } from "@repo/socket.io-types";
 import { io, Socket } from "socket.io-client";
-import { UserProvider, useBoardStore, useRoomStore } from "../lib/utils";
+import { UserProvider, useRoomStore } from "../lib/utils";
 
 let socket: Socket;
 
