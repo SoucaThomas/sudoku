@@ -33,6 +33,7 @@ export default function Tooltip() {
     useEffect(() => {
         console.log(boards.mistakes);
     }, [boards.mistakes]);
+
     return (
         <Card className="h-full w-full select-none overflow-hidden p-0 m-0">
             <CardContent className="flex flex-row p-0 px-6 h-full items-center justify-center space-x-6">

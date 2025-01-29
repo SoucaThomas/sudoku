@@ -68,8 +68,8 @@ io.on("connection", (socket: Socket) => {
         socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values()));
     });
 
-    socket.on(SocketActionTypes.join, async (roomId: string, user: User) => {
-        const room = await rooms.get(roomId);
+    socket.on(SocketActionTypes.join, (roomId: string, user: User) => {
+        const room = rooms.get(roomId);
         if (user.userName === "") {
             user.userName = "Guest";
         }
@@ -177,7 +177,6 @@ io.on("connection", (socket: Socket) => {
 
     socket.on(SocketActionTypes.getBoard, (roomId: string) => {
         const board = boards.get(roomId);
-        console.log(roomId);
         if (!board) return;
 
         socket.emit(SocketActionTypes.getBoard, {

@@ -21,7 +21,6 @@ export default function Game() {
     const sameRowCol = "bg-[hsl(var(--primary))]/30";
 
     useEffect(() => {
-        console.log("again here");
         const roomId = window.location.pathname.split("/").pop();
         getBoard(roomId).then(
             ({ serverBoard, clientBoard }: { serverBoard: string[]; clientBoard: string[] }) => {
@@ -29,7 +28,6 @@ export default function Game() {
                 setServerBoard(serverBoard);
                 listenForMoves(setClientBoard, addMistake);
 
-                console.log("hello?");
                 if (clientBoard?.length > 0) setIsLoading(false);
             }
         );
