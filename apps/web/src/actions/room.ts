@@ -262,7 +262,7 @@ export const listenForMoves = (setClientBoard, addMistake) => {
         setClientBoard(board);
     });
 
-    socket.on(SocketActionTypes.badMove, (r) => {
+    socket.on(SocketActionTypes.badMove, () => {
         addMistake();
     });
 };

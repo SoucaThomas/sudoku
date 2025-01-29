@@ -21,6 +21,7 @@ import Chat from "../../../components/Chat";
 import Game from "../../../components/Game";
 import Tooltip from "../../../components/Tooltip";
 import { useRoomStore } from "../../../lib/utils";
+import { listenForGameUpdate, closeListenForGameUpdate } from "../../../actions/room";
 
 const Room = () => {
     const { toast } = useToast();
@@ -36,6 +37,8 @@ const Room = () => {
     useEffect(() => {
         setIsMounted(true);
 
+        listenForGameUpdate(setRoom);
+
         const handleBeforeUnload = () => {
             leaveRoom();
         };
@@ -44,6 +47,8 @@ const Room = () => {
 
         return () => {
             window.removeEventListener("beforeunload", handleBeforeUnload);
+
+            closeListenForGameUpdate();
         };
     }, []);
 

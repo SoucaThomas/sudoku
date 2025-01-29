@@ -4,17 +4,12 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Play, Pause, Timer } from "lucide-react";
 import { useBoardStore, useRoomStore } from "../lib/utils";
-import { listenForGameUpdate } from "../actions/room";
 import { Button } from "./ui/button";
 
 export default function Tooltip() {
-    const { room, startStopGame, setRoom } = useRoomStore();
+    const { room, startStopGame } = useRoomStore();
     const { boards } = useBoardStore();
     const [totalPlayTime, setTotalPlayTime] = useState(room.totalPlayTime);
-
-    useEffect(() => {
-        listenForGameUpdate(setRoom);
-    }, []);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
