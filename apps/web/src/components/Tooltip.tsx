@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Play, Pause, Timer } from "lucide-react";
-import { useRoomStore } from "../lib/utils";
+import { useBoardStore, useRoomStore } from "../lib/utils";
 import { listenForGameUpdate } from "../actions/room";
 import { Button } from "./ui/button";
 
 export default function Tooltip() {
     const { room, startStopGame, setRoom } = useRoomStore();
-    const [totalPlayTime, setTotalPlayTime] = React.useState(room.totalPlayTime);
+    const { boards } = useBoardStore();
+    const [totalPlayTime, setTotalPlayTime] = useState(room.totalPlayTime);
 
     useEffect(() => {
         listenForGameUpdate(setRoom);
@@ -46,7 +47,7 @@ export default function Tooltip() {
                         {room.isPlaying ? <Pause size={24} /> : <Play size={24} />}
                     </Button>
                     <p className="flex flex-col items-center space-y-1 sm:flex-row sm:space-x-4 sm:space-y-0">
-                        Mistakes <span>3</span>
+                        Mistakes {boards.mistakes}
                     </p>
                     <p className="flex flex-col items-center space-y-1 sm:flex-row sm:space-x-4 sm:space-y-0">
                         <Timer />
