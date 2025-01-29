@@ -5,6 +5,8 @@ import { type Metadata } from "next";
 import { ThemeProvider } from "../components/theme-provider";
 import { Toaster } from "../components/ui/toaster";
 import Navbar from "../components/Navbar";
+import { motion } from "framer-motion";
+import Transition from "../components/Transition";
 
 export const metadata: Metadata = {
     title: "Sudoku Online",
@@ -23,9 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                     disableTransitionOnChange
                 >
                     <Navbar />
-                    <main className="align-center flex h-full w-full justify-center">
-                        {children}
-                    </main>
+                    <Transition> {children}</Transition>
                     <Toaster />
                 </ThemeProvider>
             </body>

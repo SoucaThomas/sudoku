@@ -2,6 +2,7 @@ import { Card, CardContent } from "./ui/card";
 import { useState, useEffect } from "react";
 import { useBoardStore, useRoomStore } from "../lib/utils";
 import { getBoard, listenForMoves } from "../actions/room";
+import { Spinner } from "./ui/spinner";
 
 export default function Game() {
     const [isLoading, setIsLoading] = useState(true);
@@ -20,14 +21,15 @@ export default function Game() {
     const sameRowCol = "bg-[hsl(var(--primary))]/30";
 
     useEffect(() => {
-        if (!room.roomId) return;
-
-        getBoard(room.roomId).then(
+        console.log("again here");
+        const roomId = window.location.pathname.split("/").pop();
+        getBoard(roomId).then(
             ({ serverBoard, clientBoard }: { serverBoard: string[]; clientBoard: string[] }) => {
                 setClientBoard(clientBoard);
                 setServerBoard(serverBoard);
                 listenForMoves(setClientBoard, addMistake);
 
+                console.log("hello?");
                 if (clientBoard?.length > 0) setIsLoading(false);
             }
         );
@@ -37,14 +39,16 @@ export default function Game() {
         return () => {
             window.removeEventListener("keydown", handleMovement);
         };
-    }, [room.roomId]);
+    }, []);
 
     return (
         <Card className="w-full h-full">
-            {isLoading ? (
-                <h1>Loading</h1>
-            ) : room.isPlaying ? (
-                <CardContent className="flex justify-center items-center h-full p-0 m-0">
+            <CardContent className="flex justify-center items-center h-full p-0 m-0">
+                {isLoading ? (
+                    <div className="flex justify-center items-center h-full p-0 m-0">
+                        <Spinner size="lg" className="bg-black dark:bg-white" />
+                    </div>
+                ) : room.isPlaying ? (
                     <div className="aspect-square w-full max-w-md grid grid-cols-3 grid-rows-3">
                         {Array.from({ length: 9 }).map((_, box) => (
                             <div
@@ -79,10 +83,10 @@ export default function Game() {
                             </div>
                         ))}
                     </div>
-                </CardContent>
-            ) : (
-                <h1>Game stopped</h1>
-            )}
+                ) : (
+                    <h1>Game stopped</h1>
+                )}
+            </CardContent>
         </Card>
     );
 }

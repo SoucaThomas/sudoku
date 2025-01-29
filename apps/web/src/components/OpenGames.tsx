@@ -9,6 +9,7 @@ import { useDiscoverStore } from "../lib/utils";
 import { Table, TableHead, TableHeader, TableRow, TableBody, TableCell } from "./ui/table";
 import { LockKeyhole, LockKeyholeOpen } from "lucide-react";
 import { useState } from "react";
+import { Spinner } from "./ui/spinner";
 
 export default function OpenGames() {
     const { rooms, setRooms } = useDiscoverStore();
@@ -48,7 +49,7 @@ export default function OpenGames() {
                         {loading ? (
                             <TableRow>
                                 <TableCell colSpan={5} className="text-center">
-                                    Loading...
+                                    <Spinner size="lg" className="bg-black dark:bg-white" />
                                 </TableCell>
                             </TableRow>
                         ) : rooms.length === 0 ? (
