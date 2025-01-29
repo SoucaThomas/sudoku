@@ -176,8 +176,6 @@ io.on("connection", (socket: Socket) => {
     });
 
     socket.on(SocketActionTypes.getBoard, (roomId: string) => {
-        //! roomId isnt used
-        return;
         const board = boards.get(roomId);
         console.log(roomId);
         if (!board) return;
