@@ -120,6 +120,7 @@ export const useBoardStore = create<{
     sameValue: string;
     setClientBoard: (grid: string[]) => void;
     setServerBoard: (grid: string[]) => void;
+    addMistake: () => void;
     setSelected: (selected: number | null) => void;
     handleMovement: (e: KeyboardEvent) => void;
 }>((set) => ({
@@ -134,6 +135,8 @@ export const useBoardStore = create<{
         set((state) => ({ boards: { ...state.boards, clientBoard } })),
     setServerBoard: (serverBoard: string[]) =>
         set((state) => ({ boards: { ...state.boards, serverBoard } })),
+    addMistake: () =>
+        set((state) => ({ boards: { ...state.boards, mistakes: state.boards.mistakes + 1 } })),
     setSelected: (selected: number | null) => set({ selected }),
     handleMovement: async (e: KeyboardEvent) => {
         //! TODO make this more generic (so it should be callable for the mobile movement)

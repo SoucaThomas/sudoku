@@ -250,7 +250,7 @@ export const makeMove = async (index: number, value: string) => {
     });
 };
 
-export const listenForMoves = (setClientBoard) => {
+export const listenForMoves = (setClientBoard, addMistake) => {
     //!handle off
     socket = getSocket();
 
@@ -263,7 +263,7 @@ export const listenForMoves = (setClientBoard) => {
     });
 
     socket.on(SocketActionTypes.badMove, (r) => {
-        console.log(r);
+        addMistake();
     });
 };
 

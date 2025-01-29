@@ -5,8 +5,15 @@ import { getBoard, listenForMoves } from "../actions/room";
 
 export default function Game() {
     const [isLoading, setIsLoading] = useState(true);
-    const { boards, selected, setSelected, handleMovement, setClientBoard, setServerBoard } =
-        useBoardStore();
+    const {
+        boards,
+        selected,
+        setSelected,
+        handleMovement,
+        setClientBoard,
+        setServerBoard,
+        addMistake,
+    } = useBoardStore();
     const { room } = useRoomStore();
     const sameValue = "bg-[hsl(var(--primary))]/70";
     const selectedCell = "bg-[hsl(var(--primary))]/90 border-2 border-[hsl(var(--foreground))]";
@@ -19,7 +26,7 @@ export default function Game() {
             ({ serverBoard, clientBoard }: { serverBoard: string[]; clientBoard: string[] }) => {
                 setClientBoard(clientBoard);
                 setServerBoard(serverBoard);
-                listenForMoves(setClientBoard);
+                listenForMoves(setClientBoard, addMistake);
 
                 if (clientBoard?.length > 0) setIsLoading(false);
             }
@@ -36,7 +43,7 @@ export default function Game() {
         <Card className="w-full h-full">
             {isLoading ? (
                 <h1>Loading</h1>
-            ) : (
+            ) : room.isPlaying ? (
                 <CardContent className="flex justify-center items-center h-full p-0 m-0">
                     <div className="aspect-square w-full max-w-md grid grid-cols-3 grid-rows-3">
                         {Array.from({ length: 9 }).map((_, box) => (
@@ -73,6 +80,8 @@ export default function Game() {
                         ))}
                     </div>
                 </CardContent>
+            ) : (
+                <h1>Game stopped</h1>
             )}
         </Card>
     );
