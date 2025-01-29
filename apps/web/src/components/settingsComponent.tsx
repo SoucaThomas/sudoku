@@ -15,16 +15,16 @@ export default function settingsComponent({
     onClick,
 }: SettingsComponentProps) {
     return (
-        <div className="w-full p-2 flex flex-row justify-between items-center">
+        <Button
+            variant={buttonVariant ? buttonVariant : "outline"}
+            onClick={() => {
+                onClick();
+            }}
+            className="w-full m-1 flex flex-row justify-between items-center"
+        >
             <p>{text}</p>
-            <Button
-                variant={buttonVariant ? buttonVariant : "outline"}
-                onClick={() => {
-                    onClick();
-                }}
-            >
-                {React.createElement(icon)}
-            </Button>
-        </div>
+
+            {React.createElement(icon)}
+        </Button>
     );
 }

@@ -7,7 +7,7 @@ import { Moon, Sun, User } from "lucide-react";
 import { useRoomStore, UserProvider } from "../lib/utils";
 import { Home, Menu, Pause, Play, X, Clipboard } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
-import { Card, CardContent, CardTitle } from "./ui/card";
+import { CardContent, CardTitle } from "./ui/card";
 import SettingsComponent from "./settingsComponent";
 
 export default function Navbar() {
@@ -36,20 +36,9 @@ export default function Navbar() {
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent side="bottom" align="center">
-                        <Card className="flex flex-col items-center  space-y-4">
+                        <div className="flex flex-col items-center  space-y-4">
                             <CardContent className="w-full p-3 flex flex-col">
-                                <CardTitle>Settings</CardTitle>
-                                {/* <div className="w-full p-3 flex flex-row justify-between items-center">
-                                    <p>Return to home</p>
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => {
-                                            window.location.href = "/";
-                                        }}
-                                    >
-                                        <Home size={24} />
-                                    </Button>
-                                </div> */}
+                                <CardTitle className="mb-2">Settings</CardTitle>
                                 <SettingsComponent
                                     icon={Home}
                                     text="Return to home"
@@ -82,7 +71,7 @@ export default function Navbar() {
                                 )}
                                 {new UserProvider().getUser().userId === room.roomHost?.userId && (
                                     <>
-                                        <CardTitle>Admin Settings</CardTitle>
+                                        <CardTitle className="my-2">Admin Settings</CardTitle>
                                         <SettingsComponent
                                             icon={X}
                                             text="Kick"
@@ -94,7 +83,7 @@ export default function Navbar() {
                                     </>
                                 )}
                             </CardContent>
-                        </Card>
+                        </div>
                     </PopoverContent>
                 </Popover>
             </div>

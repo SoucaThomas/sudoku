@@ -13,7 +13,7 @@ import MySelector from "./ui/mySelector";
 import { Button } from "./ui/button";
 import { LockKeyhole, LockKeyholeOpen } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
-import { GameTypes, GameDifficulties, CreateRoomData, User } from "@repo/socket.io-types";
+import { GameTypes, GameDifficulties, CreateRoomData } from "@repo/socket.io-types";
 import { createRoom } from "../actions/room";
 import { UserProvider } from "../lib/utils";
 
@@ -31,15 +31,6 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const { toast } = useToast();
 
-    // const user = JSON.parse(localStorage.getItem("user") || "null") as User | null;
-    // if (!user) {
-    //     const userId = uuidv4();
-    //     const userName = "Player";
-
-    //     localStorage.setItem("user", JSON.stringify({ userId, userName }));
-    // } else {
-    //     localStorage.setItem("user", JSON.stringify(user));
-    // }
     const user = new UserProvider().user;
 
     return (
@@ -53,7 +44,7 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
                     <div>
                         <form>
                             <div className="mt-3">
-                                <h1>Room Name</h1>
+                                <DialogTitle>Room Name</DialogTitle>
                                 <div className="mt-3 flex flex-row justify-between gap-2">
                                     <Input
                                         type="text"

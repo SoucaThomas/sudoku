@@ -22,7 +22,6 @@ import Game from "../../../components/Game";
 import Tooltip from "../../../components/Tooltip";
 import { useRoomStore } from "../../../lib/utils";
 import { listenForGameUpdate, closeListenForGameUpdate } from "../../../actions/room";
-import { Spinner } from "../../../components/ui/spinner";
 
 const Room = () => {
     const { toast } = useToast();
@@ -115,7 +114,7 @@ const Room = () => {
                 </PopoverContent>
             </Popover>
 
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <Dialog open={dialogOpen}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Enter Password</DialogTitle>
