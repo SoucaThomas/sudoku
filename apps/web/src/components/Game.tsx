@@ -1,8 +1,9 @@
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent, CardHeader } from "./ui/card";
 import { useState, useEffect } from "react";
 import { useBoardStore, useRoomStore } from "../lib/utils";
-import { getBoard, listenForMoves } from "../actions/room";
+import { getBoard, listenForMoves, startStop } from "../actions/room";
 import { Spinner } from "./ui/spinner";
+import { Button } from "./ui/button";
 
 export default function Game() {
     const [isLoading, setIsLoading] = useState(true);
@@ -82,7 +83,18 @@ export default function Game() {
                         ))}
                     </div>
                 ) : (
-                    <h1>Game stopped</h1>
+                    <div className="h-full w-full flex items-center justify-center flex-col">
+                        <CardHeader className="">Game is stopped</CardHeader>
+
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                startStop(room.roomId);
+                            }}
+                        >
+                            Start Game
+                        </Button>
+                    </div>
                 )}
             </CardContent>
         </Card>

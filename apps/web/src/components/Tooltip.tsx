@@ -30,9 +30,7 @@ export default function Tooltip() {
         setTotalPlayTime(room.totalPlayTime);
     }, [room]);
 
-    useEffect(() => {
-        console.log(boards.mistakes);
-    }, [boards.mistakes]);
+    useEffect(() => {}, [boards.mistakes]);
 
     return (
         <Card className="h-full w-full select-none overflow-hidden p-0 m-0">
