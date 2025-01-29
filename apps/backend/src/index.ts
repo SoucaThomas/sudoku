@@ -9,16 +9,14 @@ import {
     SocketActionTypes,
     User,
     MessageType,
+    Board,
 } from "@repo/socket.io-types";
 import { v4 as uu4id } from "uuid";
 
 const app = express();
 
 const rooms = new Map<string, GameRoom>(); //! TODO move to a database
-const boards = new Map<
-    string,
-    { serverBoard: string[]; clientBoard: string[]; solution: string[] }
->();
+const boards = new Map<string, Board>();
 
 app.use(cors());
 const server = http.createServer(app);
@@ -63,6 +61,7 @@ io.on("connection", (socket: Socket) => {
                 "371986524846521379592473861463819752285347916719652438634195287128734695957268143".split(
                     ""
                 ),
+            mistakes: 0,
         });
 
         socket.emit(SocketActionTypes.create, roomId);
@@ -203,11 +202,9 @@ io.on("connection", (socket: Socket) => {
                 board.clientBoard[index] = value;
                 io.in(roomId).emit(SocketActionTypes.move, board.clientBoard);
             }
-            if (board.solution[index] !== value) {
-                io.in(roomId).emit(SocketActionTypes.badMove, {
-                    mistakes: 1,
-                    clientBoard: board.clientBoard,
-                });
+            if (board.solution && board.solution[index] !== value) {
+                board.mistakes++;
+                io.in(roomId).emit(SocketActionTypes.badMove, board.mistakes);
             } else {
                 board.clientBoard[index] = value;
                 io.in(roomId).emit(SocketActionTypes.goodMove, board.clientBoard);

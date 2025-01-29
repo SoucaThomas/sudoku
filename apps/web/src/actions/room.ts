@@ -257,4 +257,20 @@ export const listenForMoves = (setClientBoard) => {
     socket.on(SocketActionTypes.goodMove, (board: string[]) => {
         setClientBoard(board);
     });
+
+    socket.on(SocketActionTypes.move, (board: string[]) => {
+        setClientBoard(board);
+    });
+
+    socket.on(SocketActionTypes.badMove, (r) => {
+        console.log(r);
+    });
+};
+
+export const closeListenForMoves = () => {
+    socket = getSocket();
+
+    socket.off(SocketActionTypes.goodMove);
+    socket.off(SocketActionTypes.move);
+    socket.off(SocketActionTypes.badMove);
 };

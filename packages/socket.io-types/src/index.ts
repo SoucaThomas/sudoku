@@ -58,6 +58,13 @@ export interface GameRoom {
     lastTimeStarted: Date;
 }
 
+export interface Board {
+    serverBoard: string[];
+    clientBoard: string[];
+    solution?: string[];
+    mistakes: number;
+}
+
 export interface User {
     userId: string;
     userName: string;

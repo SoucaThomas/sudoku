@@ -5,14 +5,12 @@ import { getBoard, listenForMoves } from "../actions/room";
 
 export default function Game() {
     const [isLoading, setIsLoading] = useState(true);
-    const { clientBoard, selected, setSelected, handleMovement, setClientBoard, setServerBoard } =
+    const { boards, selected, setSelected, handleMovement, setClientBoard, setServerBoard } =
         useBoardStore();
     const { room } = useRoomStore();
     const sameValue = "bg-[hsl(var(--primary))]/70";
     const selectedCell = "bg-[hsl(var(--primary))]/90 border-2 border-[hsl(var(--foreground))]";
     const sameRowCol = "bg-[hsl(var(--primary))]/30";
-
-    useEffect(() => {}, [clientBoard]);
 
     useEffect(() => {
         if (!room.roomId) return;
@@ -56,7 +54,7 @@ export default function Game() {
                                         <Card
                                             className={`rounded-none select-none 
                                             border border-[hsl(var(--foreground))]/30
-                                            ${clientBoard[selected] === clientBoard[i] && clientBoard[selected] != "0" ? sameValue : ""}
+                                            ${boards.clientBoard[selected] === boards.clientBoard[i] && boards.clientBoard[selected] != "0" ? sameValue : ""}
                                             ${selected !== null && selected % 9 === i % 9 ? sameRowCol : ""}
                                             ${Math.floor(selected / 9) === Math.floor(i / 9) && selected !== null ? sameRowCol : ""}
                                             ${Math.floor(selected / 27) === Math.floor(i / 27) && Math.floor((selected % 9) / 3) === Math.floor((i % 9) / 3) && selected !== null ? sameRowCol : ""}
@@ -65,7 +63,9 @@ export default function Game() {
                                             key={i}
                                             onClick={() => setSelected(i)}
                                         >
-                                            {clientBoard[i] === "0" ? "" : clientBoard[i]}
+                                            {boards.clientBoard[i] === "0"
+                                                ? ""
+                                                : boards.clientBoard[i]}
                                         </Card>
                                     );
                                 })}

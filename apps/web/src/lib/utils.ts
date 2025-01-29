@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { v4 as uuidv4 } from "uuid";
-import { User, MessageType, Colors, GameRoom } from "@repo/socket.io-types";
+import { User, MessageType, Colors, GameRoom, Board } from "@repo/socket.io-types";
 import { create } from "zustand";
 import { startStop, makeMove } from "../actions/room";
 import { response } from "express";
@@ -115,23 +115,25 @@ export const useDiscoverStore = create<{
 }));
 
 export const useBoardStore = create<{
-    serverBoard: string[];
-    clientBoard: string[];
+    boards: Board;
     selected: number | null;
     sameValue: string;
-    mistakes: number;
     setClientBoard: (grid: string[]) => void;
     setServerBoard: (grid: string[]) => void;
     setSelected: (selected: number | null) => void;
     handleMovement: (e: KeyboardEvent) => void;
 }>((set) => ({
-    serverBoard: [],
-    clientBoard: [],
+    boards: {
+        clientBoard: [],
+        serverBoard: [],
+        mistakes: 0,
+    },
     selected: 0,
     sameValue: "",
-    mistakes: 0,
-    setClientBoard: (clientBoard: string[]) => set({ clientBoard }),
-    setServerBoard: (serverBoard: string[]) => set({ serverBoard }),
+    setClientBoard: (clientBoard: string[]) =>
+        set((state) => ({ boards: { ...state.boards, clientBoard } })),
+    setServerBoard: (serverBoard: string[]) =>
+        set((state) => ({ boards: { ...state.boards, serverBoard } })),
     setSelected: (selected: number | null) => set({ selected }),
     handleMovement: async (e: KeyboardEvent) => {
         //! TODO make this more generic (so it should be callable for the mobile movement)
@@ -171,8 +173,8 @@ export const useBoardStore = create<{
         }
         if (e.key === "Backspace" || e.key === "Delete") {
             set((state) => {
-                if (state.clientBoard[state.selected] === "0") return state;
-                if (state.serverBoard[state.selected] !== "0") return state;
+                if (state.boards.clientBoard[state.selected] === "0") return state;
+                if (state.boards.serverBoard[state.selected] !== "0") return state;
                 makeMove(state.selected, "0");
                 return state;
             });
@@ -180,8 +182,8 @@ export const useBoardStore = create<{
 
         if (e.key.match(/[1-9]/)) {
             set((state) => {
-                if (state.clientBoard[state.selected] === e.key) return state;
-                if (state.serverBoard[state.selected] !== "0") return state;
+                if (state.boards.clientBoard[state.selected] === e.key) return state;
+                if (state.boards.serverBoard[state.selected] !== "0") return state;
                 makeMove(state.selected, e.key);
                 return state;
             });
