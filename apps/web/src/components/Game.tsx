@@ -4,6 +4,7 @@ import { useBoardStore, useRoomStore } from "../lib/utils";
 import { getBoard, listenForMoves, startStop } from "../actions/room";
 import { Spinner } from "./ui/spinner";
 import { Button } from "./ui/button";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function Game() {
     const [isLoading, setIsLoading] = useState(true);
@@ -83,7 +84,12 @@ export default function Game() {
                         ))}
                     </div>
                 ) : (
-                    <div className="h-full w-full flex items-center justify-center flex-col">
+                    <motion.div
+                        className="h-full w-full flex items-center justify-center flex-col"
+                        initial={{ opacity: 0, y: 25 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4 }}
+                    >
                         <CardHeader className="">Game is stopped</CardHeader>
 
                         <Button
@@ -94,7 +100,7 @@ export default function Game() {
                         >
                             Start Game
                         </Button>
-                    </div>
+                    </motion.div>
                 )}
             </CardContent>
         </Card>
