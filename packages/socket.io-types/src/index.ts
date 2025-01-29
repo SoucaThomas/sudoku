@@ -37,6 +37,10 @@ export enum SocketActionTypes {
     update = "update",
 
     startStop = "start stop",
+    getBoard = "get board",
+    move = "move made",
+    goodMove = "good move",
+    badMove = "bad move",
 }
 
 export interface GameRoom {

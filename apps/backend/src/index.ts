@@ -15,6 +15,10 @@ import { v4 as uu4id } from "uuid";
 const app = express();
 
 const rooms = new Map<string, GameRoom>(); //! TODO move to a database
+const boards = new Map<
+    string,
+    { serverBoard: string[]; clientBoard: string[]; solution: string[] }
+>();
 
 app.use(cors());
 const server = http.createServer(app);
@@ -43,6 +47,22 @@ io.on("connection", (socket: Socket) => {
             isPlaying: false,
             totalPlayTime: 0,
             lastTimeStarted: new Date(),
+        });
+
+        //! Generate board based on the room settings
+        boards.set(roomId, {
+            serverBoard:
+                "301086504046521070500000001400800002080347900009050038004090200008734090007208103".split(
+                    ""
+                ),
+            clientBoard:
+                "301086504046521070500000001400800002080347900009050038004090200008734090007208103".split(
+                    ""
+                ),
+            solution:
+                "371986524846521379592473861463819752285347916719652438634195287128734695957268143".split(
+                    ""
+                ),
         });
 
         socket.emit(SocketActionTypes.create, roomId);
@@ -155,6 +175,45 @@ io.on("connection", (socket: Socket) => {
         socket.to(roomId).emit(SocketActionTypes.update, room);
         socket.emit(SocketActionTypes.update, room);
     });
+
+    socket.on(SocketActionTypes.getBoard, (roomId: string) => {
+        //! roomId isnt used
+        const board = boards.get(roomId);
+        console.log(roomId);
+        if (!board) return;
+
+        socket.emit(SocketActionTypes.getBoard, {
+            serverBoard: board?.serverBoard,
+            clientBoard: board?.clientBoard,
+        });
+    });
+
+    socket.on(
+        SocketActionTypes.move,
+        ({ roomId, index, value }: { roomId: string; index: number; value: string }) => {
+            const room = rooms.get(roomId);
+            const board = boards.get(roomId);
+            if (!room || !board) {
+                return;
+            }
+
+            if (board.serverBoard[index] !== "0") return;
+
+            if (value === "0") {
+                board.clientBoard[index] = value;
+                socket.to(roomId).emit(SocketActionTypes.move, board.clientBoard);
+            }
+            if (board.solution[index] !== value) {
+                socket.emit(SocketActionTypes.badMove, {
+                    mistakes: 1,
+                    clientBoard: board.clientBoard,
+                });
+            } else {
+                board.clientBoard[index] = value;
+                socket.emit(SocketActionTypes.goodMove, board.clientBoard);
+            }
+        }
+    );
 
     socket.on("disconnect", () => console.log("-", socket.id));
 });

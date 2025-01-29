@@ -3,7 +3,8 @@ import { twMerge } from "tailwind-merge";
 import { v4 as uuidv4 } from "uuid";
 import { User, MessageType, Colors, GameRoom } from "@repo/socket.io-types";
 import { create } from "zustand";
-import { startStop } from "../actions/room";
+import { startStop, makeMove } from "../actions/room";
+import { response } from "express";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -33,7 +34,6 @@ export class UserProvider {
     }
 
     public createUser() {
-        console.log("Creating user");
         const userId = uuidv4();
         const userName = "";
         const colorValues = Object.values(Colors);
@@ -72,7 +72,6 @@ export const useRoomStore = create<{
         });
     },
     removeUser: (user: User) => {
-        console.log("remove");
         set((state) => {
             const newUsers = state.room.roomUsers.filter((u) => u.userId !== user.userId);
             return {
@@ -116,28 +115,25 @@ export const useDiscoverStore = create<{
 }));
 
 export const useBoardStore = create<{
-    serverBoard: string;
-    grid: string[];
+    serverBoard: string[];
+    clientBoard: string[];
     selected: number | null;
     sameValue: string;
-    selectedCell: string;
-    sameRowCol: string;
-    setGrid: (grid: string[]) => void;
+    mistakes: number;
+    setClientBoard: (grid: string[]) => void;
+    setServerBoard: (grid: string[]) => void;
     setSelected: (selected: number | null) => void;
     handleMovement: (e: KeyboardEvent) => void;
 }>((set) => ({
-    serverBoard:
-        "096200831300084070000603040600000000001409003003560900002740096507190084964802000",
-    grid: "096200831300084070000603040600000000001409003003560900002740096507190084964802000".split(
-        ""
-    ),
-    selected: null,
+    serverBoard: [],
+    clientBoard: [],
+    selected: 0,
     sameValue: "",
-    selectedCell: "",
-    sameRowCol: "",
-    setGrid: (grid: string[]) => set({ grid }),
+    mistakes: 0,
+    setClientBoard: (clientBoard: string[]) => set({ clientBoard }),
+    setServerBoard: (serverBoard: string[]) => set({ serverBoard }),
     setSelected: (selected: number | null) => set({ selected }),
-    handleMovement: (e: KeyboardEvent) => {
+    handleMovement: async (e: KeyboardEvent) => {
         //! TODO make this more generic (so it should be callable for the mobile movement)
         switch (e.key) {
             case "ArrowUp":
@@ -175,19 +171,19 @@ export const useBoardStore = create<{
         }
         if (e.key === "Backspace" || e.key === "Delete") {
             set((state) => {
-                if (state.selected !== null) {
-                    state.grid[state.selected] = "0";
-                }
-                return { grid: state.grid };
+                if (state.clientBoard[state.selected] === "0") return state;
+                if (state.serverBoard[state.selected] !== "0") return state;
+                makeMove(state.selected, "0");
+                return state;
             });
         }
 
         if (e.key.match(/[1-9]/)) {
             set((state) => {
-                if (state.selected !== null && state.serverBoard[state.selected] === "0") {
-                    state.grid[state.selected] = e.key;
-                }
-                return { grid: state.grid };
+                if (state.clientBoard[state.selected] === e.key) return state;
+                if (state.serverBoard[state.selected] !== "0") return state;
+                makeMove(state.selected, e.key);
+                return state;
             });
         }
     },

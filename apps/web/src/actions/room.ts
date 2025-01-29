@@ -6,7 +6,7 @@ import {
     MessageType,
 } from "@repo/socket.io-types";
 import { io, Socket } from "socket.io-client";
-import { UserProvider, useRoomStore } from "../lib/utils";
+import { UserProvider, useBoardStore, useRoomStore } from "../lib/utils";
 
 let socket: Socket;
 
@@ -222,4 +222,39 @@ export const listenForGameUpdate = (setRoom: (room: GameRoom) => void) => {
 export const closeListenForGameUpdate = () => {
     socket = getSocket();
     socket.off(SocketActionTypes.update);
+};
+
+export const getBoard = async (roomId: string) => {
+    socket = getSocket();
+    return new Promise<{ serverBoard: string[]; clientBoard: string[] }>((resolve) => {
+        socket.emit(SocketActionTypes.getBoard, roomId);
+
+        socket.on(
+            SocketActionTypes.getBoard,
+            ({ serverBoard, clientBoard }: { serverBoard: string[]; clientBoard: string[] }) => {
+                resolve({ serverBoard, clientBoard });
+
+                socket.off(SocketActionTypes.getBoard);
+            }
+        );
+    });
+};
+
+export const makeMove = async (index: number, value: string) => {
+    socket = getSocket();
+
+    socket.emit(SocketActionTypes.move, {
+        roomId: useRoomStore.getState().room.roomId,
+        index,
+        value,
+    });
+};
+
+export const listenForMoves = (setClientBoard) => {
+    //!handle off
+    socket = getSocket();
+
+    socket.on(SocketActionTypes.goodMove, (board: string[]) => {
+        setClientBoard(board);
+    });
 };
