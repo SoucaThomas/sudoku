@@ -210,6 +210,16 @@ io.on("connection", (socket: Socket) => {
         }
     );
 
+    socket.on(SocketActionTypes.clear, ({ roomId }: { roomId: string }) => {
+        console.log(roomId);
+        const board = boards.get(roomId);
+        if (!board) return;
+
+        board.clientBoard = board.serverBoard;
+        board.mistakes = 0;
+        io.in(roomId).emit(SocketActionTypes.clear, board);
+    });
+
     socket.on("disconnect", () => console.log("-", socket.id));
 });
 

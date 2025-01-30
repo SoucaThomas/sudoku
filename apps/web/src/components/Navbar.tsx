@@ -3,12 +3,13 @@
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Moon, Sun, User } from "lucide-react";
+import { Moon, Sun, Trash, User } from "lucide-react";
 import { useRoomStore, UserProvider } from "../lib/utils";
 import { Home, Menu, Pause, Play, X, Clipboard } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import { CardContent, CardTitle } from "./ui/card";
 import SettingsComponent from "./settingsComponent";
+import { clearBoard } from "../actions/room";
 
 export default function Navbar() {
     const { theme, setTheme } = useTheme();
@@ -63,19 +64,27 @@ export default function Navbar() {
                                     }}
                                 />
                                 {room.roomGame && (
-                                    <SettingsComponent
-                                        icon={room.isPlaying ? Pause : Play}
-                                        text={room.isPlaying ? "Pause Game" : "Start Game"}
-                                        onClick={startStopGame}
-                                    />
+                                    <>
+                                        <SettingsComponent
+                                            icon={room.isPlaying ? Pause : Play}
+                                            text={room.isPlaying ? "Pause Game" : "Start Game"}
+                                            onClick={startStopGame}
+                                        />
+                                        <SettingsComponent
+                                            icon={Trash}
+                                            text="Clear Board"
+                                            onClick={clearBoard}
+                                        />
+                                    </>
                                 )}
                                 {new UserProvider().getUser().userId === room.roomHost?.userId && (
                                     <>
-                                        <CardTitle className="my-2">Admin Settings</CardTitle>
+                                        <CardTitle className="my-2 mt-5">Admin Settings</CardTitle>
                                         <SettingsComponent
                                             icon={X}
                                             text="Kick"
                                             buttonVariant="destructive"
+                                            disabled={room.roomUsers.length === 1}
                                             onClick={() => {
                                                 console.log("Kicked"); //! TODO Implement kick
                                             }}

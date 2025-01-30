@@ -2,13 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "./ui/card";
-import { Play, Pause, Timer } from "lucide-react";
+import { Play, Pause, Timer, Trash } from "lucide-react";
 import { useBoardStore, useRoomStore } from "../lib/utils";
 import { Button } from "./ui/button";
 
 export default function Tooltip() {
     const { room, startStopGame } = useRoomStore();
-    const { boards } = useBoardStore();
+    const { boards, clearBoard } = useBoardStore();
     const [totalPlayTime, setTotalPlayTime] = useState(room.totalPlayTime);
 
     useEffect(() => {
@@ -41,9 +41,20 @@ export default function Tooltip() {
                         onClick={() => {
                             startStopGame();
                         }}
+                        className="hidden sm:block"
                     >
                         {room.isPlaying ? <Pause size={24} /> : <Play size={24} />}
                     </Button>
+                    <Button
+                        variant="outline"
+                        onClick={() => {
+                            clearBoard();
+                        }}
+                        className="hidden sm:block"
+                    >
+                        <Trash size={24} />
+                    </Button>
+
                     <p className="flex flex-col items-center space-y-1 sm:flex-row sm:space-x-4 sm:space-y-0">
                         Mistakes {boards.mistakes}
                     </p>

@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { v4 as uuidv4 } from "uuid";
 import { User, MessageType, Colors, GameRoom, Board } from "@repo/socket.io-types";
 import { create } from "zustand";
-import { startStop, makeMove } from "../actions/room";
+import { startStop, makeMove, clearBoard } from "../actions/room";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -120,8 +120,10 @@ export const useBoardStore = create<{
     setClientBoard: (grid: string[]) => void;
     setServerBoard: (grid: string[]) => void;
     addMistake: () => void;
+    setMistakes: (mistakes: number) => void;
     setSelected: (selected: number | null) => void;
     handleMovement: (e: KeyboardEvent) => void;
+    clearBoard: () => void;
 }>((set) => ({
     boards: {
         clientBoard: [],
@@ -136,6 +138,7 @@ export const useBoardStore = create<{
         set((state) => ({ boards: { ...state.boards, serverBoard } })),
     addMistake: () =>
         set((state) => ({ boards: { ...state.boards, mistakes: state.boards.mistakes + 1 } })),
+    setMistakes: (mistakes: number) => set((state) => ({ boards: { ...state.boards, mistakes } })),
     setSelected: (selected: number | null) => set({ selected }),
     handleMovement: async (e: KeyboardEvent) => {
         //! TODO make this more generic (so it should be callable for the mobile movement)
@@ -190,5 +193,8 @@ export const useBoardStore = create<{
                 return state;
             });
         }
+    },
+    clearBoard: () => {
+        clearBoard();
     },
 }));

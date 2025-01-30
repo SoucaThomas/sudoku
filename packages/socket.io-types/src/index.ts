@@ -41,6 +41,7 @@ export enum SocketActionTypes {
     move = "move made",
     goodMove = "good move",
     badMove = "bad move",
+    clear = "clear",
 }
 
 export interface GameRoom {

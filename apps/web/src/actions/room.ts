@@ -6,7 +6,7 @@ import {
     MessageType,
 } from "@repo/socket.io-types";
 import { io, Socket } from "socket.io-client";
-import { UserProvider, useRoomStore } from "../lib/utils";
+import { UserProvider, useBoardStore, useRoomStore } from "../lib/utils";
 
 let socket: Socket;
 
@@ -273,4 +273,19 @@ export const closeListenForMoves = () => {
     socket.off(SocketActionTypes.goodMove);
     socket.off(SocketActionTypes.move);
     socket.off(SocketActionTypes.badMove);
+};
+
+export const clearBoard = () => {
+    socket = getSocket();
+
+    socket.emit(SocketActionTypes.clear, {
+        roomId: useRoomStore.getState().room.roomId,
+    });
+
+    socket.on(SocketActionTypes.clear, (board: { serverBoard: string[]; mistakes: number }) => {
+        useBoardStore.getState().setClientBoard(board.serverBoard);
+        useBoardStore.getState().setMistakes(board.mistakes);
+
+        socket.off(SocketActionTypes.clear);
+    });
 };
