@@ -289,3 +289,14 @@ export const clearBoard = () => {
         socket.off(SocketActionTypes.clear);
     });
 };
+
+export const updateRoomUser = () => {
+    socket = getSocket();
+
+    const user = new UserProvider().user;
+    const roomId = useRoomStore.getState().room.roomId;
+
+    if (!roomId) return;
+
+    socket.emit(SocketActionTypes.updateUser, { roomId, user });
+};

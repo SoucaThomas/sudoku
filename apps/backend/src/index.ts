@@ -220,6 +220,11 @@ io.on("connection", (socket: Socket) => {
         io.in(roomId).emit(SocketActionTypes.clear, board);
     });
 
+    socket.on(SocketActionTypes.updateUser, ({ roomId, user }: { roomId: string; user: User }) => {
+        console.log(roomId, user);
+        socket.emit(SocketActionTypes.updateUser);
+    });
+
     socket.on("disconnect", () => console.log("-", socket.id));
 });
 

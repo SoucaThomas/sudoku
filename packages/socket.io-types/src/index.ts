@@ -35,6 +35,7 @@ export enum SocketActionTypes {
     roomUpdate = "room update",
 
     update = "update",
+    updateUser = "update user",
 
     startStop = "start stop",
     getBoard = "get board",

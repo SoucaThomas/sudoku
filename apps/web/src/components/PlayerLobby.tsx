@@ -1,6 +1,5 @@
 "use client";
 
-import { UserPen } from "lucide-react";
 import { Button } from "../components/ui/button";
 import {
     Card,
@@ -14,23 +13,14 @@ import { Input } from "../components/ui/input";
 import { Tabs } from "../components/ui/tabs";
 import { Separator } from "../components/ui/separator";
 import CreateRoomDialog from "../components/CreateRoomDialog";
-import { GameTypes, ColorValues, MessageType } from "@repo/socket.io-types";
-import { useEffect, useState, useRef } from "react";
+import { GameTypes } from "@repo/socket.io-types";
+import { useEffect, useState } from "react";
 import { UserProvider } from "../lib/utils";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
-import { useTheme } from "next-themes";
-import Message from "./Message";
+
+import ColorSelectorDialog from "./ColorSelectorDialog";
 
 export default function PlayerLobby() {
     const [userName, setUserName] = useState("");
-    const user = new UserProvider().getUser();
-    const { theme } = useTheme();
-    const [refresh, setRefresh] = useState(0);
-    const messageRef = useRef<HTMLDivElement>(null);
-
-    const refreshMessage = () => {
-        setRefresh((prev) => prev + 1);
-    };
 
     useEffect(() => {
         const user = new UserProvider().getUser();
@@ -49,7 +39,7 @@ export default function PlayerLobby() {
                             <CardHeader>
                                 <CardTitle>Profile</CardTitle>
                             </CardHeader>
-                            <CardDescription className="sm:flex sm:items-center sm:justify-between sm:gap-2">
+                            <CardDescription className="flex items-center justify-between gap-2">
                                 <Input
                                     placeholder="Enter your username"
                                     value={userName}
@@ -62,51 +52,7 @@ export default function PlayerLobby() {
                                         localStorage.setItem("user", JSON.stringify(user));
                                     }}
                                 />
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <Button variant={"default"}>
-                                            <UserPen className="h-6 w-6" />
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogTitle>Edit Profile</DialogTitle>
-                                        <div ref={messageRef}>
-                                            <Message
-                                                message={
-                                                    {
-                                                        message: `Hello! I'm ${userName}`,
-                                                        user: user,
-                                                    } as MessageType
-                                                }
-                                            />
-                                        </div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {Object.keys(ColorValues).map((color, index) => {
-                                                return (
-                                                    <Button
-                                                        key={index}
-                                                        className="w-12 h-12"
-                                                        style={{
-                                                            backgroundColor:
-                                                                theme === "dark"
-                                                                    ? ColorValues[color].dark
-                                                                    : ColorValues[color].light,
-                                                        }}
-                                                        onClick={() => {
-                                                            const updatedUser = {
-                                                                ...user,
-                                                                color: color,
-                                                            };
-                                                            new UserProvider().setUser(updatedUser);
-
-                                                            refreshMessage();
-                                                        }}
-                                                    ></Button>
-                                                );
-                                            })}
-                                        </div>
-                                    </DialogContent>
-                                </Dialog>
+                                <ColorSelectorDialog />
                             </CardDescription>
                             <CardFooter className="h-fit py-4">
                                 <CreateRoomDialog className="mx-auto mt-2 text-lg">

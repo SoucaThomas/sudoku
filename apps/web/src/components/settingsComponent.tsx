@@ -3,11 +3,12 @@ import { Button } from "./ui/button";
 import { motion } from "framer-motion";
 
 interface SettingsComponentProps {
-    icon: React.FC;
+    icon?: React.FC;
     text: string;
     buttonVariant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
     disabled?: boolean;
     onClick: () => void;
+    children?: React.ReactNode;
 }
 
 export default function settingsComponent({
@@ -16,6 +17,7 @@ export default function settingsComponent({
     buttonVariant,
     onClick,
     disabled,
+    children,
 }: SettingsComponentProps) {
     return (
         <motion.div
@@ -35,7 +37,9 @@ export default function settingsComponent({
             >
                 <p>{text}</p>
 
-                {React.createElement(icon)}
+                {icon && React.createElement(icon)}
+
+                {children}
             </Button>
         </motion.div>
     );

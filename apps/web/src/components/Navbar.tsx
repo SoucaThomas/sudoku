@@ -10,10 +10,12 @@ import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import { CardContent, CardTitle } from "./ui/card";
 import SettingsComponent from "./settingsComponent";
 import { clearBoard } from "../actions/room";
+import ColorSelectorDialog from "./ColorSelectorDialog";
 
 export default function Navbar() {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const { room, startStopGame } = useRoomStore();
 
     useEffect(() => {
@@ -57,12 +59,16 @@ export default function Navbar() {
                                     />
                                 )}
                                 <SettingsComponent
-                                    icon={User}
                                     text="Edit Profile"
                                     onClick={() => {
-                                        window.location.href = "/";
+                                        setIsDialogOpen(!isDialogOpen);
                                     }}
-                                />
+                                >
+                                    <ColorSelectorDialog
+                                        isDialogOpen={isDialogOpen}
+                                        setIsDialogOpen={setIsDialogOpen}
+                                    />
+                                </SettingsComponent>
                                 {room.roomGame && (
                                     <>
                                         <SettingsComponent
