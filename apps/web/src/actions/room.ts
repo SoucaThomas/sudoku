@@ -266,6 +266,21 @@ export const listenForMoves = (setBoard) => {
     socket.on(SocketActionTypes.badMove, (board: Board) => {
         setBoard(board);
     });
+
+    socket.on(SocketActionTypes.clear, (board: { serverBoard: string[]; mistakes: number }) => {
+        useBoardStore.getState().setClientBoard(board.serverBoard);
+        useBoardStore.getState().setMistakes(board.mistakes);
+    });
+
+    socket.on(SocketActionTypes.win, (board: Board) => {
+        console.log("WIN");
+        setBoard(board);
+    });
+
+    socket.on(SocketActionTypes.lose, (board: Board) => {
+        console.log("LOSE");
+        setBoard(board);
+    });
 };
 
 export const closeListenForMoves = () => {
@@ -274,6 +289,9 @@ export const closeListenForMoves = () => {
     socket.off(SocketActionTypes.goodMove);
     socket.off(SocketActionTypes.move);
     socket.off(SocketActionTypes.badMove);
+    socket.off(SocketActionTypes.clear);
+    socket.off(SocketActionTypes.win);
+    socket.off(SocketActionTypes.lose);
 };
 
 export const clearBoard = () => {
@@ -281,13 +299,6 @@ export const clearBoard = () => {
 
     socket.emit(SocketActionTypes.clear, {
         roomId: useRoomStore.getState().room.roomId,
-    });
-
-    socket.on(SocketActionTypes.clear, (board: { serverBoard: string[]; mistakes: number }) => {
-        useBoardStore.getState().setClientBoard(board.serverBoard);
-        useBoardStore.getState().setMistakes(board.mistakes);
-
-        socket.off(SocketActionTypes.clear);
     });
 };
 

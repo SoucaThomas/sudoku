@@ -56,7 +56,7 @@ export default function ColorSelectorDialog({
                     <Message
                         message={
                             {
-                                message: `Hello! I'm ${user.userName}`,
+                                message: `Hello! I'm ${user?.userName}`,
                                 user: user,
                             } as MessageType
                         }

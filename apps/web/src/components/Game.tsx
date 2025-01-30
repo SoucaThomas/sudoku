@@ -5,6 +5,8 @@ import { getBoard, listenForMoves, startStop } from "../actions/room";
 import { Spinner } from "./ui/spinner";
 import { Button } from "./ui/button";
 import { AnimatePresence, motion } from "framer-motion";
+import { Status } from "@repo/socket.io-types";
+import Won from "./Won";
 
 export default function Game() {
     const [isLoading, setIsLoading] = useState(true);
@@ -84,7 +86,7 @@ export default function Game() {
                             </div>
                         ))}
                     </div>
-                ) : (
+                ) : room.status === Status.PLAYING ? (
                     <motion.div
                         className="h-full w-full flex items-center justify-center flex-col"
                         initial={{ opacity: 0, y: 25 }}
@@ -102,6 +104,10 @@ export default function Game() {
                             Start Game
                         </Button>
                     </motion.div>
+                ) : room.status === Status.WON ? (
+                    <Won></Won>
+                ) : (
+                    <>lost</>
                 )}
             </CardContent>
         </Card>

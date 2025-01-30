@@ -43,8 +43,16 @@ export enum SocketActionTypes {
     goodMove = "good move",
     badMove = "bad move",
     clear = "clear",
+
+    win = "win",
+    lose = "lose",
 }
 
+export enum Status {
+    PLAYING = "Playing",
+    LOST = "Lost",
+    WON = "Won",
+}
 export interface GameRoom {
     roomId: string;
     roomName: string;
@@ -58,6 +66,8 @@ export interface GameRoom {
     isPlaying: boolean;
     totalPlayTime: number;
     lastTimeStarted: Date;
+
+    status: Status;
 }
 
 export interface Board {

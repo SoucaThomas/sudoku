@@ -10,6 +10,7 @@ import {
     User,
     MessageType,
     Board,
+    Status,
 } from "@repo/socket.io-types";
 import { v4 as uu4id } from "uuid";
 
@@ -45,6 +46,7 @@ io.on("connection", (socket: Socket) => {
             isPlaying: false,
             totalPlayTime: 0,
             lastTimeStarted: new Date(),
+            status: Status.PLAYING,
         });
 
         //! Generate board based on the room settings
@@ -54,7 +56,7 @@ io.on("connection", (socket: Socket) => {
                     ""
                 ),
             clientBoard:
-                "301086504046521070500000001400800002080347900009050038004090200008734090007208103".split(
+                "301986524846521379592473861463819752285347916719652438634195287128734695957268143".split(
                     ""
                 ),
             solution:
@@ -219,6 +221,40 @@ io.on("connection", (socket: Socket) => {
                 board.clientBoard[index] = value;
                 board.score += 150;
                 io.in(roomId).emit(SocketActionTypes.goodMove, {
+                    serverBoard: board.serverBoard,
+                    clientBoard: board.clientBoard,
+                    mistakes: board.mistakes,
+                    score: board.score,
+                });
+            }
+
+            if (board.mistakes >= 3) {
+                console.log("LOSE"); //! TODO: handle lose
+
+                room.isPlaying = false;
+                const date = new Date();
+                room.totalPlayTime += date.getTime() - room.lastTimeStarted.getTime();
+                room.status = Status.LOST;
+                rooms.set(roomId, room);
+
+                io.to(roomId).emit(SocketActionTypes.update, room);
+                io.in(roomId).emit(SocketActionTypes.lose, {
+                    serverBoard: board.serverBoard,
+                    clientBoard: board.clientBoard,
+                    mistakes: board.mistakes,
+                    score: board.score,
+                });
+            }
+
+            if (board.clientBoard.join("") === board.solution?.join("")) {
+                room.isPlaying = false;
+                const date = new Date();
+                room.totalPlayTime += date.getTime() - room.lastTimeStarted.getTime();
+                room.status = Status.WON;
+                rooms.set(roomId, room);
+
+                io.to(roomId).emit(SocketActionTypes.update, room);
+                io.in(roomId).emit(SocketActionTypes.win, {
                     serverBoard: board.serverBoard,
                     clientBoard: board.clientBoard,
                     mistakes: board.mistakes,
