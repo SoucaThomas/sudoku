@@ -68,8 +68,8 @@ export default function Tooltip() {
                                 "00:00"}
                         </span>
                     </p>
-                    <p className="flex flex-col items-center space-y-1 sm:flex-row sm:space-x-4 sm:space-y-0">
-                        Score: <span className="tabular-nums">12003</span>
+                    <p className="flex flex-col items-center space-y-1 sm:flex-row sm:space-x-4 sm:space-y-0 tabular-nums">
+                        Score: {boards.score}
                     </p>
                 </div>
             </CardContent>

@@ -15,7 +15,7 @@ export default function Game() {
         handleMovement,
         setClientBoard,
         setServerBoard,
-        addMistake,
+        setBoard,
     } = useBoardStore();
     const { room } = useRoomStore();
     const sameValue = "bg-[hsl(var(--primary))]/70";
@@ -28,7 +28,7 @@ export default function Game() {
             ({ serverBoard, clientBoard }: { serverBoard: string[]; clientBoard: string[] }) => {
                 setClientBoard(clientBoard);
                 setServerBoard(serverBoard);
-                listenForMoves(setClientBoard, addMistake);
+                listenForMoves(setBoard);
 
                 if (clientBoard?.length > 0) setIsLoading(false);
             }

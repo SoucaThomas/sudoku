@@ -65,6 +65,7 @@ export interface Board {
     clientBoard: string[];
     solution?: string[];
     mistakes: number;
+    score: number;
 }
 
 export interface User {

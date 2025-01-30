@@ -4,6 +4,7 @@ import {
     SocketActionTypes,
     User,
     MessageType,
+    Board,
 } from "@repo/socket.io-types";
 import { io, Socket } from "socket.io-client";
 import { UserProvider, useBoardStore, useRoomStore } from "../lib/utils";
@@ -250,20 +251,20 @@ export const makeMove = async (index: number, value: string) => {
     });
 };
 
-export const listenForMoves = (setClientBoard, addMistake) => {
+export const listenForMoves = (setBoard) => {
     //!handle off
     socket = getSocket();
 
-    socket.on(SocketActionTypes.goodMove, (board: string[]) => {
-        setClientBoard(board);
+    socket.on(SocketActionTypes.goodMove, (board: Board) => {
+        setBoard(board);
     });
 
-    socket.on(SocketActionTypes.move, (board: string[]) => {
-        setClientBoard(board);
+    socket.on(SocketActionTypes.move, (board: Board) => {
+        setBoard(board);
     });
 
-    socket.on(SocketActionTypes.badMove, () => {
-        addMistake();
+    socket.on(SocketActionTypes.badMove, (board: Board) => {
+        setBoard(board);
     });
 };
 

@@ -62,6 +62,7 @@ io.on("connection", (socket: Socket) => {
                     ""
                 ),
             mistakes: 0,
+            score: 0,
         });
 
         socket.emit(SocketActionTypes.create, roomId);
@@ -198,14 +199,31 @@ io.on("connection", (socket: Socket) => {
 
             if (value === "0") {
                 board.clientBoard[index] = value;
-                io.in(roomId).emit(SocketActionTypes.move, board.clientBoard);
+                io.in(roomId).emit(SocketActionTypes.move, {
+                    serverBoard: board.serverBoard,
+                    clientBoard: board.clientBoard,
+                    mistakes: board.mistakes,
+                    score: board.score,
+                });
             }
             if (board.solution && board.solution[index] !== value) {
                 board.mistakes++;
-                io.in(roomId).emit(SocketActionTypes.badMove, board.mistakes);
+                board.score -= 100;
+                io.in(roomId).emit(SocketActionTypes.badMove, {
+                    serverBoard: board.serverBoard,
+                    clientBoard: board.clientBoard,
+                    mistakes: board.mistakes,
+                    score: board.score,
+                });
             } else {
                 board.clientBoard[index] = value;
-                io.in(roomId).emit(SocketActionTypes.goodMove, board.clientBoard);
+                board.score += 150;
+                io.in(roomId).emit(SocketActionTypes.goodMove, {
+                    serverBoard: board.serverBoard,
+                    clientBoard: board.clientBoard,
+                    mistakes: board.mistakes,
+                    score: board.score,
+                });
             }
         }
     );
@@ -217,7 +235,13 @@ io.on("connection", (socket: Socket) => {
 
         board.clientBoard = board.serverBoard;
         board.mistakes = 0;
-        io.in(roomId).emit(SocketActionTypes.clear, board);
+        board.score = 0;
+        io.in(roomId).emit(SocketActionTypes.clear, {
+            serverBoard: board.serverBoard,
+            clientBoard: board.clientBoard,
+            mistakes: board.mistakes,
+            score: board.score,
+        });
     });
 
     socket.on(SocketActionTypes.updateUser, ({ roomId, user }: { roomId: string; user: User }) => {

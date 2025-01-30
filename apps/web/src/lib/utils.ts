@@ -119,7 +119,7 @@ export const useBoardStore = create<{
     sameValue: string;
     setClientBoard: (grid: string[]) => void;
     setServerBoard: (grid: string[]) => void;
-    addMistake: () => void;
+    setBoard: (board: Board) => void;
     setMistakes: (mistakes: number) => void;
     setSelected: (selected: number | null) => void;
     handleMovement: (e: KeyboardEvent) => void;
@@ -129,6 +129,7 @@ export const useBoardStore = create<{
         clientBoard: [],
         serverBoard: [],
         mistakes: 0,
+        score: 0,
     },
     selected: 0,
     sameValue: "",
@@ -136,8 +137,7 @@ export const useBoardStore = create<{
         set((state) => ({ boards: { ...state.boards, clientBoard } })),
     setServerBoard: (serverBoard: string[]) =>
         set((state) => ({ boards: { ...state.boards, serverBoard } })),
-    addMistake: () =>
-        set((state) => ({ boards: { ...state.boards, mistakes: state.boards.mistakes + 1 } })),
+    setBoard: (board: Board) => set((state) => ({ boards: { ...state.boards, ...board } })),
     setMistakes: (mistakes: number) => set((state) => ({ boards: { ...state.boards, mistakes } })),
     setSelected: (selected: number | null) => set({ selected }),
     handleMovement: async (e: KeyboardEvent) => {
