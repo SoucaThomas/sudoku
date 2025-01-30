@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { ColorValues } from "@repo/socket.io-types";
 
-export default function Won() {
+export default function Lose() {
     const { room } = useRoomStore();
     const { boards } = useBoardStore();
     const { theme } = useTheme();
@@ -15,7 +15,7 @@ export default function Won() {
     return (
         <Dialog open={true}>
             <DialogContent className="flex flex-col items-center justify-center select-none">
-                <DialogTitle className="text-3xl items-center">🎉 Puzzle Solved! 🎉</DialogTitle>
+                <DialogTitle className="text-3xl items-center">Game Over! 😢</DialogTitle>
 
                 <motion.h2
                     className="pt-2"
@@ -23,7 +23,7 @@ export default function Won() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    Great teamwork! You completed the Sudoku!
+                    Oops! The puzzle remains unsolved.
                 </motion.h2>
                 <div className="grid grid-cols-2 gap-4 h-1/2 w-full">
                     <motion.div
@@ -43,7 +43,7 @@ export default function Won() {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.5, delay: 0.55 }}
                                     >
-                                        👥 Players: {room.roomUsers.length}
+                                        👥 Players: {room.roomUsers?.length}
                                     </motion.p>
                                     <motion.p
                                         initial={{ opacity: 0, y: 25 }}
@@ -80,8 +80,8 @@ export default function Won() {
                                         🏆 Score: {boards.score}
                                     </motion.p>
 
-                                    <Button className="mt-4" onClick={() => {}}>
-                                        Share your score!
+                                    <Button className="mt-4" onClick={() => {}} variant="outline">
+                                        Try again!
                                     </Button>
                                 </CardContent>
                             </motion.div>
@@ -94,7 +94,7 @@ export default function Won() {
                     >
                         <Card className="w-full h-full flex flex-col">
                             <CardContent className="flex flex-col pt-4">
-                                {room.roomUsers.slice(0, 4).map((user, index) => (
+                                {room.roomUsers?.slice(0, 4).map((user, index) => (
                                     <motion.div
                                         key={index}
                                         initial={{ opacity: 0, y: 25 }}
@@ -131,13 +131,27 @@ export default function Won() {
                         </Card>
                     </motion.div>
                 </div>
-                <DialogFooter>
+                <DialogFooter className="flex flex-col items-center justify-center m-0 p-0">
                     <motion.div
                         initial={{ opacity: 0, y: 25 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 1 }}
                     >
-                        <Button onClick={() => (window.location.href = "/")}>Play again</Button>
+                        <Button onClick={() => {}}>Play again</Button>
+                    </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 25 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 1 }}
+                    >
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                window.location.href = "/";
+                            }}
+                        >
+                            Take a break!
+                        </Button>
                     </motion.div>
                 </DialogFooter>
             </DialogContent>

@@ -7,6 +7,7 @@ import { Button } from "./ui/button";
 import { AnimatePresence, motion } from "framer-motion";
 import { Status } from "@repo/socket.io-types";
 import Won from "./Won";
+import Lose from "./Lose";
 
 export default function Game() {
     const [isLoading, setIsLoading] = useState(true);
@@ -107,7 +108,7 @@ export default function Game() {
                 ) : room.status === Status.WON ? (
                     <Won></Won>
                 ) : (
-                    <>lost</>
+                    <Lose />
                 )}
             </CardContent>
         </Card>
