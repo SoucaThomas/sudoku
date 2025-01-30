@@ -73,6 +73,7 @@ export default function Game() {
                                         `}
                                             key={i}
                                             onClick={() => setSelected(i)}
+                                            onMouseEnter={() => setSelected(i)}
                                         >
                                             {boards.clientBoard[i] === "0"
                                                 ? ""
