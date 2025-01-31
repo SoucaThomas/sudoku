@@ -5,7 +5,6 @@ import { type Metadata } from "next";
 import { ThemeProvider } from "../components/theme-provider";
 import { Toaster } from "../components/ui/toaster";
 import Navbar from "../components/Navbar";
-import { motion } from "framer-motion";
 import Transition from "../components/Transition";
 
 export const metadata: Metadata = {
@@ -17,7 +16,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en" className={`${GeistSans.variable}`} suppressHydrationWarning>
-            <body className="h-dvh w-full overflow-hidden">
+            <body className="h-dvh w-full md:overflow-hidden">
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="system"

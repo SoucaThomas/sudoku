@@ -132,7 +132,7 @@ const Room = () => {
                     <DialogFooter>
                         <Button
                             onClick={handlePasswordSubmit}
-                            className="bg-blue-500 text-white px-4 py-2 rounded"
+                            className="bg-[hsl(--var(primary))] text-white px-4 py-2 rounded"
                         >
                             Submit
                         </Button>

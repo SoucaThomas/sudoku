@@ -8,6 +8,7 @@ export default function Transition({ children }: Readonly<{ children: React.Reac
             <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -50 }}
                 transition={{ duration: 0.4 }}
                 className="align-center flex h-full w-full justify-center"
             >
