@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from "uuid";
 import { User, MessageType, Colors, GameRoom, Board, MovementActions } from "@repo/socket.io-types";
 import { create } from "zustand";
 import { startStop, makeMove, clearBoard } from "../actions/room";
-import { use } from "react";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -184,7 +183,6 @@ export const useMovementStore = create<{
     proccesCommand: () => {
         const process = useMovementStore.getState().commands.pop();
 
-        console.log(process);
         switch (process) {
             case MovementActions.UP:
                 useBoardStore

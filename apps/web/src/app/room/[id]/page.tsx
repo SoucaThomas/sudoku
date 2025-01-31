@@ -22,6 +22,7 @@ import Game from "../../../components/Game";
 import Tooltip from "../../../components/Tooltip";
 import { useRoomStore } from "../../../lib/utils";
 import { listenForGameUpdate, closeListenForGameUpdate } from "../../../actions/room";
+import MobileController from "../../../components/MobileController";
 
 const Room = () => {
     const { toast } = useToast();
@@ -91,22 +92,24 @@ const Room = () => {
     }, [isMounted, router, id]);
 
     return (
-        <section className="w-5/6 md:w-3/4 max-w-7xl mx-auto my-10">
-            <div className="h-16 w-full">
-                <Tooltip></Tooltip>
+        <section className="h-full w-5/6 md:w- max-w-7xl mx-auto">
+            <div className="h-16 w-full mb-2">
+                <Tooltip />
             </div>
-            <div className="h-full md:grid md:grid-cols-6 md:grid-rows-6 lg:grid ">
-                <div className="m-2 max-md:h-1/2 md:row-span-3 md:col-span-4">
+            <div className="h-5/6 felx md:grid md:grid-cols-6 dgrid-rows-6 md:grid-rows-3 lg:grid ">
+                <div className="max-md:h-3/5 mb-2 row-span-4 col-span-6 md:row-span-2 md:col-span-4 mr-1">
                     <Game />
                 </div>
-                <div className="m-2 hidden md:block md:row-span-3 md:col-span-2">
+                <div className="mb-2 hidden md:block md:row-span-2 md:col-span-2 ml-1">
                     <Chat />
                 </div>
-                <div className="bg-blue-400/20 m-2 h-1/5 md:hidden"> controls for mobile</div>
+                <div className="md:hidden row-span-2 col-span-6 order-2">
+                    <MobileController />
+                </div>
             </div>
 
             <Popover>
-                <PopoverTrigger className="fixed bottom-4 right-4 z-10 border border-white p-3 md:hidden rounded-full shadow-lg">
+                <PopoverTrigger className="fixed bottom-4 right-4 z-10 border p-3 md:hidden rounded-full shadow-lg">
                     <MessageCircleMore />
                 </PopoverTrigger>
                 <PopoverContent className="w-[80dvw] h-[60dvh]">
