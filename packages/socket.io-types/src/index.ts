@@ -73,9 +73,27 @@ export interface GameRoom {
 export interface Board {
     serverBoard: string[];
     clientBoard: string[];
+    pencilMarks: string[][];
     solution?: string[];
     mistakes: number;
     score: number;
+}
+
+export enum MovementActions {
+    UP = "up",
+    DOWN = "down",
+    LEFT = "left",
+    RIGHT = "right",
+    ONE = "1",
+    TWO = "2",
+    THREE = "3",
+    FOUR = "4",
+    FIVE = "5",
+    SIX = "6",
+    SEVEN = "7",
+    EIGHT = "8",
+    NINE = "9",
+    DELETE = "0",
 }
 
 export interface User {

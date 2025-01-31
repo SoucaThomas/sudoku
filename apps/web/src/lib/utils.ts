@@ -1,9 +1,10 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { v4 as uuidv4 } from "uuid";
-import { User, MessageType, Colors, GameRoom, Board } from "@repo/socket.io-types";
+import { User, MessageType, Colors, GameRoom, Board, MovementActions } from "@repo/socket.io-types";
 import { create } from "zustand";
 import { startStop, makeMove, clearBoard } from "../actions/room";
+import { use } from "react";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -128,6 +129,7 @@ export const useBoardStore = create<{
     boards: {
         clientBoard: [],
         serverBoard: [],
+        pencilMarks: [] as string[][],
         mistakes: 0,
         score: 0,
     },
@@ -144,57 +146,125 @@ export const useBoardStore = create<{
         //! TODO make this more generic (so it should be callable for the mobile movement)
         switch (e.key) {
             case "ArrowUp":
-                set((state) => ({
-                    selected:
-                        state.selected !== null && state.selected < 9
-                            ? state.selected
-                            : state.selected - 9,
-                }));
+                useMovementStore.getState().addCommand(MovementActions.UP);
                 break;
             case "ArrowDown":
-                set((state) => ({
-                    selected:
-                        state.selected !== null && state.selected > 71
-                            ? state.selected
-                            : state.selected + 9,
-                }));
+                useMovementStore.getState().addCommand(MovementActions.DOWN);
                 break;
             case "ArrowLeft":
-                set((state) => ({
-                    selected:
-                        state.selected !== null && state.selected % 9 === 0
-                            ? state.selected
-                            : state.selected - 1,
-                }));
+                useMovementStore.getState().addCommand(MovementActions.LEFT);
                 break;
             case "ArrowRight":
-                set((state) => ({
-                    selected:
-                        state.selected !== null && state.selected % 9 === 8
-                            ? state.selected
-                            : state.selected + 1,
-                }));
+                useMovementStore.getState().addCommand(MovementActions.RIGHT);
                 break;
         }
         if (e.key === "Backspace" || e.key === "Delete") {
-            set((state) => {
-                if (state.boards.clientBoard[state.selected] === "0") return state;
-                if (state.boards.serverBoard[state.selected] !== "0") return state;
-                makeMove(state.selected, "0");
-                return state;
-            });
+            useMovementStore.getState().addCommand(MovementActions.DELETE);
         }
 
         if (e.key.match(/[1-9]/)) {
-            set((state) => {
-                if (state.boards.clientBoard[state.selected] === e.key) return state;
-                if (state.boards.serverBoard[state.selected] !== "0") return state;
-                makeMove(state.selected, e.key);
-                return state;
-            });
+            useMovementStore.getState().addCommand(e.key as MovementActions);
         }
     },
     clearBoard: () => {
         clearBoard();
+    },
+}));
+
+export const useMovementStore = create<{
+    commands: MovementActions[];
+    addCommand: (command: MovementActions) => void;
+    proccesCommand: () => void;
+}>((set) => ({
+    commands: [] as MovementActions[],
+    addCommand: (command: MovementActions) =>
+        set((state) => ({
+            commands: [...state.commands, command],
+        })),
+    proccesCommand: () => {
+        const process = useMovementStore.getState().commands.pop();
+
+        console.log(process);
+        switch (process) {
+            case MovementActions.UP:
+                useBoardStore
+                    .getState()
+                    .setSelected(
+                        useBoardStore.getState().selected !== null &&
+                            useBoardStore.getState().selected < 9
+                            ? useBoardStore.getState().selected
+                            : useBoardStore.getState().selected - 9
+                    );
+                break;
+
+            case MovementActions.DOWN:
+                useBoardStore
+                    .getState()
+                    .setSelected(
+                        useBoardStore.getState().selected !== null &&
+                            useBoardStore.getState().selected > 71
+                            ? useBoardStore.getState().selected
+                            : useBoardStore.getState().selected + 9
+                    );
+                break;
+
+            case MovementActions.LEFT:
+                useBoardStore
+                    .getState()
+                    .setSelected(
+                        useBoardStore.getState().selected !== null &&
+                            useBoardStore.getState().selected % 9 === 0
+                            ? useBoardStore.getState().selected
+                            : useBoardStore.getState().selected - 1
+                    );
+                break;
+
+            case MovementActions.RIGHT:
+                useBoardStore
+                    .getState()
+                    .setSelected(
+                        useBoardStore.getState().selected !== null &&
+                            useBoardStore.getState().selected % 9 === 8
+                            ? useBoardStore.getState().selected
+                            : useBoardStore.getState().selected + 1
+                    );
+                break;
+
+            case MovementActions.DELETE:
+                if (
+                    useBoardStore.getState().boards.clientBoard[
+                        useBoardStore.getState().selected
+                    ] === "0"
+                )
+                    break;
+                if (
+                    useBoardStore.getState().boards.serverBoard[
+                        useBoardStore.getState().selected
+                    ] !== "0"
+                )
+                    break;
+                makeMove(useBoardStore.getState().selected, "0");
+                break;
+
+            default:
+                if (process?.match(/[1-9]/)) {
+                    if (
+                        useBoardStore.getState().boards.clientBoard[
+                            useBoardStore.getState().selected
+                        ] === process
+                    )
+                        break;
+                    if (
+                        useBoardStore.getState().boards.serverBoard[
+                            useBoardStore.getState().selected
+                        ] !== "0"
+                    )
+                        break;
+                    makeMove(useBoardStore.getState().selected, process);
+                }
+                break;
+        }
+
+        return process;
     },
 }));

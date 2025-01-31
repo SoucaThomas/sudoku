@@ -59,6 +59,7 @@ io.on("connection", (socket: Socket) => {
                 "301986524846521379592473861463819752285347916719652438634195287128734695957268143".split(
                     ""
                 ),
+            pencilMarks: [],
             solution:
                 "371986524846521379592473861463819752285347916719652438634195287128734695957268143".split(
                     ""
@@ -201,30 +202,24 @@ io.on("connection", (socket: Socket) => {
 
             if (value === "0") {
                 board.clientBoard[index] = value;
+                const { solution, ...boardWithoutSolution } = board;
                 io.in(roomId).emit(SocketActionTypes.move, {
-                    serverBoard: board.serverBoard,
-                    clientBoard: board.clientBoard,
-                    mistakes: board.mistakes,
-                    score: board.score,
+                    ...boardWithoutSolution,
                 });
             }
             if (board.solution && board.solution[index] !== value) {
                 board.mistakes++;
                 board.score -= 100;
+                const { solution, ...boardWithoutSolution } = board;
                 io.in(roomId).emit(SocketActionTypes.badMove, {
-                    serverBoard: board.serverBoard,
-                    clientBoard: board.clientBoard,
-                    mistakes: board.mistakes,
-                    score: board.score,
+                    ...boardWithoutSolution,
                 });
             } else {
                 board.clientBoard[index] = value;
                 board.score += 150;
+                const { solution, ...boardWithoutSolution } = board;
                 io.in(roomId).emit(SocketActionTypes.goodMove, {
-                    serverBoard: board.serverBoard,
-                    clientBoard: board.clientBoard,
-                    mistakes: board.mistakes,
-                    score: board.score,
+                    ...boardWithoutSolution,
                 });
             }
 

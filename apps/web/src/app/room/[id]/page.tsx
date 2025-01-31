@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { joinRoom, leaveRoom, listenForMoves } from "../../../actions/room";
+import { joinRoom, leaveRoom } from "../../../actions/room";
 import { useToast } from "../../../hooks/use-toast";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";

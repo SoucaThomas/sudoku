@@ -1,10 +1,10 @@
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { useState, useEffect } from "react";
-import { useBoardStore, useRoomStore } from "../lib/utils";
+import { useBoardStore, useMovementStore, useRoomStore } from "../lib/utils";
 import { getBoard, listenForMoves, startStop } from "../actions/room";
 import { Spinner } from "./ui/spinner";
 import { Button } from "./ui/button";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Status } from "@repo/socket.io-types";
 import Won from "./Won";
 import Lose from "./Lose";
@@ -21,6 +21,8 @@ export default function Game() {
         setBoard,
     } = useBoardStore();
     const { room } = useRoomStore();
+    const { commands, proccesCommand } = useMovementStore();
+
     const sameValue = "bg-[hsl(var(--primary))]/70";
     const selectedCell = "bg-[hsl(var(--primary))]/90 border-2 border-[hsl(var(--foreground))]";
     const sameRowCol = "bg-[hsl(var(--primary))]/30";
@@ -43,6 +45,10 @@ export default function Game() {
             window.removeEventListener("keydown", handleMovement);
         };
     }, []);
+
+    useEffect(() => {
+        proccesCommand();
+    }, [commands]);
 
     return (
         <Card className="w-full h-full">
