@@ -16,7 +16,7 @@ export interface CreateRoomData {
     roomGame: GameTypes;
     roomDifficulty: GameDifficulties;
     isRoomPublic: boolean;
-    roomHost: User;
+    roomHostId: string;
 }
 
 export enum SocketActionTypes {
@@ -57,24 +57,21 @@ export enum Status {
 export interface GameRoom {
     roomId: string;
     roomName: string;
-    roomPassword?: string;
-    roomGame: GameTypes;
-    roomDifficulty: GameDifficulties;
+    roomPassword: string | null;
+    roomGame: string;
+    roomDifficulty: string;
     isRoomPublic: boolean;
-    roomHost?: User;
+    roomHostId: string;
     roomUsers: User[];
-
     isPlaying: boolean;
     totalPlayTime: number;
-    lastTimeStarted: Date;
-
-    status: Status;
+    lastTimeStarted: Date | null;
+    status: string;
 }
 
 export interface Board {
     serverBoard: string[];
     clientBoard: string[];
-    pencilMarks: string[][];
     solution?: string[];
     mistakes: number;
     score: number;
@@ -116,6 +113,7 @@ export enum ColorShades {
     LIGHT = "light",
     DARK = "dark",
 }
+
 export enum Colors {
     RED = "red",
     GREEN = "green",

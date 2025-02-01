@@ -10,7 +10,6 @@
     "license": "MIT",
     "dependencies": {
         "express": "5.0.1",
-        "mongoose": "^8.9.5",
         "nodemon": "^3.1.9",
         "socket.io": "^4.8.1",
         "ts-node": "^10.4.0",
@@ -19,6 +18,7 @@
     "devDependencies": {
         "@repo/eslint-config": "*",
         "@repo/typescript-config": "*",
+        "@repo/database": "*",
         "@repo/socket.io-types": "*",
         "@types/node": "^20",
         "@types/express": "^5.0.0",

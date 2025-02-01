@@ -23,7 +23,10 @@ export const createRoom = (data: CreateRoomData) => {
     socket = getSocket();
 
     return new Promise<string>((resolve, reject) => {
-        socket.emit(SocketActionTypes.create, { ...data, roomHost: user } as CreateRoomData);
+        socket.emit(SocketActionTypes.create, {
+            ...data,
+            roomHostId: user.userId,
+        } as CreateRoomData);
 
         socket.on(SocketActionTypes.create, (roomId: string) => {
             // window.location.href = `/room/${roomId}`;

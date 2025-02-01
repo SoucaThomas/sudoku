@@ -128,7 +128,6 @@ export const useBoardStore = create<{
     boards: {
         clientBoard: [],
         serverBoard: [],
-        pencilMarks: [] as string[][],
         mistakes: 0,
         score: 0,
     },
