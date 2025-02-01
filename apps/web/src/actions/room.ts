@@ -230,12 +230,12 @@ export const closeListenForGameUpdate = () => {
 
 export const getBoard = async (roomId: string) => {
     socket = getSocket();
-    return new Promise<{ serverBoard: string[]; clientBoard: string[] }>((resolve) => {
+    return new Promise<{ serverBoard: string; clientBoard: string }>((resolve) => {
         socket.emit(SocketActionTypes.getBoard, roomId);
 
         socket.on(
             SocketActionTypes.getBoard,
-            ({ serverBoard, clientBoard }: { serverBoard: string[]; clientBoard: string[] }) => {
+            ({ serverBoard, clientBoard }: { serverBoard: string; clientBoard: string }) => {
                 resolve({ serverBoard, clientBoard });
 
                 socket.off(SocketActionTypes.getBoard);
@@ -255,7 +255,6 @@ export const makeMove = async (index: number, value: string) => {
 };
 
 export const listenForMoves = (setBoard) => {
-    //!handle off
     socket = getSocket();
 
     socket.on(SocketActionTypes.goodMove, (board: Board) => {
@@ -270,7 +269,7 @@ export const listenForMoves = (setBoard) => {
         setBoard(board);
     });
 
-    socket.on(SocketActionTypes.clear, (board: { serverBoard: string[]; mistakes: number }) => {
+    socket.on(SocketActionTypes.clear, (board: { serverBoard: string; mistakes: number }) => {
         useBoardStore.getState().setClientBoard(board.serverBoard);
         useBoardStore.getState().setMistakes(board.mistakes);
     });

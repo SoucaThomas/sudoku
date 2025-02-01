@@ -30,7 +30,7 @@ export default function Game() {
     useEffect(() => {
         const roomId = window.location.pathname.split("/").pop();
         getBoard(roomId).then(
-            ({ serverBoard, clientBoard }: { serverBoard: string[]; clientBoard: string[] }) => {
+            ({ serverBoard, clientBoard }: { serverBoard: string; clientBoard: string }) => {
                 setClientBoard(clientBoard);
                 setServerBoard(serverBoard);
                 listenForMoves(setBoard);
@@ -114,7 +114,7 @@ export default function Game() {
                 ) : room.status === Status.WON ? (
                     <Won></Won>
                 ) : (
-                    <Lose />
+                    room.status === Status.LOST && <Lose />
                 )}
             </CardContent>
         </Card>
