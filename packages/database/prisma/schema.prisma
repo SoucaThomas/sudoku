@@ -30,17 +30,17 @@ model Room {
 
   status String
 
-  boardId String? @unique @db.ObjectId // Store reference manually
+  boardId String? @unique @db.ObjectId
 }
 
 model Board {
   boardId String @id @default(auto()) @map("_id") @db.ObjectId
 
-  serverBoard String[]
-  clientBoard String[]
-  solution    String[]
+  serverBoard String
+  clientBoard String
+  solution    String
   mistakes    Int
   score       Int
 
-  roomId String @unique @db.ObjectId // This links the board to a room
+  roomId String @unique @db.ObjectId
 }

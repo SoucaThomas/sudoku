@@ -5,11 +5,9 @@ import { Socket } from "socket.io";
 import { Server } from "socket.io";
 import {
     CreateRoomData,
-    GameRoom,
     SocketActionTypes,
     User,
     MessageType,
-    Board,
     Status,
 } from "@repo/socket.io-types";
 
@@ -27,9 +25,6 @@ import {
 } from "@repo/database";
 
 const app = express();
-
-// const rooms = new Map<string, GameRoom>(); //! TODO move to a database
-// const boards = new Map<string, Board>();
 
 app.use(cors());
 const server = http.createServer(app);
@@ -51,9 +46,15 @@ io.on("connection", (socket: Socket) => {
         const sudoku = getSudoku(difficulty);
 
         const boards = {
-            serverBoard: sudoku.puzzle.split("").map((v) => (v === "-" ? "0" : v)),
-            clientBoard: sudoku.puzzle.split("").map((v) => (v === "-" ? "0" : v)),
-            solution: sudoku.solution.split(""),
+            serverBoard: sudoku.puzzle
+                .split("")
+                .map((v) => (v === "-" ? "0" : v))
+                .join(""),
+            clientBoard: sudoku.puzzle
+                .split("")
+                .map((v) => (v === "-" ? "0" : v))
+                .join(""),
+            solution: sudoku.solution,
             mistakes: 0,
             score: 0,
         };
@@ -188,7 +189,10 @@ io.on("connection", (socket: Socket) => {
             if (board.serverBoard[index] !== "0") return;
 
             if (value === "0") {
-                board.clientBoard[index] = value;
+                board.clientBoard =
+                    board.clientBoard.substring(0, index) +
+                    value +
+                    board.clientBoard.substring(index + 1);
                 await updateBoard(room.boardId ?? "", board);
                 const { solution, ...boardWithoutSolution } = board;
                 io.in(roomId).emit(SocketActionTypes.move, {
@@ -203,7 +207,10 @@ io.on("connection", (socket: Socket) => {
                     ...boardWithoutSolution,
                 });
             } else {
-                board.clientBoard[index] = value;
+                board.clientBoard =
+                    board.clientBoard.substring(0, index) +
+                    value +
+                    board.clientBoard.substring(index + 1);
                 board.score += 150;
                 await updateBoard(room.boardId ?? "", board);
                 const { solution, ...boardWithoutSolution } = board;
@@ -230,7 +237,7 @@ io.on("connection", (socket: Socket) => {
                 });
             }
 
-            if (board.clientBoard.join("") === board.solution?.join("")) {
+            if (board.clientBoard === board.solution) {
                 room.isPlaying = false;
                 const date = new Date();
                 room.totalPlayTime += date.getTime() - room.lastTimeStarted.getTime();

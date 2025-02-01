@@ -40,7 +40,7 @@ export async function create({ boards, data }: { boards: Board; data: CreateRoom
             roomId: room.roomId,
             serverBoard: boards.serverBoard,
             clientBoard: boards.clientBoard,
-            solution: boards.solution,
+            solution: boards.solution || "",
             mistakes: 0,
             score: 0,
         },

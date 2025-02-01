@@ -117,8 +117,8 @@ export const useBoardStore = create<{
     boards: Board;
     selected: number | null;
     sameValue: string;
-    setClientBoard: (grid: string[]) => void;
-    setServerBoard: (grid: string[]) => void;
+    setClientBoard: (grid: string) => void;
+    setServerBoard: (grid: string) => void;
     setBoard: (board: Board) => void;
     setMistakes: (mistakes: number) => void;
     setSelected: (selected: number | null) => void;
@@ -126,22 +126,21 @@ export const useBoardStore = create<{
     clearBoard: () => void;
 }>((set) => ({
     boards: {
-        clientBoard: [],
-        serverBoard: [],
+        clientBoard: "",
+        serverBoard: "",
         mistakes: 0,
         score: 0,
     },
     selected: 0,
     sameValue: "",
-    setClientBoard: (clientBoard: string[]) =>
+    setClientBoard: (clientBoard: string) =>
         set((state) => ({ boards: { ...state.boards, clientBoard } })),
-    setServerBoard: (serverBoard: string[]) =>
+    setServerBoard: (serverBoard: string) =>
         set((state) => ({ boards: { ...state.boards, serverBoard } })),
     setBoard: (board: Board) => set((state) => ({ boards: { ...state.boards, ...board } })),
     setMistakes: (mistakes: number) => set((state) => ({ boards: { ...state.boards, mistakes } })),
     setSelected: (selected: number | null) => set({ selected }),
     handleMovement: async (e: KeyboardEvent) => {
-        //! TODO make this more generic (so it should be callable for the mobile movement)
         switch (e.key) {
             case "ArrowUp":
                 useMovementStore.getState().addCommand(MovementActions.UP);

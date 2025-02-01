@@ -70,9 +70,9 @@ export interface GameRoom {
 }
 
 export interface Board {
-    serverBoard: string[];
-    clientBoard: string[];
-    solution?: string[];
+    serverBoard: string;
+    clientBoard: string;
+    solution?: string;
     mistakes: number;
     score: number;
 }
