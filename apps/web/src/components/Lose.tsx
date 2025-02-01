@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogFooter, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { motion } from "framer-motion";
 import Stats from "./Stats";
+import CreateRoomDialog from "./CreateRoomDialog";
 
 export default function Lose() {
     return (
@@ -24,7 +25,9 @@ export default function Lose() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 1 }}
                     >
-                        <Button onClick={() => {}}>Play again</Button>
+                        <CreateRoomDialog className="mx-auto mt-2 text-lg">
+                            <Button variant={"default"}>Play again!</Button>
+                        </CreateRoomDialog>
                     </motion.div>
                     <motion.div
                         initial={{ opacity: 0, y: 25 }}

@@ -83,14 +83,14 @@ export default function Navbar() {
                                         />
                                     </>
                                 )}
-                                {new UserProvider().getUser().userId === room.roomHost?.userId && (
+                                {new UserProvider().getUser().userId === room.roomHostId && (
                                     <>
                                         <CardTitle className="my-2 mt-5">Admin Settings</CardTitle>
                                         <SettingsComponent
                                             icon={X}
                                             text="Kick"
                                             buttonVariant="destructive"
-                                            disabled={room.roomUsers.length === 1}
+                                            disabled={room.roomUsers.length <= 1}
                                             onClick={() => {
                                                 console.log("Kicked"); //! TODO Implement kick
                                             }}

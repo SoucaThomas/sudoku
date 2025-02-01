@@ -5,6 +5,7 @@ import { useBoardStore, useRoomStore } from "../lib/utils";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
+import CreateRoomDialog from "./CreateRoomDialog";
 
 export default function Stats() {
     const { room } = useRoomStore();
@@ -67,9 +68,9 @@ export default function Stats() {
                                 🏆 Score: {boards.score}
                             </motion.p>
 
-                            <Button className="mt-4" onClick={() => {}} variant="outline">
-                                Try again!
-                            </Button>
+                            <CreateRoomDialog className="mx-auto mt-4 text-lg">
+                                <Button variant={"outline"}>Try again!</Button>
+                            </CreateRoomDialog>
                         </CardContent>
                     </motion.div>
                 </Card>
