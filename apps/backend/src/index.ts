@@ -13,6 +13,7 @@ import {
     Status,
 } from "@repo/socket.io-types";
 import { v4 as uu4id } from "uuid";
+import { getSudoku } from "sudoku-gen";
 
 const app = express();
 
@@ -49,21 +50,17 @@ io.on("connection", (socket: Socket) => {
             status: Status.PLAYING,
         });
 
-        //! Generate board based on the room settings
+        const validDifficulties = ["easy", "medium", "hard", "expert"];
+        const difficulty = validDifficulties.includes(data.roomDifficulty)
+            ? data.roomDifficulty
+            : "easy";
+        const sudoku = getSudoku(difficulty);
+
         boards.set(roomId, {
-            serverBoard:
-                "301086504046521070500000001400800002080347900009050038004090200008734090007208103".split(
-                    ""
-                ),
-            clientBoard:
-                "301986524846521379592473861463819752285347916719652438634195287128734695957268143".split(
-                    ""
-                ),
+            serverBoard: sudoku.puzzle.split("").map((v) => (v === "-" ? "0" : v)),
+            clientBoard: sudoku.puzzle.split("").map((v) => (v === "-" ? "0" : v)),
+            solution: sudoku.solution.split(""),
             pencilMarks: [],
-            solution:
-                "371986524846521379592473861463819752285347916719652438634195287128734695957268143".split(
-                    ""
-                ),
             mistakes: 0,
             score: 0,
         });
@@ -99,7 +96,7 @@ io.on("connection", (socket: Socket) => {
             roomHost: room.roomHost?.userId === user.userId ? room.roomHost : undefined,
         };
 
-        socket.emit(SocketActionTypes.join, roomData); //! we should send the board and stuff like that
+        socket.emit(SocketActionTypes.join, roomData);
         socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values()));
     });
 
@@ -128,7 +125,7 @@ io.on("connection", (socket: Socket) => {
             };
 
             socket.join(roomId);
-            socket.emit(SocketActionTypes.join, room); //! we should send the board and stuff like that
+            socket.emit(SocketActionTypes.join, room);
             socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values()));
         }
     );
@@ -224,7 +221,7 @@ io.on("connection", (socket: Socket) => {
             }
 
             if (board.mistakes >= 3) {
-                console.log("LOSE"); //! TODO: handle lose
+                console.log("LOSE");
 
                 room.isPlaying = false;
                 const date = new Date();

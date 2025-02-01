@@ -13,7 +13,8 @@
         "mongoose": "^8.9.5",
         "nodemon": "^3.1.9",
         "socket.io": "^4.8.1",
-        "ts-node": "^10.4.0"
+        "ts-node": "^10.4.0",
+        "sudoku-gen": "^1.0.2"
     },
     "devDependencies": {
         "@repo/eslint-config": "*",

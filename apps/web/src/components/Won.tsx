@@ -1,18 +1,9 @@
-import { CircleUser, Clock } from "lucide-react";
-import { useBoardStore, useRoomStore } from "../lib/utils";
-import { Card, CardContent } from "./ui/card";
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { motion } from "framer-motion";
-import { useTheme } from "next-themes";
-import { ColorValues } from "@repo/socket.io-types";
 import Stats from "./Stats";
 
 export default function Won() {
-    const { room } = useRoomStore();
-    const { boards } = useBoardStore();
-    const { theme } = useTheme();
-
     return (
         <Dialog open={true}>
             <DialogContent className="flex flex-col items-center justify-center select-none">
