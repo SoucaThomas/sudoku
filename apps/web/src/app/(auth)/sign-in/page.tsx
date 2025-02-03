@@ -20,6 +20,9 @@ import {
     FormLabel,
     FormMessage,
 } from "../../../components/ui/form";
+import { authClient } from "../../../lib/auth-client";
+import { useRouter } from "next/navigation";
+import { toast } from "../../../hooks/use-toast";
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -27,6 +30,8 @@ const formSchema = z.object({
 });
 
 export default function SignIn() {
+    const router = useRouter();
+
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -35,8 +40,26 @@ export default function SignIn() {
         },
     });
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log(values);
+    const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+        await authClient.signIn.email(
+            {
+                email: formData.email,
+                password: formData.password,
+            },
+            {
+                onSuccess: () => {
+                    console.log("Sign in successful");
+                    router.push("/");
+                },
+                onError: (ctx) => {
+                    toast({
+                        variant: "destructive",
+                        title: "Invalid credentials",
+                        description: ctx.error.message,
+                    });
+                },
+            }
+        );
     };
 
     return (
