@@ -22,6 +22,7 @@
         "@radix-ui/react-toast": "^1.2.4",
         "@repo/ui": "*",
         "better-auth": "^1.1.15",
+        "better-auth/react": "^1.1.15",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "framer-motion": "^11.18.1",

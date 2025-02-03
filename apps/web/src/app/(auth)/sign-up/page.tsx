@@ -14,7 +14,8 @@ import {
     FormLabel,
     FormMessage,
 } from "../../../components/ui/form";
-import { signIn } from "../../../lib/auth-client";
+import { authClient } from "../../../lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
     name: z.string().nonempty(),
@@ -23,6 +24,8 @@ const formSchema = z.object({
 });
 
 export default function SignUp() {
+    const router = useRouter();
+
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -31,6 +34,24 @@ export default function SignUp() {
             password: "",
         },
     });
+
+    const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+        await authClient.signUp.email(
+            {
+                email: formData.email,
+                password: formData.password,
+                name: formData.name,
+            },
+            {
+                onSuccess: () => {
+                    router.push("/");
+                },
+                onError: (ctx) => {
+                    alert(ctx.error.message);
+                },
+            }
+        );
+    };
 
     return (
         <div className="h-full w-full flex flex-col justify-center space-y-8">

@@ -8,6 +8,7 @@
         "allowJs": true,
         "jsx": "preserve",
         "noEmit": true,
-        "strict": false
+        "strict": true,
+        "noImplicitAny": false
     }
 }

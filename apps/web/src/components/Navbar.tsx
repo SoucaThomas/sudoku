@@ -3,7 +3,7 @@
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Moon, Sun, Trash, User } from "lucide-react";
+import { Moon, Sun, Trash } from "lucide-react";
 import { useRoomStore, UserProvider } from "../lib/utils";
 import { Home, Menu, Pause, Play, X, Clipboard } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
@@ -11,16 +11,20 @@ import { CardContent, CardTitle } from "./ui/card";
 import SettingsComponent from "./settingsComponent";
 import { clearBoard } from "../actions/room";
 import ColorSelectorDialog from "./ColorSelectorDialog";
+import { authClient } from "../lib/auth-client";
 
 export default function Navbar() {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const { room, startStopGame } = useRoomStore();
+    const user = authClient.useSession();
 
     useEffect(() => {
         setMounted(true);
-    }, []);
+
+        console.log(user);
+    }, [user]);
 
     if (!mounted) {
         return null;
