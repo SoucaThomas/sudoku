@@ -16,6 +16,7 @@ import {
 } from "../../../components/ui/form";
 import { authClient } from "../../../lib/auth-client";
 import { useRouter } from "next/navigation";
+import { toast } from "../../../hooks/use-toast";
 
 const formSchema = z.object({
     name: z.string().nonempty(),
@@ -47,7 +48,11 @@ export default function SignUp() {
                     router.push("/");
                 },
                 onError: (ctx) => {
-                    alert(ctx.error.message);
+                    toast({
+                        variant: "destructive",
+                        title: "Invalid credentials",
+                        description: ctx.error.message,
+                    });
                 },
             }
         );
