@@ -14,9 +14,9 @@ import {
     FormLabel,
     FormMessage,
 } from "../../../components/ui/form";
-import { authClient } from "../../../lib/auth-client";
-import { useRouter } from "next/navigation";
 import { toast } from "../../../hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../../../hooks/useAuth";
 
 const formSchema = z.object({
     name: z.string().nonempty(),
@@ -25,7 +25,7 @@ const formSchema = z.object({
 });
 
 export default function SignUp() {
-    const router = useRouter();
+    const { signUp } = useAuth();
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -37,25 +37,7 @@ export default function SignUp() {
     });
 
     const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-        await authClient.signUp.email(
-            {
-                email: formData.email,
-                password: formData.password,
-                name: formData.name,
-            },
-            {
-                onSuccess: () => {
-                    router.push("/");
-                },
-                onError: (ctx) => {
-                    toast({
-                        variant: "destructive",
-                        title: "Invalid credentials",
-                        description: ctx.error.message,
-                    });
-                },
-            }
-        );
+        signUp(formData.email, formData.password, formData.name);
     };
 
     return (

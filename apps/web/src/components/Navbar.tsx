@@ -11,20 +11,22 @@ import { CardContent, CardTitle } from "./ui/card";
 import SettingsComponent from "./settingsComponent";
 import { clearBoard } from "../actions/room";
 import ColorSelectorDialog from "./ColorSelectorDialog";
-import { authClient } from "../lib/auth-client";
+import { useAuth } from "../hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const { room, startStopGame } = useRoomStore();
-    const user = authClient.useSession();
+    const { session, user } = useAuth();
+    const router = useRouter();
 
     useEffect(() => {
         setMounted(true);
 
-        console.log(user);
-    }, [user]);
+        console.log("update here", session);
+    }, [session]);
 
     if (!mounted) {
         return null;
@@ -106,6 +108,26 @@ export default function Navbar() {
                     </PopoverContent>
                 </Popover>
             </div>
+            {user ? (
+                <Button
+                    variant="outline"
+                    onClick={() => {
+                        router.push("/sign-up");
+                    }}
+                >
+                    Sign-up
+                </Button>
+            ) : (
+                <Button
+                    variant="outline"
+                    onClick={() => {
+                        router.push("/sign-in");
+                    }}
+                >
+                    Sign-out
+                </Button>
+            )}
+            {session?.data?.user.isAnonymous ? "Anonymous" : user?.name}
             <Button
                 variant={"outline"}
                 onClick={() => {

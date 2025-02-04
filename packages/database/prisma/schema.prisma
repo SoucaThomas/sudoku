@@ -54,6 +54,7 @@ model User {
   image         String?
   createdAt     DateTime
   updatedAt     DateTime
+  isAnonymous   Boolean?
   sessions      Session[]
   accounts      Account[]
 
