@@ -45,7 +45,6 @@ model Board {
   roomId String @unique @db.ObjectId
 }
 
-
 model User {
   id            String    @id @map("_id")
   name          String
@@ -54,7 +53,9 @@ model User {
   image         String?
   createdAt     DateTime
   updatedAt     DateTime
-  isAnonymous   Boolean?
+  isAnonymous   Boolean   @default(false)
+  gamesPlayed   Int       @default(0)
+  totalScore    Int       @default(0)
   sessions      Session[]
   accounts      Account[]
 

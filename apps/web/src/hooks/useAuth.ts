@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { authClient } from "../lib/auth-client";
 import { useRouter } from "next/navigation";
+import { User } from "../../auth";
 
 export function useAuth() {
-    const [user, setUser] = useState<any | null>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const session = authClient.useSession();
 
@@ -17,7 +18,13 @@ export function useAuth() {
             } else {
                 console.log("no session, signing in anonymously"); //* debug
                 const anonymousUser = await authClient.signIn.anonymous();
-                setUser(anonymousUser);
+                if (anonymousUser.data?.user) {
+                    setUser({
+                        ...anonymousUser.data.user,
+                        gamesPlayed: 0,
+                        totalScore: 0,
+                    });
+                }
             }
 
             setLoading(false);
@@ -38,7 +45,6 @@ export function useAuth() {
     const signIn = async (email: string, password: string) => {
         await authClient.signIn.email({ email, password });
         if (session?.data?.user) {
-            console.log("AOJSNDOJANS");
             setUser(session.data.user);
         }
     };

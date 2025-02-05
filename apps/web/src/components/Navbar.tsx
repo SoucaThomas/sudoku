@@ -127,7 +127,8 @@ export default function Navbar() {
                     Sign-out
                 </Button>
             )}
-            {session?.data?.user.isAnonymous ? "Anonymous" : user?.name}
+            {/* {user ? "Welcome " + user.name : "Welcome Guest"} */}
+            {user && user.gamesPlayed}
             <Button
                 variant={"outline"}
                 onClick={() => {
