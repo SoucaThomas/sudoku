@@ -11,7 +11,7 @@ import { CardContent, CardTitle } from "./ui/card";
 import SettingsComponent from "./settingsComponent";
 import { clearBoard } from "../actions/room";
 import ColorSelectorDialog from "./ColorSelectorDialog";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../hooks/AuthProvider";
 import { useRouter } from "next/navigation";
 
 export default function Navbar() {
@@ -24,8 +24,6 @@ export default function Navbar() {
 
     useEffect(() => {
         setMounted(true);
-
-        console.log("update here", session);
     }, [session]);
 
     if (!mounted) {

@@ -1,0 +1,83 @@
+"use client";
+
+import { createContext, useContext, useEffect, useState } from "react";
+import { authClient } from "../lib/auth-client";
+import { User, Session } from "../../auth";
+
+interface AuthContextType {
+    user: User | null;
+    session: Session | null;
+    loading: boolean;
+    signUp: (email: string, password: string, name: string) => Promise<void>;
+    signIn: (email: string, password: string) => Promise<void>;
+    signOut: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+    const [user, setUser] = useState<User | null>(null);
+    const [session, setSession] = useState<Session | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const checkSession = async () => {
+            const session = await authClient.getSession();
+            if (session?.data?.user) {
+                setUser(session.data.user);
+                setSession(session.data);
+            } else {
+                console.log("No session, signing in anonymously");
+                const anonymousUser = await authClient.signIn.anonymous();
+                if (anonymousUser.data?.user) {
+                    setUser({
+                        ...anonymousUser.data.user,
+                        gamesPlayed: 0,
+                        totalScore: 0,
+                        level: 0,
+                        experiance: 0,
+                    });
+                    setSession(session.data);
+                }
+            }
+            setLoading(false);
+        };
+
+        checkSession();
+    }, []);
+
+    const signUp = async (email: string, password: string, name: string) => {
+        await authClient.signUp.email({ email, password, name });
+        const session = await authClient.getSession();
+        if (session?.data?.user) {
+            setUser(session.data.user);
+        }
+    };
+
+    const signIn = async (email: string, password: string) => {
+        await authClient.signIn.email({ email, password });
+        const session = await authClient.getSession();
+        if (session?.data?.user) {
+            setUser(session.data.user);
+        }
+    };
+
+    const signOut = async () => {
+        await authClient.signOut();
+        setUser(null);
+    };
+
+    return (
+        <AuthContext.Provider value={{ user, loading, signUp, signIn, signOut, session }}>
+            {children}
+        </AuthContext.Provider>
+    );
+}
+
+export function useAuth() {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error("useAuth must be used within an AuthProvider");
+    }
+    return context;
+}

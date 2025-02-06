@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -5,38 +6,6 @@ generator client {
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
-}
-
-model Room {
-  roomId         String  @id @default(auto()) @map("_id") @db.ObjectId
-  roomName       String
-  roomPassword   String?
-  roomGame       String
-  roomDifficulty String
-  isRoomPublic   Boolean
-
-  roomHostId String
-  roomUsers  Json[]
-
-  isPlaying       Boolean
-  totalPlayTime   Int
-  lastTimeStarted DateTime
-
-  status String
-
-  boardId String? @unique @db.ObjectId
-}
-
-model Board {
-  boardId String @id @default(auto()) @map("_id") @db.ObjectId
-
-  serverBoard String
-  clientBoard String
-  solution    String
-  mistakes    Int
-  score       Int
-
-  roomId String @unique @db.ObjectId
 }
 
 model User {

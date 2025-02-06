@@ -31,28 +31,12 @@ export default function PlayerLobby() {
                     <div className="flex h-full flex-col justify-between">
                         <div>
                             <CardTitle>
-                                <h1 className="p-2 text-5xl sm:p-3">RT-sudoku</h1>
+                                <h1 className="p-2 text-5xl sm:p-3 font-mono">Co-op sudoku</h1>
                             </CardTitle>
                             <Separator className="my-4" />
-                            <CardHeader>
-                                <CardTitle>Profile</CardTitle>
-                            </CardHeader>
-                            <CardDescription className="flex items-center justify-between gap-2">
-                                <Input
-                                    placeholder="Enter your username"
-                                    value={userName}
-                                    onChange={(e) => {
-                                        setUserName(e.target.value);
-                                        const user = JSON.parse(
-                                            localStorage.getItem("user") || "{}"
-                                        );
-                                        user.userName = e.target.value;
-                                        localStorage.setItem("user", JSON.stringify(user));
-                                    }}
-                                />
-                            </CardDescription>
-                            <CardFooter className="h-fit py-4">
-                                <CreateRoomDialog className="mx-auto mt-2 text-lg">
+                            <CardFooter className="h-fit py-4 flex flex-row justify-center gap-6">
+                                <Button variant={"outline"}>Join a Room!</Button>
+                                <CreateRoomDialog className="text-lg">
                                     <Button variant={"default"}>Create a Room!</Button>
                                 </CreateRoomDialog>
                             </CardFooter>

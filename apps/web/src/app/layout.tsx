@@ -6,6 +6,7 @@ import { ThemeProvider } from "../components/theme-provider";
 import { Toaster } from "../components/ui/toaster";
 import Navbar from "../components/Navbar";
 import Transition from "../components/Transition";
+import { AuthProvider } from "../hooks/AuthProvider";
 
 export const metadata: Metadata = {
     title: "Sudoku Online",
@@ -23,9 +24,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <Navbar />
-                    <Transition> {children}</Transition>
-                    <Toaster />
+                    <AuthProvider>
+                        <Navbar />
+                        <Transition> {children}</Transition>
+                        <Toaster />
+                    </AuthProvider>
                 </ThemeProvider>
             </body>
         </html>

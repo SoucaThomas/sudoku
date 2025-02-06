@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { mergeAccounts, prisma } from "@repo/database";
+import { prisma } from "@repo/database";
 import { anonymous } from "better-auth/plugins";
 
 export const auth = betterAuth({
@@ -14,6 +14,14 @@ export const auth = betterAuth({
                 defaultValue: 0,
             },
             totalScore: {
+                type: "number",
+                defaultValue: 0,
+            },
+            level: {
+                type: "number",
+                defaultValue: 1,
+            },
+            experiance: {
                 type: "number",
                 defaultValue: 0,
             },
@@ -41,6 +49,8 @@ export const auth = betterAuth({
                             totalScore: (newAccount.totalScore || 0) + (oldAccount.totalScore || 0),
                             gamesPlayed:
                                 (newAccount.gamesPlayed || 0) + (oldAccount.gamesPlayed || 0),
+                            level: (newAccount.level || 0) + (oldAccount.level || 0),
+                            experiance: (newAccount.experiance || 0) + (oldAccount.experiance || 0),
                         },
                     });
 

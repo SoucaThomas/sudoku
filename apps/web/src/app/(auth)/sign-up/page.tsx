@@ -14,9 +14,8 @@ import {
     FormLabel,
     FormMessage,
 } from "../../../components/ui/form";
-import { toast } from "../../../hooks/use-toast";
+import { useAuth } from "../../../hooks/AuthProvider";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../../../hooks/useAuth";
 
 const formSchema = z.object({
     name: z.string().nonempty(),
@@ -26,6 +25,7 @@ const formSchema = z.object({
 
 export default function SignUp() {
     const { signUp } = useAuth();
+    const router = useRouter();
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -37,7 +37,11 @@ export default function SignUp() {
     });
 
     const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-        signUp(formData.email, formData.password, formData.name);
+        signUp(formData.email, formData.password, formData.name).then(() => {
+            form.reset();
+
+            router.push("/");
+        });
     };
 
     return (
