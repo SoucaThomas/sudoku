@@ -1,22 +1,28 @@
 import { InputJsonValue } from "@prisma/client/runtime/library";
 import { prisma, Room } from "./client";
 
-import { Status, User, type CreateRoomData, Board } from "@repo/socket.io-types";
+import { Status, User, type CreateRoomData, Board, GameRoom } from "@repo/socket.io-types";
 
-export function getRooms() {
-    return prisma.room.findMany();
-}
-
-export function getRoom(roomId: string) {
-    if (!/^[0-9a-fA-F]{24}$/.test(roomId)) {
-        return;
-    }
-    return prisma.room.findUnique({
-        where: {
-            roomId,
+export const getRooms = async () => {
+    const rooms = await prisma.room.findMany({
+        include: {
+            users: true,
         },
     });
-}
+
+    return rooms;
+};
+
+export const getRoom = async (roomId: string) => {
+    return await prisma.room.findUnique({
+        where: {
+            roomId: roomId,
+        },
+        include: {
+            users: true,
+        },
+    });
+};
 
 export async function create({ boards, data }: { boards: Board; data: CreateRoomData }) {
     const room = await prisma.room.create({
@@ -26,11 +32,11 @@ export async function create({ boards, data }: { boards: Board; data: CreateRoom
             roomGame: data.roomGame,
             roomDifficulty: data.roomDifficulty,
             isRoomPublic: data.isRoomPublic,
-            roomHostId: data.roomHostId || "",
-            roomUsers: [],
+
             isPlaying: false,
             totalPlayTime: 0,
             lastTimeStarted: new Date(),
+
             status: Status.PLAYING,
         },
     });
@@ -58,60 +64,70 @@ export async function create({ boards, data }: { boards: Board; data: CreateRoom
     return room;
 }
 
-export function addUserToRoom(roomId: string, userId: User["userId"]) {
-    return prisma.room.update({
-        where: {
-            roomId,
-        },
+export const addUserToRoom = async ({ userId, roomId }: { userId: string; roomId: string }) => {
+    return await prisma.room.update({
+        where: { roomId },
         data: {
-            roomUsers: {
-                push: userId,
+            users: {
+                connect: { id: userId },
             },
         },
     });
-}
+};
 
-export function removeUserFromRoom({ roomId, userId }: { roomId: string; userId: User["userId"] }) {
-    // return prisma.room.update({
-    //     where: {
-    //         roomId,
-    //     },
-    //     data: async () => {
-    //         const room = await prisma.room.findUnique({
-    //             where: { roomId },
-    //             select: { roomUsers: true },
-    //         });
-    //         return {
-    //             roomUsers: {
-    //                 set: room?.roomUsers.filter((id) => id !== userId) || [],
-    //             },
-    //         };
-    //     },
-    // });
-    return prisma.room.findUnique({
-        where: {
-            roomId,
+export function removeUserFromRoom({ roomId, user }: { roomId: string; user: User }) {
+    return prisma.room.update({
+        where: { roomId },
+        data: {
+            users: {
+                disconnect: { id: user.id },
+            },
+        },
+        include: {
+            users: true,
         },
     });
 }
 
-export function updateRoom(roomId: string, data: Room) {
-    const { roomId: _, ...updateData } = data;
+export function startStop(roomId: string, data: Room) {
     return prisma.room.update({
         where: {
             roomId,
         },
         data: {
-            ...updateData,
-            roomUsers: updateData.roomUsers as unknown as InputJsonValue[], // assuming data.roomUsers is already an array of IDs
+            isPlaying: data.isPlaying,
+            lastTimeStarted: data.lastTimeStarted,
+            totalPlayTime: data.totalPlayTime,
         },
     });
 }
 
-export function deleteRoom(roomId: string) {
-    return prisma.room.delete({
+export const updateRoom = async (room: GameRoom) => {
+    return await prisma.room.update({
         where: {
-            roomId,
+            roomId: room.roomId,
+        },
+        data: {
+            roomName: room.roomName,
+            roomPassword: room.roomPassword,
+            roomGame: room.roomGame,
+            roomDifficulty: room.roomDifficulty,
+            isRoomPublic: room.isRoomPublic,
+            isPlaying: room.isPlaying,
+            totalPlayTime: room.totalPlayTime,
+            lastTimeStarted: room.lastTimeStarted || new Date(),
+            status: room.status,
+            users: {
+                set: room.users.map((user) => ({ id: user.id })),
+            },
         },
     });
-}
+};
+
+// export function deleteRoom(roomId: string) {
+//     return prisma.room.delete({
+//         where: {
+//             roomId,
+//         },
+//     });
+// }

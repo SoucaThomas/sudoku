@@ -16,7 +16,6 @@ export interface CreateRoomData {
     roomGame: GameTypes;
     roomDifficulty: GameDifficulties;
     isRoomPublic: boolean;
-    roomHostId: string;
 }
 
 export enum SocketActionTypes {
@@ -58,15 +57,18 @@ export interface GameRoom {
     roomId: string;
     roomName: string;
     roomPassword: string | null;
-    roomGame: string;
-    roomDifficulty: string;
+    roomGame: GameTypes;
+    roomDifficulty: GameDifficulties;
     isRoomPublic: boolean;
-    roomHostId: string;
-    roomUsers: User[];
+
+    users: User[];
+
     isPlaying: boolean;
     totalPlayTime: number;
     lastTimeStarted: Date | null;
-    status: string;
+    status: Status;
+    boardId: string | null;
+    board?: Board;
 }
 
 export interface Board {
@@ -94,14 +96,14 @@ export enum MovementActions {
     DELETE = "0",
 }
 
-interface User {
+export interface User {
     id: string;
     email: string;
     emailVerified: boolean;
     name: string;
     createdAt: Date;
     updatedAt: Date;
-    image?: string | null | undefined;
+    image?: string | null | undefined | undefined;
     isAnonymous?: boolean | null | undefined;
     gamesPlayed: number;
     totalScore: number;

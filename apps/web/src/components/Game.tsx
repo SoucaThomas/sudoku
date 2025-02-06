@@ -28,13 +28,14 @@ export default function Game() {
     const sameRowCol = "bg-[hsl(var(--primary))]/30";
 
     useEffect(() => {
-        const roomId = window.location.pathname.split("/").pop();
+        const roomId = window.location.pathname.split("/").pop() || "";
         getBoard(roomId).then(
             ({ serverBoard, clientBoard }: { serverBoard: string; clientBoard: string }) => {
                 setClientBoard(clientBoard);
                 setServerBoard(serverBoard);
                 listenForMoves(setBoard);
 
+                console.log(clientBoard);
                 if (clientBoard?.length > 0) setIsLoading(false);
             }
         );
@@ -74,10 +75,10 @@ export default function Game() {
                                         <Card
                                             className={`rounded-none select-none 
                                             border border-[hsl(var(--foreground))]/30
-                                            ${boards.clientBoard[selected] === boards.clientBoard[i] && boards.clientBoard[selected] != "0" ? sameValue : ""}
+                                            ${selected !== null && boards.clientBoard[selected] === boards.clientBoard[i] && boards.clientBoard[selected] != "0" ? sameValue : ""}
                                             ${selected !== null && selected % 9 === i % 9 ? sameRowCol : ""}
-                                            ${Math.floor(selected / 9) === Math.floor(i / 9) && selected !== null ? sameRowCol : ""}
-                                            ${Math.floor(selected / 27) === Math.floor(i / 27) && Math.floor((selected % 9) / 3) === Math.floor((i % 9) / 3) && selected !== null ? sameRowCol : ""}
+                                            ${selected !== null && Math.floor(selected / 9) === Math.floor(i / 9) ? sameRowCol : ""}
+                                            ${selected !== null && Math.floor(selected / 27) === Math.floor(i / 27) && Math.floor((selected % 9) / 3) === Math.floor((i % 9) / 3) ? sameRowCol : ""}
                                             ${selected === i ? selectedCell : ""}
                                         `}
                                             key={i}

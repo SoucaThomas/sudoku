@@ -3,20 +3,19 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Room {
-  roomId         String  @id @default(auto()) @map("_id") @db.ObjectId
+  roomId         String  @id @default(uuid())
   roomName       String
   roomPassword   String?
   roomGame       String
   roomDifficulty String
   isRoomPublic   Boolean
 
-  roomHostId String
-  roomUsers  Json[]
+  users User[]
 
   isPlaying       Boolean
   totalPlayTime   Int
@@ -24,11 +23,43 @@ model Room {
 
   status String
 
-  boardId String? @unique @db.ObjectId
+  board   Board?
+  boardId String? @unique
 }
 
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  isAnonymous   Boolean? @default(false)
+  gamesPlayed   Int?     @default(0)
+  totalScore    Int?     @default(0)
+  level         Int?     @default(1)
+  experiance    Int?     @default(0)
+  color         String?  @default("blue")
+
+  room Room[]
+
+  sessions Session[]
+  accounts Account[]
+}
+
+// model RoomUser {
+//   roomId String
+//   userId String
+
+//   room Room @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
+//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//   @@id([roomId, userId])
+// }
+
 model Board {
-  boardId String @id @default(auto()) @map("_id") @db.ObjectId
+  boardId String @id @default(uuid())
 
   serverBoard String
   clientBoard String
@@ -36,47 +67,24 @@ model Board {
   mistakes    Int
   score       Int
 
-  roomId String @unique @db.ObjectId
-}
-
-model User {
-  id            String    @id @map("_id")
-  name          String
-  email         String
-  emailVerified Boolean
-  image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
-  isAnonymous   Boolean?  @default(false)
-  gamesPlayed   Int?    @default(0)
-  totalScore    Int?    @default(0)
-  level         Int?    @default(1)
-  experiance    Int?    @default(0)
-  color         String? @default("blue")
-  sessions      Session[]
-  accounts      Account[]
-
-  @@unique([email])
-  @@map("user")
+  roomId String @unique
+  room   Room   @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
 }
 
 model Session {
-  id        String   @id @map("_id")
+  id        String   @id @default(uuid())
   expiresAt DateTime
-  token     String
-  createdAt DateTime
-  updatedAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([token])
-  @@map("session")
 }
 
 model Account {
-  id                    String    @id @map("_id")
+  id                    String    @id @default(uuid())
   accountId             String
   providerId            String
   userId                String
@@ -88,19 +96,15 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-  createdAt             DateTime
-  updatedAt             DateTime
-
-  @@map("account")
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 }
 
 model Verification {
-  id         String    @id @map("_id")
+  id         String    @id @default(uuid())
   identifier String
   value      String
   expiresAt  DateTime
-  createdAt  DateTime?
-  updatedAt  DateTime?
-
-  @@map("verification")
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
 }

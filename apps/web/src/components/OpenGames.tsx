@@ -19,6 +19,7 @@ export default function OpenGames() {
         askRooms()
             .then((rooms: GameRoom[]) => {
                 setRooms(rooms);
+                console.log(rooms);
                 setLoading(false);
             })
             .catch((error) => {
@@ -73,7 +74,7 @@ export default function OpenGames() {
                                         </TableCell>
                                         <TableCell>{room.roomGame}</TableCell>
                                         <TableCell>{room.roomDifficulty}</TableCell>
-                                        <TableCell>{room.roomUsers.length}</TableCell>
+                                        <TableCell>{room.users.length}</TableCell>
                                         <TableCell>
                                             <LockKeyhole
                                                 size={15}

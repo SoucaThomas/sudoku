@@ -23,6 +23,7 @@ import Tooltip from "../../../components/Tooltip";
 import { useRoomStore } from "../../../lib/utils";
 import { listenForGameUpdate, closeListenForGameUpdate } from "../../../actions/room";
 import MobileController from "../../../components/MobileController";
+import { useAuth } from "../../../hooks/AuthProvider";
 
 const Room = () => {
     const { toast } = useToast();
@@ -34,6 +35,7 @@ const Room = () => {
     const [password, setPassword] = useState("");
     const [passwordResolve, setPasswordResolve] = useState<((value: string) => void) | null>(null);
     const router = useRouter();
+    const { user } = useAuth();
 
     useEffect(() => {
         setIsMounted(true);
@@ -41,7 +43,9 @@ const Room = () => {
         listenForGameUpdate(setRoom);
 
         const handleBeforeUnload = () => {
-            leaveRoom();
+            if (user) {
+                leaveRoom(user);
+            }
         };
 
         window.addEventListener("beforeunload", handleBeforeUnload);
@@ -69,10 +73,10 @@ const Room = () => {
     };
 
     useEffect(() => {
-        if (!isMounted || !router || !id || isJoining) return;
+        if (!isMounted || !router || !id || isJoining || !user) return;
 
         setIsJoining(true);
-        joinRoom(id, requestPassword)
+        joinRoom(id, user, requestPassword)
             .then((room: GameRoom) => {
                 setRoom(room);
                 setIsJoining(false);
@@ -89,7 +93,7 @@ const Room = () => {
                     router.push("/");
                 }
             });
-    }, [isMounted, router, id]);
+    }, [user]);
 
     return (
         <section className="h-full w-5/6 md:w- max-w-7xl mx-auto">

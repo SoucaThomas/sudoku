@@ -5,7 +5,7 @@ import { anonymous } from "better-auth/plugins";
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
-        provider: "mongodb",
+        provider: "postgresql",
     }),
     user: {
         additionalFields: {

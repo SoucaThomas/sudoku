@@ -11,7 +11,7 @@ export const Message = ({ message }: MessageProps) => {
     const { theme } = useTheme();
     return (
         <>
-            {message.messageType === "message" ? (
+            {message.messageType === "message" && !!message.user ? (
                 <Card className="p-4 flex flex-col mt-3">
                     <div className="flex items-start">
                         <CircleUser className="h-6 w-6 flex-shrink-0" />
@@ -21,8 +21,8 @@ export const Message = ({ message }: MessageProps) => {
                                 style={{
                                     color:
                                         theme === "dark"
-                                            ? ColorValues[message.user.color]?.dark
-                                            : ColorValues[message.user.color]?.light,
+                                            ? ColorValues[message.user?.color]?.dark
+                                            : ColorValues[message.user?.color]?.light,
                                 }}
                             >
                                 {message.user?.name ? message.user.name : "Anonymous"}
@@ -40,11 +40,11 @@ export const Message = ({ message }: MessageProps) => {
                             style={{
                                 color:
                                     theme === "dark"
-                                        ? ColorValues[message.user.color]?.dark
-                                        : ColorValues[message.user.color]?.light,
+                                        ? ColorValues[message.user?.color]?.dark
+                                        : ColorValues[message.user?.color]?.light,
                             }}
                         >
-                            {message.user.name ? message.user.name : "Anonymous"}
+                            {message.user?.name ? message.user.name : "Anonymous"}
                         </span>{" "}
                         {message.message}
                     </p>

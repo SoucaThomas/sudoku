@@ -2,12 +2,13 @@ import {
     CreateRoomData,
     GameRoom,
     SocketActionTypes,
-    User,
     MessageType,
     Board,
 } from "@repo/socket.io-types";
 import { io, Socket } from "socket.io-client";
 import { UserProvider, useBoardStore, useRoomStore } from "../lib/utils";
+
+import { type User } from "../../auth";
 
 let socket: Socket;
 
@@ -25,7 +26,7 @@ export const createRoom = (data: CreateRoomData) => {
     return new Promise<string>((resolve, reject) => {
         socket.emit(SocketActionTypes.create, {
             ...data,
-            roomHostId: user.userId,
+            roomHostId: user.id,
         } as CreateRoomData);
 
         socket.on(SocketActionTypes.create, (roomId: string) => {
@@ -43,11 +44,9 @@ export const createRoom = (data: CreateRoomData) => {
     });
 };
 
-export const joinRoom = async (id: string, requestPassword: () => Promise<string>) => {
+export const joinRoom = async (id: string, user: User, requestPassword: () => Promise<string>) => {
     socket = getSocket();
     return new Promise<GameRoom>((resolve, reject) => {
-        const user = JSON.parse(localStorage.getItem("user") || "{}") as User;
-
         socket.emit(SocketActionTypes.join, id, user);
 
         const onJoinSuccess = (room: GameRoom) => {
@@ -120,7 +119,6 @@ export const listenForMessages = (addMessage: (message: MessageType) => void) =>
 
     socket.on(SocketActionTypes.join, () => {
         addMessage({
-            user: { userName: "System" },
             message: "- Welcome to the chat!",
             time: new Date().toLocaleTimeString(),
             messageType: "system",
@@ -175,13 +173,9 @@ export const closeUserListener = () => {
     socket.off(SocketActionTypes.leave);
 };
 
-export const leaveRoom = () => {
+export const leaveRoom = (user: User) => {
     socket = getSocket();
-    socket.emit(
-        SocketActionTypes.leave,
-        useRoomStore.getState().room.roomId,
-        new UserProvider().user
-    );
+    socket.emit(SocketActionTypes.leave, useRoomStore.getState().room.roomId, user);
 };
 
 export const askRooms = () => {
@@ -230,6 +224,7 @@ export const closeListenForGameUpdate = () => {
 
 export const getBoard = async (roomId: string) => {
     socket = getSocket();
+    console.log("GET BOARD");
     return new Promise<{ serverBoard: string; clientBoard: string }>((resolve) => {
         socket.emit(SocketActionTypes.getBoard, roomId);
 

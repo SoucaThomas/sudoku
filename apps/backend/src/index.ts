@@ -9,6 +9,7 @@ import {
     User,
     MessageType,
     Status,
+    GameRoom,
 } from "@repo/socket.io-types";
 
 import { getSudoku } from "sudoku-gen";
@@ -17,11 +18,12 @@ import {
     getRoom,
     addUserToRoom,
     removeUserFromRoom,
-    deleteRoom,
     getRooms,
-    updateRoom,
+    // deleteRoom,
+    startStop,
     getBoard,
     updateBoard,
+    updateRoom,
 } from "@repo/database";
 
 const app = express();
@@ -36,7 +38,7 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket: Socket) => {
-    console.log("Number of connected sockets:", io.engine.clientsCount);
+    console.log("New connection", socket.id);
 
     socket.on(SocketActionTypes.create, async (data: CreateRoomData) => {
         const validDifficulties = ["easy", "medium", "hard", "expert"];
@@ -44,7 +46,6 @@ io.on("connection", (socket: Socket) => {
             ? data.roomDifficulty
             : "easy";
         const sudoku = getSudoku(difficulty);
-
         const boards = {
             serverBoard: sudoku.puzzle
                 .split("")
@@ -61,31 +62,29 @@ io.on("connection", (socket: Socket) => {
 
         const room = await create({ data, boards });
 
-        socket.emit(SocketActionTypes.create, room.roomId);
+        console.log("Created room", room.roomId);
 
+        socket.emit(SocketActionTypes.create, room.roomId);
         // socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values())); //! TODO CALL THE PRISMA FUNCTION TO GET ALL THE ROOMS
     });
 
     socket.on(SocketActionTypes.join, async (roomId: string, user: User) => {
+        console.log("Join request", roomId, user.id);
         const room = await getRoom(roomId);
 
-        if (user.userName === "") {
-            user.userName = "Guest";
-        }
-
         if (!room) {
+            console.log("Room not found");
             socket.emit(SocketActionTypes.joinFailed, "Room not found");
             return;
         }
-
         if (!room.isRoomPublic) {
+            console.log("Room is private");
             socket.emit(SocketActionTypes.roomPrivate);
             return;
         }
-
         socket.join(roomId);
-        const r = await addUserToRoom(roomId, user.userId); //! TODO Anonymous user
-
+        await addUserToRoom({ userId: user.id, roomId: roomId });
+        console.log("Successfully joined room", roomId);
         socket.emit(SocketActionTypes.join, room);
         // socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values())); //! TODO CALL THE PRISMA FUNCTION TO GET ALL THE ROOMS
     });
@@ -93,50 +92,50 @@ io.on("connection", (socket: Socket) => {
     socket.on(
         SocketActionTypes.joinWithPassword,
         async (roomId: string, user: User, password: string) => {
+            console.log("Join with password request", roomId, user.id);
             const room = await getRoom(roomId);
+
             if (!room) {
-                socket.emit(SocketActionTypes.joinFailed);
+                console.log("Room not found");
+                socket.emit(SocketActionTypes.joinFailed, "Room not found");
                 return;
             }
-
             if (room.roomPassword !== password) {
+                console.log("Invalid password");
                 socket.emit(SocketActionTypes.joinFailed, "Invalid password");
                 return;
             }
-
-            const roomData = {
-                ...room,
-                roomHost: room.roomHostId === user.userId ? room.roomHostId : undefined,
-            };
-
             socket.join(roomId);
+            await addUserToRoom({ userId: user.id, roomId: roomId });
+            console.log("Successfully joined room with password", room);
             socket.emit(SocketActionTypes.join, room);
             // socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values())); //! TODO CALL THE PRISMA FUNCTION TO GET ALL THE ROOMS
         }
     );
-
     socket.on(SocketActionTypes.message, (message: MessageType) => {
         socket.to(message.roomId).emit(SocketActionTypes.message, message);
     });
 
-    socket.on(SocketActionTypes.leave, async (roomId: string, user: User) => {
-        const room = await getRoom(roomId);
-        if (!room) {
-            socket.emit(SocketActionTypes.leaveFailed);
-            return;
-        }
+    //! we wont get user because the provider will be null when we are getting the request
+    // socket.on(SocketActionTypes.leave, async (roomId: string, user: User) => {
+    //     console.log(roomId, user);
 
-        let newRoom = await removeUserFromRoom({ roomId, userId: user.userId });
+    //     const room = await getRoom(roomId);
+    //     if (!room) {
+    //         socket.emit(SocketActionTypes.leaveFailed);
+    //         return;
+    //     }
+    //     let newRoom = await removeUserFromRoom({ roomId, user: user });
 
-        if (newRoom?.roomUsers.length === 0) {
-            await deleteRoom(roomId);
-        }
-
-        socket.to(roomId).emit(SocketActionTypes.leave, user);
-        socket.leave(roomId);
-        socket.emit(SocketActionTypes.update, room);
-        // socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values())); //! TODO CALL THE PRISMA FUNCTION TO GET ALL THE ROOMS
-    });
+    //     console.log("User left", newRoom, user.id);
+    //     // if (newRoom?.roomUsers.length === 0) {
+    //     //     await deleteRoom(roomId);
+    //     // }
+    //     socket.to(roomId).emit(SocketActionTypes.leave, user);
+    //     socket.leave(roomId);
+    //     socket.emit(SocketActionTypes.update, room);
+    //     // socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values())); //! TODO CALL THE PRISMA FUNCTION TO GET ALL THE ROOMS
+    // });
 
     socket.on(SocketActionTypes.askRooms, async () => {
         let rooms = await getRooms();
@@ -148,17 +147,15 @@ io.on("connection", (socket: Socket) => {
         if (!room) {
             return;
         }
-
+        console.log("Start/Stop", room.isPlaying);
         const date = new Date();
-
         room.isPlaying = !room.isPlaying;
         if (room.isPlaying) {
             room.lastTimeStarted = date;
         } else {
             room.totalPlayTime += date.getTime() - room.lastTimeStarted.getTime();
         }
-        const newRoom = await updateRoom(roomId, room);
-
+        const newRoom = await startStop(roomId, room);
         socket.to(roomId).emit(SocketActionTypes.update, newRoom);
         socket.emit(SocketActionTypes.update, newRoom);
     });
@@ -167,9 +164,13 @@ io.on("connection", (socket: Socket) => {
         const room = await getRoom(roomId);
         if (!room) return;
 
-        const board = await getBoard(room.boardId ?? "");
-        if (!board) return;
+        console.log("GET BOARD", room.boardId);
 
+        const board = await getBoard(room.boardId ?? "");
+
+        console.log(board);
+
+        if (!board) return;
         socket.emit(SocketActionTypes.getBoard, {
             serverBoard: board?.serverBoard,
             clientBoard: board?.clientBoard,
@@ -181,13 +182,10 @@ io.on("connection", (socket: Socket) => {
         async ({ roomId, index, value }: { roomId: string; index: number; value: string }) => {
             const room = await getRoom(roomId);
             const board = await getBoard(room?.boardId ?? "");
-
             if (!room || !board) {
                 return;
             }
-
             if (board.serverBoard[index] !== "0") return;
-
             if (value === "0") {
                 board.clientBoard =
                     board.clientBoard.substring(0, index) +
@@ -218,16 +216,13 @@ io.on("connection", (socket: Socket) => {
                     ...boardWithoutSolution,
                 });
             }
-
             if (board.mistakes >= 3) {
                 console.log("LOSE");
-
                 room.isPlaying = false;
                 const date = new Date();
                 room.totalPlayTime += date.getTime() - room.lastTimeStarted.getTime();
                 room.status = Status.LOST;
-
-                await updateRoom(roomId, room);
+                await updateRoom(room as GameRoom);
                 io.to(roomId).emit(SocketActionTypes.update, room);
                 io.in(roomId).emit(SocketActionTypes.lose, {
                     serverBoard: board.serverBoard,
@@ -236,14 +231,12 @@ io.on("connection", (socket: Socket) => {
                     score: board.score,
                 });
             }
-
             if (board.clientBoard === board.solution) {
                 room.isPlaying = false;
                 const date = new Date();
                 room.totalPlayTime += date.getTime() - room.lastTimeStarted.getTime();
                 room.status = Status.WON;
-
-                await updateRoom(roomId, room);
+                await updateRoom(room as GameRoom);
                 io.to(roomId).emit(SocketActionTypes.update, room);
                 io.in(roomId).emit(SocketActionTypes.win, {
                     serverBoard: board.serverBoard,
@@ -259,7 +252,6 @@ io.on("connection", (socket: Socket) => {
         const room = await getRoom(roomId);
         const board = await getBoard(room?.boardId ?? "");
         if (!board) return;
-
         board.clientBoard = board.serverBoard;
         board.mistakes = 0;
         board.score = 0;
@@ -270,7 +262,6 @@ io.on("connection", (socket: Socket) => {
             score: board.score,
         });
     });
-
     socket.on(SocketActionTypes.updateUser, ({ roomId, user }: { roomId: string; user: User }) => {
         console.log(roomId, user);
         socket.emit(SocketActionTypes.updateUser);
