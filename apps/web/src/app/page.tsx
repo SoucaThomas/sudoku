@@ -3,6 +3,7 @@
 import PlayerLobby from "../components/PlayerLobby";
 import OpenGames from "../components/OpenGames";
 import { motion } from "framer-motion";
+import UserStats from "../components/UserStats";
 
 export default function HomePage() {
     return (
@@ -35,9 +36,9 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: -25 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.4 }}
-                className="order-4 hidden h-full w-full bg-pink-400 md:col-span-2 md:row-span-2 md:block lg:order-3 lg:col-span-2 lg:row-span-6 lg:block"
+                className="order-4 hidden h-full w-full md:col-span-2 md:row-span-2 md:block lg:order-3 lg:col-span-2 lg:row-span-6 lg:block"
             >
-                stats/ad
+                <UserStats />
             </motion.div>
         </div>
     );

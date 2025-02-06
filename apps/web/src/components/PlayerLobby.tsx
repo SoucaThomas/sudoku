@@ -17,8 +17,6 @@ import { GameTypes } from "@repo/socket.io-types";
 import { useEffect, useState } from "react";
 import { UserProvider } from "../lib/utils";
 
-import ColorSelectorDialog from "./ColorSelectorDialog";
-
 export default function PlayerLobby() {
     const [userName, setUserName] = useState("");
 
@@ -52,7 +50,6 @@ export default function PlayerLobby() {
                                         localStorage.setItem("user", JSON.stringify(user));
                                     }}
                                 />
-                                <ColorSelectorDialog />
                             </CardDescription>
                             <CardFooter className="h-fit py-4">
                                 <CreateRoomDialog className="mx-auto mt-2 text-lg">

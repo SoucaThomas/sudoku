@@ -10,12 +10,14 @@ import { updateRoomUser } from "../actions/room";
 
 interface ColorSelectorDialogProps {
     isDialogOpen?: boolean;
+    classname?: string;
     setIsDialogOpen?: (isDialogOpen: boolean) => void;
 }
 
 export default function ColorSelectorDialog({
     isDialogOpen,
     setIsDialogOpen,
+    classname,
 }: ColorSelectorDialogProps) {
     const user = new UserProvider().getUser();
     const { theme } = useTheme();
@@ -48,7 +50,7 @@ export default function ColorSelectorDialog({
             }}
         >
             <DialogTrigger asChild>
-                <UserPen className="h-6 w-6" />
+                <UserPen className={`h-6 w-6 ${classname}`} />
             </DialogTrigger>
             <DialogContent>
                 <DialogTitle>Edit Profile</DialogTitle>
