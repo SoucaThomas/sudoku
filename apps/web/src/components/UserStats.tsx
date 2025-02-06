@@ -2,15 +2,15 @@ import { User } from "lucide-react";
 import { useAuth } from "../hooks/AuthProvider";
 import { Card, CardContent, CardFooter } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import ColorSelectorDialog from "./ColorSelectorDialog";
 import { Skeleton } from "./ui/skeleton";
 import { Progress } from "./ui/progress";
 import GradientText from "./ui/GradientText";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import EditUserProfile from "./EditUserProfile";
 
 export default function UserStats() {
-    const { loading, user } = useAuth();
+    const { loading, user, signOut } = useAuth();
     const router = useRouter();
 
     return (
@@ -36,7 +36,7 @@ export default function UserStats() {
                     </Avatar>
                 </div>
                 <div className="flex flex-col w-full md:mt-0 lg:mt-4">
-                    <ColorSelectorDialog classname="self-end" />
+                    <EditUserProfile className="self-end" />
                     <div className="flex flex-row w-full justify-between">
                         {loading ? (
                             <Skeleton className="h-6 w-[80%]"></Skeleton>
@@ -73,19 +73,37 @@ export default function UserStats() {
                     </div>
                 </div>
             </CardContent>
-            <CardFooter className="mt-auto self-end">
-                {!loading && (
-                    <div className="flex flex-col items-center w-full">
-                        <p className="text-lg mb-4 text-center">You are not logged in.</p>
-                        <Button
-                            onClick={() => {
-                                router.push("/sign-up");
-                            }}
-                        >
-                            Create Account!
-                        </Button>
-                    </div>
-                )}
+            <CardFooter className="w-full mt-auto self-end">
+                <div className="flex flex-col justify-center items-center w-full">
+                    {!loading && (user?.isAnonymous || user?.isAnonymous === undefined) ? (
+                        <>
+                            <p className="text-lg mb-4 text-center">You are not logged in.</p>
+                            <Button
+                                onClick={() => {
+                                    router.push("/sign-in");
+                                }}
+                                variant={"secondary"}
+                                className="w-full"
+                            >
+                                Sign In!
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button
+                                onClick={() => {
+                                    signOut();
+
+                                    router.refresh();
+                                }}
+                                variant={"secondary"}
+                                className="w-full"
+                            >
+                                Sign out
+                            </Button>
+                        </>
+                    )}
+                </div>
             </CardFooter>
         </Card>
     );

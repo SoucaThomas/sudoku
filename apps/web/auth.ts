@@ -25,6 +25,10 @@ export const auth = betterAuth({
                 type: "number",
                 defaultValue: 0,
             },
+            color: {
+                type: "string",
+                defaultValue: "blue",
+            },
         },
     },
     emailAndPassword: {
@@ -49,8 +53,8 @@ export const auth = betterAuth({
                             totalScore: (newAccount.totalScore || 0) + (oldAccount.totalScore || 0),
                             gamesPlayed:
                                 (newAccount.gamesPlayed || 0) + (oldAccount.gamesPlayed || 0),
-                            level: (newAccount.level || 0) + (oldAccount.level || 0),
-                            experiance: (newAccount.experiance || 0) + (oldAccount.experiance || 0),
+                            color: oldAccount.color || newAccount.color,
+                            isAnonymous: false,
                         },
                     });
 

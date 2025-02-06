@@ -11,20 +11,26 @@ type User = {
     isAnonymous?: boolean | null | undefined;
     gamesPlayed: number;
     totalScore: number;
+    level: number;
+    experiance: number;
+    color: string;
 };
 
-export const mergeAccounts = (newAccount: User, oldAccount: User) => {
-    console.log("Merging accounts", newAccount, oldAccount);
-    console.log(newAccount);
-    console.log(oldAccount);
-
-    prisma.user.update({
+export const prismaUpdateUser = (updatedUser: User) => {
+    return prisma.user.update({
         where: {
-            id: newAccount.id,
+            id: updatedUser.id,
         },
         data: {
-            totalScore: newAccount.totalScore,
-            gamesPlayed: newAccount.gamesPlayed,
+            email: updatedUser.email,
+            emailVerified: updatedUser.emailVerified,
+            name: updatedUser.name,
+            image: updatedUser.image,
+            gamesPlayed: updatedUser.gamesPlayed,
+            totalScore: updatedUser.totalScore,
+            level: updatedUser.level,
+            experiance: updatedUser.experiance,
+            color: updatedUser.color,
         },
     });
 };

@@ -94,11 +94,20 @@ export enum MovementActions {
     DELETE = "0",
 }
 
-export interface User {
-    userId: string;
-    userName: string;
-    userAvatar?: string;
-    color?: string;
+interface User {
+    id: string;
+    email: string;
+    emailVerified: boolean;
+    name: string;
+    createdAt: Date;
+    updatedAt: Date;
+    image?: string | null | undefined;
+    isAnonymous?: boolean | null | undefined;
+    gamesPlayed: number;
+    totalScore: number;
+    level: number;
+    experiance: number;
+    color: Colors;
 }
 
 export interface MessageType {

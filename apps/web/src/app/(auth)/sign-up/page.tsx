@@ -38,8 +38,6 @@ export default function SignUp() {
 
     const onSubmit = async (formData: z.infer<typeof formSchema>) => {
         signUp(formData.email, formData.password, formData.name).then(() => {
-            form.reset();
-
             router.push("/");
         });
     };

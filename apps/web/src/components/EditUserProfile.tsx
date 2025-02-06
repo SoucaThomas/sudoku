@@ -1,43 +1,54 @@
 import { useRef, useState } from "react";
 import { UserPen } from "lucide-react";
 import { ColorValues, MessageType } from "@repo/socket.io-types";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "./ui/dialog";
 import Message from "./Message";
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
-import { UserProvider } from "../lib/utils";
-import { updateRoomUser } from "../actions/room";
+import { useAuth } from "../hooks/AuthProvider";
+import { type User } from "../../auth";
+import { Input } from "./ui/input";
+import { z } from "zod";
 
-interface ColorSelectorDialogProps {
+interface EditUserProfileProps {
     isDialogOpen?: boolean;
-    classname?: string;
+    className?: string;
     setIsDialogOpen?: (isDialogOpen: boolean) => void;
 }
 
-export default function ColorSelectorDialog({
+const zodSchema = z.object({
+    name: z.string(),
+    color: z.string(),
+});
+
+export default function EditUserProfile({
     isDialogOpen,
     setIsDialogOpen,
-    classname,
-}: ColorSelectorDialogProps) {
-    const user = new UserProvider().getUser();
+    className,
+}: EditUserProfileProps) {
+    const { user, updateUser } = useAuth();
+    const [username, setUsername] = useState(user?.name);
+    const [selectedColor, setSelectedColor] = useState(user?.color);
     const { theme } = useTheme();
-    const [refresh, setRefresh] = useState(0);
     const messageRef = useRef<HTMLDivElement>(null);
 
-    const refreshMessage = () => {
-        setRefresh((prev) => prev + 1);
-    };
+    const saveUser = () => {
+        const input = { name: username, color: selectedColor };
+        console.log(input);
+        const userInput = zodSchema.safeParse(input);
 
-    const updateUser = (color: string) => {
+        if (!userInput.success) {
+            console.error(userInput.error);
+            return;
+        }
+
         const updatedUser = {
             ...user,
-            color: color,
-        };
+            name: userInput.data.name,
+            color: userInput.data.color,
+        } as User;
 
-        new UserProvider().setUser(updatedUser);
-        refreshMessage();
-
-        updateRoomUser();
+        updateUser(updatedUser as User);
     };
 
     return (
@@ -50,20 +61,32 @@ export default function ColorSelectorDialog({
             }}
         >
             <DialogTrigger asChild>
-                <UserPen className={`h-6 w-6 ${classname}`} />
+                <UserPen className={`h-6 w-6 ${className}`} />
             </DialogTrigger>
             <DialogContent>
                 <DialogTitle>Edit Profile</DialogTitle>
+
+                <h1>Username</h1>
+                <Input
+                    disabled={!!user?.isAnonymous && true}
+                    value={username}
+                    onChange={(e) => {
+                        setUsername(e.target.value);
+                    }}
+                />
+
+                <h1 className="-mb-3 ">User Color</h1>
                 <div ref={messageRef}>
                     <Message
                         message={
                             {
-                                message: `Hello! I'm ${user?.userName}`,
+                                message: `Hello! I'm ${user?.name ?? "Guest"}`,
                                 user: user,
                             } as MessageType
                         }
                     />
                 </div>
+
                 <div className="flex flex-wrap gap-2">
                     {Object.keys(ColorValues).map((color, index) => {
                         return (
@@ -77,12 +100,21 @@ export default function ColorSelectorDialog({
                                             : ColorValues[color].light,
                                 }}
                                 onClick={() => {
-                                    updateUser(color);
+                                    setSelectedColor(color);
                                 }}
                             ></Button>
                         );
                     })}
                 </div>
+                <DialogFooter>
+                    <Button
+                        onClick={() => {
+                            saveUser();
+                        }}
+                    >
+                        Save
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

@@ -8,6 +8,7 @@ interface AuthContextType {
     user: User | null;
     session: Session | null;
     loading: boolean;
+    updateUser: (user: User) => Promise<void>;
     signUp: (email: string, password: string, name: string) => Promise<void>;
     signIn: (email: string, password: string) => Promise<void>;
     signOut: () => Promise<void>;
@@ -26,8 +27,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (session?.data?.user) {
                 setUser(session.data.user);
                 setSession(session.data);
+
+                setLoading(false);
             } else {
-                console.log("No session, signing in anonymously");
                 const anonymousUser = await authClient.signIn.anonymous();
                 if (anonymousUser.data?.user) {
                     setUser({
@@ -36,13 +38,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         totalScore: 0,
                         level: 0,
                         experiance: 0,
+                        color: "blue",
                     });
                     setSession(session.data);
                 }
+                setLoading(false);
             }
-            setLoading(false);
         };
-
         checkSession();
     }, []);
 
@@ -63,12 +65,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const signOut = async () => {
+        if (!user) return;
+
+        setLoading(true);
         await authClient.signOut();
-        setUser(null);
+
+        const session = await authClient.getSession();
+        const anonymousUser = await authClient.signIn.anonymous();
+        if (anonymousUser.data?.user) {
+            setUser({
+                ...anonymousUser.data.user,
+                gamesPlayed: 0,
+                totalScore: 0,
+                level: 0,
+                experiance: 0,
+                color: "blue",
+            });
+            setSession(session.data);
+        }
+
+        setLoading(false);
+    };
+
+    const updateUser = async (user: User) => {
+        console.log("Updating user", user.id);
+
+        const { email, ...updatedUser } = user;
+
+        setUser(user);
+        await authClient.updateUser(updatedUser);
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, signUp, signIn, signOut, session }}>
+        <AuthContext.Provider
+            value={{ user, updateUser, loading, signUp, signIn, signOut, session }}
+        >
             {children}
         </AuthContext.Provider>
     );

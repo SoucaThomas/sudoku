@@ -25,7 +25,7 @@ export const Message = ({ message }: MessageProps) => {
                                             : ColorValues[message.user.color]?.light,
                                 }}
                             >
-                                {message.user?.userName ? message.user.userName : "Guest"}
+                                {message.user?.name ? message.user.name : "Anonymous"}
                             </p>
                             <p className="text-sm break-words max-w-full whitespace-pre-wrap">
                                 {message.message}
@@ -44,7 +44,7 @@ export const Message = ({ message }: MessageProps) => {
                                         : ColorValues[message.user.color]?.light,
                             }}
                         >
-                            {message.user.userName ? message.user.userName : "New User"}
+                            {message.user.name ? message.user.name : "Anonymous"}
                         </span>{" "}
                         {message.message}
                     </p>

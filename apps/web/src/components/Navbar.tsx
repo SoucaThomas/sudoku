@@ -10,7 +10,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import { CardContent, CardTitle } from "./ui/card";
 import SettingsComponent from "./settingsComponent";
 import { clearBoard } from "../actions/room";
-import ColorSelectorDialog from "./ColorSelectorDialog";
+import ColorSelectorDialog from "./EditUserProfile";
 import { useAuth } from "../hooks/AuthProvider";
 import { useRouter } from "next/navigation";
 

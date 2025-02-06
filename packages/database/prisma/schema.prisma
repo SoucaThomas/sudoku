@@ -47,11 +47,12 @@ model User {
   image         String?
   createdAt     DateTime
   updatedAt     DateTime
-  isAnonymous   Boolean?
-  gamesPlayed   Int?
-  totalScore    Int?
-  level         Int?
-  experiance    Int?
+  isAnonymous   Boolean?  @default(false)
+  gamesPlayed   Int?    @default(0)
+  totalScore    Int?    @default(0)
+  level         Int?    @default(1)
+  experiance    Int?    @default(0)
+  color         String? @default("blue")
   sessions      Session[]
   accounts      Account[]
 
