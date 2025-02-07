@@ -8,10 +8,18 @@ import GradientText from "./ui/GradientText";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import EditUserProfile from "./EditUserProfile";
+import { levelExperiance } from "@repo/socket.io-types";
+import { useEffect } from "react";
 
 export default function UserStats() {
-    const { loading, user, signOut } = useAuth();
+    const { loading, user, signOut, isLoggedIn } = useAuth();
     const router = useRouter();
+
+    useEffect(() => {
+        console.log("user", user?.level);
+        console.log("need", levelExperiance(user?.level ?? 0));
+        console.log("user", user?.experiance);
+    });
 
     return (
         <Card className="w-full h-full overflow-hidden flex flex-col">
@@ -68,14 +76,20 @@ export default function UserStats() {
                         {loading ? (
                             <Skeleton className="h-4 w-full"></Skeleton>
                         ) : (
-                            <Progress value={user?.experiance ?? 10} />
+                            <Progress
+                                value={
+                                    ((user?.experiance || 0) /
+                                        levelExperiance((user?.level ?? 0) + 1)) *
+                                    100
+                                }
+                            />
                         )}
                     </div>
                 </div>
             </CardContent>
             <CardFooter className="w-full mt-auto self-end">
                 <div className="flex flex-col justify-center items-center w-full">
-                    {!loading && (user?.isAnonymous || user?.isAnonymous === undefined) ? (
+                    {!loading && !isLoggedIn ? (
                         <>
                             <p className="text-lg mb-4 text-center">You are not logged in.</p>
                             <Button

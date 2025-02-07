@@ -8,6 +8,7 @@ interface AuthContextType {
     user: User | null;
     session: Session | null;
     loading: boolean;
+    isLoggedIn: boolean;
     updateUser: (user: User) => Promise<void>;
     signUp: (email: string, password: string, name: string) => Promise<void>;
     signIn: (email: string, password: string) => Promise<void>;
@@ -20,6 +21,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
         const checkSession = async () => {
@@ -29,6 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setSession(session.data);
 
                 setLoading(false);
+                setIsLoggedIn(true);
             } else {
                 const anonymousUser = await authClient.signIn.anonymous();
                 if (anonymousUser.data?.user) {
@@ -41,6 +44,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         color: "blue",
                     });
                     setSession(session.data);
+
+                    setIsLoggedIn(false);
                 }
                 setLoading(false);
             }
@@ -53,6 +58,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const session = await authClient.getSession();
         if (session?.data?.user) {
             setUser(session.data.user);
+
+            setIsLoggedIn(true);
         }
     };
 
@@ -61,6 +68,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const session = await authClient.getSession();
         if (session?.data?.user) {
             setUser(session.data.user);
+
+            setIsLoggedIn(true);
         }
     };
 
@@ -85,6 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         setLoading(false);
+        setIsLoggedIn(false);
     };
 
     const updateUser = async (user: User) => {
@@ -98,7 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <AuthContext.Provider
-            value={{ user, updateUser, loading, signUp, signIn, signOut, session }}
+            value={{ user, updateUser, loading, signUp, signIn, signOut, session, isLoggedIn }}
         >
             {children}
         </AuthContext.Provider>

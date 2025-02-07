@@ -185,3 +185,7 @@ export const ColorValues: { [key in Colors]: { [key in ColorShades]: string } } 
         [ColorShades.DARK]: "#006666",
     },
 };
+
+export function levelExperiance(experiance: number): number {
+    return Math.floor(200 + Math.pow(experiance, 2));
+}

@@ -1,4 +1,3 @@
-import { InputJsonValue } from "@prisma/client/runtime/library";
 import { prisma, Room } from "./client";
 
 import { Status, User, type CreateRoomData, Board, GameRoom } from "@repo/socket.io-types";
@@ -44,9 +43,12 @@ export async function create({ boards, data }: { boards: Board; data: CreateRoom
     const board = await prisma.board.create({
         data: {
             roomId: room.roomId,
-            serverBoard: boards.serverBoard,
-            clientBoard: boards.clientBoard,
-            solution: boards.solution || "",
+            serverBoard: "123400",
+            clientBoard: "123400",
+            solution: "123456",
+            // serverBoard: boards.serverBoard,
+            // clientBoard: boards.clientBoard,
+            // solution: boards.solution || "",
             mistakes: 0,
             score: 0,
         },
@@ -124,10 +126,10 @@ export const updateRoom = async (room: GameRoom) => {
     });
 };
 
-// export function deleteRoom(roomId: string) {
-//     return prisma.room.delete({
-//         where: {
-//             roomId,
-//         },
-//     });
-// }
+export function deleteRoom(roomId: string) {
+    return prisma.room.delete({
+        where: {
+            roomId,
+        },
+    });
+}

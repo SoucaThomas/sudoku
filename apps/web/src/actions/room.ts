@@ -14,7 +14,8 @@ let socket: Socket;
 
 const getSocket = () => {
     if (!socket) {
-        socket = io("http://192.168.0.59:4001");
+        ///192.168.0.59
+        socket = io("http://localhost:4001");
     }
     return socket;
 };

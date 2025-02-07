@@ -10,6 +10,7 @@ import {
     MessageType,
     Status,
     GameRoom,
+    GameDifficulties,
 } from "@repo/socket.io-types";
 
 import { getSudoku } from "sudoku-gen";
@@ -19,12 +20,22 @@ import {
     addUserToRoom,
     removeUserFromRoom,
     getRooms,
-    // deleteRoom,
     startStop,
     getBoard,
     updateBoard,
     updateRoom,
+    deleteRoom,
+    updateUser,
 } from "@repo/database";
+
+const BASE_EXPERIANCE = 300;
+const validDifficulties = ["easy", "medium", "hard", "expert"];
+const DIFFICULTY_MULTIPLIERS = {
+    easy: 1,
+    MEDIUM: 1.4,
+    HARD: 1.5,
+    EXPERT: 1.6,
+};
 
 const app = express();
 
@@ -37,15 +48,16 @@ const io = new Server(server, {
     },
 });
 
+const socketToUserMap = new Map<string, User>();
+
 io.on("connection", (socket: Socket) => {
     console.log("New connection", socket.id);
 
     socket.on(SocketActionTypes.create, async (data: CreateRoomData) => {
-        const validDifficulties = ["easy", "medium", "hard", "expert"];
-        const difficulty = validDifficulties.includes(data.roomDifficulty)
-            ? data.roomDifficulty
+        const difficulty = validDifficulties.includes(data.roomDifficulty.toLowerCase())
+            ? data.roomDifficulty.toLowerCase()
             : "easy";
-        const sudoku = getSudoku(difficulty);
+        const sudoku = getSudoku(difficulty as GameDifficulties | "easy");
         const boards = {
             serverBoard: sudoku.puzzle
                 .split("")
@@ -65,7 +77,6 @@ io.on("connection", (socket: Socket) => {
         console.log("Created room", room.roomId);
 
         socket.emit(SocketActionTypes.create, room.roomId);
-        // socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values())); //! TODO CALL THE PRISMA FUNCTION TO GET ALL THE ROOMS
     });
 
     socket.on(SocketActionTypes.join, async (roomId: string, user: User) => {
@@ -84,9 +95,11 @@ io.on("connection", (socket: Socket) => {
         }
         socket.join(roomId);
         await addUserToRoom({ userId: user.id, roomId: roomId });
+
+        socketToUserMap.set(socket.id, user);
+
         console.log("Successfully joined room", roomId);
         socket.emit(SocketActionTypes.join, room);
-        // socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values())); //! TODO CALL THE PRISMA FUNCTION TO GET ALL THE ROOMS
     });
 
     socket.on(
@@ -107,35 +120,18 @@ io.on("connection", (socket: Socket) => {
             }
             socket.join(roomId);
             await addUserToRoom({ userId: user.id, roomId: roomId });
+
+            // Update the mapping
+            socketToUserMap.set(socket.id, user);
+
             console.log("Successfully joined room with password", room);
             socket.emit(SocketActionTypes.join, room);
-            // socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values())); //! TODO CALL THE PRISMA FUNCTION TO GET ALL THE ROOMS
         }
     );
+
     socket.on(SocketActionTypes.message, (message: MessageType) => {
         socket.to(message.roomId).emit(SocketActionTypes.message, message);
     });
-
-    //! we wont get user because the provider will be null when we are getting the request
-    // socket.on(SocketActionTypes.leave, async (roomId: string, user: User) => {
-    //     console.log(roomId, user);
-
-    //     const room = await getRoom(roomId);
-    //     if (!room) {
-    //         socket.emit(SocketActionTypes.leaveFailed);
-    //         return;
-    //     }
-    //     let newRoom = await removeUserFromRoom({ roomId, user: user });
-
-    //     console.log("User left", newRoom, user.id);
-    //     // if (newRoom?.roomUsers.length === 0) {
-    //     //     await deleteRoom(roomId);
-    //     // }
-    //     socket.to(roomId).emit(SocketActionTypes.leave, user);
-    //     socket.leave(roomId);
-    //     socket.emit(SocketActionTypes.update, room);
-    //     // socket.broadcast.emit(SocketActionTypes.roomUpdate, Array.from(rooms.values())); //! TODO CALL THE PRISMA FUNCTION TO GET ALL THE ROOMS
-    // });
 
     socket.on(SocketActionTypes.askRooms, async () => {
         let rooms = await getRooms();
@@ -147,7 +143,7 @@ io.on("connection", (socket: Socket) => {
         if (!room) {
             return;
         }
-        console.log("Start/Stop", room.isPlaying);
+
         const date = new Date();
         room.isPlaying = !room.isPlaying;
         if (room.isPlaying) {
@@ -168,8 +164,6 @@ io.on("connection", (socket: Socket) => {
 
         const board = await getBoard(room.boardId ?? "");
 
-        console.log(board);
-
         if (!board) return;
         socket.emit(SocketActionTypes.getBoard, {
             serverBoard: board?.serverBoard,
@@ -182,25 +176,33 @@ io.on("connection", (socket: Socket) => {
         async ({ roomId, index, value }: { roomId: string; index: number; value: string }) => {
             const room = await getRoom(roomId);
             const board = await getBoard(room?.boardId ?? "");
+
             if (!room || !board) {
                 return;
             }
+
             if (board.serverBoard[index] !== "0") return;
+
             if (value === "0") {
                 board.clientBoard =
                     board.clientBoard.substring(0, index) +
                     value +
                     board.clientBoard.substring(index + 1);
                 await updateBoard(room.boardId ?? "", board);
+
                 const { solution, ...boardWithoutSolution } = board;
+
                 io.in(roomId).emit(SocketActionTypes.move, {
                     ...boardWithoutSolution,
                 });
             } else if (board.solution && board.solution[index] !== value) {
                 board.mistakes++;
                 board.score -= 100;
+
                 await updateBoard(room.boardId ?? "", board);
+
                 const { solution, ...boardWithoutSolution } = board;
+
                 io.in(roomId).emit(SocketActionTypes.badMove, {
                     ...boardWithoutSolution,
                 });
@@ -210,19 +212,25 @@ io.on("connection", (socket: Socket) => {
                     value +
                     board.clientBoard.substring(index + 1);
                 board.score += 150;
+
                 await updateBoard(room.boardId ?? "", board);
+
                 const { solution, ...boardWithoutSolution } = board;
+
                 io.in(roomId).emit(SocketActionTypes.goodMove, {
                     ...boardWithoutSolution,
                 });
             }
             if (board.mistakes >= 3) {
-                console.log("LOSE");
                 room.isPlaying = false;
+
                 const date = new Date();
+
                 room.totalPlayTime += date.getTime() - room.lastTimeStarted.getTime();
                 room.status = Status.LOST;
+
                 await updateRoom(room as GameRoom);
+
                 io.to(roomId).emit(SocketActionTypes.update, room);
                 io.in(roomId).emit(SocketActionTypes.lose, {
                     serverBoard: board.serverBoard,
@@ -230,13 +238,38 @@ io.on("connection", (socket: Socket) => {
                     mistakes: board.mistakes,
                     score: board.score,
                 });
+
+                const totalPlayTime =
+                    typeof room.totalPlayTime === "number" ? room.totalPlayTime : 0;
+
+                const gainedExperiance = Math.floor(
+                    BASE_EXPERIANCE *
+                        DIFFICULTY_MULTIPLIERS[
+                            room.roomDifficulty as keyof typeof DIFFICULTY_MULTIPLIERS
+                        ] +
+                        (Math.max(0, 100 - (totalPlayTime / 60000) * 5) - board.mistakes * 10) * 0.3
+                );
+                console.log("Gained experiance", gainedExperiance);
+
+                for (const user of room.users) {
+                    await updateUser({
+                        user: user as User,
+                        score: board.score,
+                        totalPlayTime: room.totalPlayTime,
+                        experiance: gainedExperiance,
+                    });
+                }
             }
             if (board.clientBoard === board.solution) {
                 room.isPlaying = false;
+
                 const date = new Date();
+
                 room.totalPlayTime += date.getTime() - room.lastTimeStarted.getTime();
                 room.status = Status.WON;
+
                 await updateRoom(room as GameRoom);
+
                 io.to(roomId).emit(SocketActionTypes.update, room);
                 io.in(roomId).emit(SocketActionTypes.win, {
                     serverBoard: board.serverBoard,
@@ -244,6 +277,26 @@ io.on("connection", (socket: Socket) => {
                     mistakes: board.mistakes,
                     score: board.score,
                 });
+
+                const totalPlayTime =
+                    typeof room.totalPlayTime === "number" ? room.totalPlayTime : 0;
+
+                const gainedExperiance = Math.floor(
+                    BASE_EXPERIANCE *
+                        DIFFICULTY_MULTIPLIERS[
+                            room.roomDifficulty as keyof typeof DIFFICULTY_MULTIPLIERS
+                        ] +
+                        (Math.max(0, 100 - (totalPlayTime / 60000) * 5) - board.mistakes * 10) * 0.3
+                );
+
+                for (const user of room.users) {
+                    await updateUser({
+                        user: user as User,
+                        score: board.score,
+                        totalPlayTime: room.totalPlayTime,
+                        experiance: gainedExperiance,
+                    });
+                }
             }
         }
     );
@@ -262,12 +315,33 @@ io.on("connection", (socket: Socket) => {
             score: board.score,
         });
     });
+
     socket.on(SocketActionTypes.updateUser, ({ roomId, user }: { roomId: string; user: User }) => {
         console.log(roomId, user);
         socket.emit(SocketActionTypes.updateUser);
     });
 
-    socket.on("disconnect", () => console.log("-", socket.id));
+    socket.on("disconnect", async () => {
+        console.log("-", socket.id);
+        const user = socketToUserMap.get(socket.id);
+        if (user) {
+            const rooms = await getRooms();
+            for (const room of rooms.values()) {
+                if (room.users.some((u) => u.id === user.id)) {
+                    const newRoom = await removeUserFromRoom({ roomId: room.roomId, user });
+                    if (newRoom) {
+                        if (newRoom.users.length === 0) {
+                            await deleteRoom(newRoom.roomId);
+                        }
+                    }
+                    io.to(room.roomId).emit(SocketActionTypes.leave, user);
+                    console.log("User left", user.id, room.roomId);
+                }
+            }
+
+            socketToUserMap.delete(socket.id);
+        }
+    });
 });
 
 const port = process.env.PORT || 4001;
