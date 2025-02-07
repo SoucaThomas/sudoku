@@ -1,29 +1,13 @@
 "use client";
 
 import { Button } from "../components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "../components/ui/card";
-import { Input } from "../components/ui/input";
+import { Card, CardContent, CardFooter, CardTitle } from "../components/ui/card";
 import { Tabs } from "../components/ui/tabs";
 import { Separator } from "../components/ui/separator";
 import CreateRoomDialog from "../components/CreateRoomDialog";
 import { GameTypes } from "@repo/socket.io-types";
-import { useEffect, useState } from "react";
-import { UserProvider } from "../lib/utils";
 
 export default function PlayerLobby() {
-    const [userName, setUserName] = useState("");
-
-    useEffect(() => {
-        const user = new UserProvider().getUser();
-        setUserName(user.userName);
-    }, []);
     return (
         <Card className="h-full w-full">
             <Tabs defaultValue={GameTypes.SUDOKU} className="h-full w-full">
@@ -42,7 +26,7 @@ export default function PlayerLobby() {
                             </CardFooter>
                         </div>
                         <p className="ml-0 font-mono text-xs font-bold sm:ml-auto">
-                            version: 0.13.4
+                            version: {process.env.NEXT_PUBLIC_APP_VERSION}
                         </p>
                     </div>
                 </CardContent>

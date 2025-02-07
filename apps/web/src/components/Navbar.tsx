@@ -4,8 +4,8 @@ import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Moon, Sun, Trash } from "lucide-react";
-import { useRoomStore, UserProvider } from "../lib/utils";
-import { Home, Menu, Pause, Play, X, Clipboard } from "lucide-react";
+import { useRoomStore } from "../lib/utils";
+import { Home, Menu, Pause, Play, Clipboard } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import { CardContent, CardTitle } from "./ui/card";
 import SettingsComponent from "./settingsComponent";
@@ -19,12 +19,12 @@ export default function Navbar() {
     const [mounted, setMounted] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const { room, startStopGame } = useRoomStore();
-    const { session, user } = useAuth();
+    const { signOut, isLoggedIn } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
         setMounted(true);
-    }, [session]);
+    }, []);
 
     if (!mounted) {
         return null;
@@ -87,7 +87,7 @@ export default function Navbar() {
                                         />
                                     </>
                                 )}
-                                {new UserProvider().getUser().userId === room.roomHostId && (
+                                {/* {new UserProvider().getUser().userId === room.roomHostId && (   //! TODO Implement admin settings
                                     <>
                                         <CardTitle className="my-2 mt-5">Admin Settings</CardTitle>
                                         <SettingsComponent
@@ -100,33 +100,33 @@ export default function Navbar() {
                                             }}
                                         />
                                     </>
-                                )}
+                                )} */}
                             </CardContent>
                         </div>
                     </PopoverContent>
                 </Popover>
             </div>
-            {user ? (
+            {isLoggedIn ? (
                 <Button
                     variant="outline"
                     onClick={() => {
-                        router.push("/sign-up");
+                        signOut();
                     }}
+                    className="mr-4"
                 >
-                    Sign-up
+                    sign-out
                 </Button>
             ) : (
                 <Button
                     variant="outline"
                     onClick={() => {
-                        router.push("/sign-in");
+                        router.push("/sign-up");
                     }}
+                    className="mr-4"
                 >
-                    Sign-out
+                    Sign-up
                 </Button>
             )}
-            {/* {user ? "Welcome " + user.name : "Welcome Guest"} */}
-            {user && user.gamesPlayed}
             <Button
                 variant={"outline"}
                 onClick={() => {

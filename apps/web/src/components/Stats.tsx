@@ -31,7 +31,7 @@ export default function Stats() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: 0.55 }}
                             >
-                                👥 Players: {room.roomUsers?.length}
+                                👥 Players: {room.users?.length}
                             </motion.p>
                             <motion.p
                                 initial={{ opacity: 0, y: 25 }}
@@ -82,7 +82,7 @@ export default function Stats() {
             >
                 <Card className="w-full h-full flex flex-col">
                     <CardContent className="flex flex-col pt-4">
-                        {room.roomUsers?.slice(0, 4).map((user, index) => (
+                        {room.users?.slice(0, 4).map((user, index) => (
                             <motion.div
                                 key={index}
                                 initial={{ opacity: 0, y: 25 }}
@@ -103,7 +103,7 @@ export default function Stats() {
                                                                 : ColorValues[user.color]?.light,
                                                     }}
                                                 >
-                                                    {user.userName ? user.userName : "Guest"}
+                                                    {user.name ? user.name : "Guest"}
                                                 </p>
                                             </div>
                                         </div>
