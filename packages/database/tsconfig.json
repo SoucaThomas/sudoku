@@ -1,17 +1,12 @@
 {
+    "extends": "@repo/typescript-config/base.json",
+    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "tsup.config.ts", "src/**/*.ts"],
+    "exclude": ["node_modules"],
     "compilerOptions": {
-        "composite": true,
-        "declaration": true,
-        "declarationMap": true,
-        "outDir": "dist",
-        "rootDir": "src",
-        "module": "CommonJS",
-        "target": "ESNext",
-        "moduleResolution": "node",
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "skipLibCheck": true
-    },
-    "include": ["src"]
+        "baseUrl": ".",
+        "paths": {
+            "@repo/database": ["src/index.ts"],
+            "@repo/database/*": ["src/*"]
+        }
+    }
 }

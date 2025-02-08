@@ -4,7 +4,7 @@
     "main": "index.ts",
     "scripts": {
         "build": "tsc",
-        "start": "node dist/index.js",
+        "start": "ts-node src/index.ts",
         "dev": "nodemon src/index.ts"
     },
     "license": "MIT",
@@ -17,7 +17,6 @@
     },
     "devDependencies": {
         "@repo/eslint-config": "*",
-        "@repo/typescript-config": "*",
         "@repo/database": "*",
         "@repo/socket.io-types": "*",
         "@types/node": "^20",
