@@ -14,8 +14,7 @@ let socket: Socket;
 
 const getSocket = () => {
     if (!socket) {
-        ///192.168.0.59
-        socket = io("http://localhost:4001");
+        socket = io("https://sudoku.soucathomas.tech");
     }
     return socket;
 };
