@@ -2,6 +2,7 @@
     "name": "backend",
     "version": "1.0.0",
     "main": "index.ts",
+    "private": true,
     "scripts": {
         "build": "tsc",
         "start": "ts-node src/index.ts",
@@ -14,11 +15,11 @@
         "socket.io": "^4.8.1",
         "ts-node": "^10.4.0",
         "sudoku-gen": "^1.0.2",
-        "@repo/database": "workspace:*",
-        "@repo/socket.io-types": "workspace:*"
+        "@repo/database": "*",
+        "@repo/socket.io-types": "*"
     },
     "devDependencies": {
-        "@repo/eslint-config": "workspace:*",
+        "@repo/eslint-config": "*",
         "@types/node": "^20",
         "@types/express": "^5.0.0",
         "@types/mongoose": "^5.11.96",

@@ -1,21 +1,5 @@
 {
-    "compilerOptions": {
-        "baseUrl": ".",
-        "paths": {
-            "@repo/socket.io-types": ["packages/socket.io-types"]
-        },
-        "composite": true,
-        "declaration": true,
-        "declarationMap": true,
-        "outDir": "dist",
-        "rootDir": "src",
-        "module": "CommonJS",
-        "target": "ESNext",
-        "moduleResolution": "node",
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "skipLibCheck": true
-    },
-    "include": ["src"]
+    "extends": "@repo/typescript-config/base.json",
+    "include": ["src"],
+    "exclude": ["node_modules"]
 }
