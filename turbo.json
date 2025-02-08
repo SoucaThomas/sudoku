@@ -5,7 +5,8 @@
         "build": {
             "dependsOn": ["^db:generate", "^build", "@repo/socket.io-types#build"],
             "inputs": ["$TURBO_DEFAULT$", ".env*"],
-            "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+            "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+            "env": ["NODE_ENV", "DATABASE_URL", "BETTER_AUTH_SECRET"]
         },
         "start": {
             "dependsOn": ["build"],
