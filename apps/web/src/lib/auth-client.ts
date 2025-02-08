@@ -4,6 +4,6 @@ import { inferAdditionalFields } from "better-auth/client/plugins";
 import type { auth } from "../../auth";
 
 export const authClient = createAuthClient({
-    baseURL: "sudoku.soucathomas.tech",
+    baseURL: "https://sudoku.soucathomas.tech",
     plugins: [anonymousClient(), inferAdditionalFields<typeof auth>()],
 });
