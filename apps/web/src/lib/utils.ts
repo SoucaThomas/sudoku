@@ -1,16 +1,17 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { v4 as uuidv4 } from "uuid";
-import { User, MessageType, Colors, GameRoom, Board, MovementActions } from "@repo/socket.io-types";
+import { MessageType, Colors, GameRoom, Board, MovementActions } from "@repo/socket.io-types";
 import { create } from "zustand";
 import { startStop, makeMove, clearBoard } from "../actions/room";
+import { User } from "../../auth";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
 export class UserProvider {
-    user: User;
+    user;
 
     constructor(user?: User) {
         if (typeof localStorage !== "undefined" && localStorage.getItem("user") !== null) {
@@ -72,7 +73,7 @@ export const useRoomStore = create<{
     },
     removeUser: (user: User) => {
         set((state) => {
-            const newUsers = state.room.roomUsers.filter((u) => u.userId !== user.userId);
+            const newUsers = state.room.users.filter((u) => u.id !== user.id);
             return {
                 ...state,
                 room: { ...state.room, roomUsers: newUsers },
@@ -83,7 +84,7 @@ export const useRoomStore = create<{
         set((state) => {
             return {
                 ...state,
-                room: { ...state.room, roomUsers: [...(state.room?.roomUsers || []), user] },
+                room: { ...state.room, roomUsers: [...(state.room?.users || []), user] },
             };
         });
     },
@@ -186,10 +187,9 @@ export const useMovementStore = create<{
                 useBoardStore
                     .getState()
                     .setSelected(
-                        useBoardStore.getState().selected !== null &&
-                            useBoardStore.getState().selected < 9
+                        (useBoardStore.getState().selected || 0) < 9
                             ? useBoardStore.getState().selected
-                            : useBoardStore.getState().selected - 9
+                            : (useBoardStore.getState().selected || 0) - 9
                     );
                 break;
 
@@ -198,9 +198,9 @@ export const useMovementStore = create<{
                     .getState()
                     .setSelected(
                         useBoardStore.getState().selected !== null &&
-                            useBoardStore.getState().selected > 71
+                            (useBoardStore.getState().selected || 0) > 71
                             ? useBoardStore.getState().selected
-                            : useBoardStore.getState().selected + 9
+                            : (useBoardStore.getState().selected || 0) + 9
                     );
                 break;
 
@@ -208,10 +208,11 @@ export const useMovementStore = create<{
                 useBoardStore
                     .getState()
                     .setSelected(
-                        useBoardStore.getState().selected !== null &&
-                            useBoardStore.getState().selected % 9 === 0
+                        ((useBoardStore.getState().selected !== null &&
+                            useBoardStore.getState().selected) ||
+                            0 % 9) === 0
                             ? useBoardStore.getState().selected
-                            : useBoardStore.getState().selected - 1
+                            : (useBoardStore.getState().selected || 0) - 1
                     );
                 break;
 
@@ -220,43 +221,43 @@ export const useMovementStore = create<{
                     .getState()
                     .setSelected(
                         useBoardStore.getState().selected !== null &&
-                            useBoardStore.getState().selected % 9 === 8
+                            (useBoardStore.getState().selected || 0) % 9 === 8
                             ? useBoardStore.getState().selected
-                            : useBoardStore.getState().selected + 1
+                            : (useBoardStore.getState().selected || 0) + 1
                     );
                 break;
 
             case MovementActions.DELETE:
                 if (
                     useBoardStore.getState().boards.clientBoard[
-                        useBoardStore.getState().selected
+                        useBoardStore.getState().selected || 0
                     ] === "0"
                 )
                     break;
                 if (
                     useBoardStore.getState().boards.serverBoard[
-                        useBoardStore.getState().selected
+                        useBoardStore.getState().selected || 0
                     ] !== "0"
                 )
                     break;
-                makeMove(useBoardStore.getState().selected, "0");
+                makeMove(useBoardStore.getState().selected || 0, "0");
                 break;
 
             default:
                 if (process?.match(/[1-9]/)) {
                     if (
                         useBoardStore.getState().boards.clientBoard[
-                            useBoardStore.getState().selected
+                            useBoardStore.getState().selected || 0
                         ] === process
                     )
                         break;
                     if (
                         useBoardStore.getState().boards.serverBoard[
-                            useBoardStore.getState().selected
+                            useBoardStore.getState().selected || 0
                         ] !== "0"
                     )
                         break;
-                    makeMove(useBoardStore.getState().selected, process);
+                    makeMove(useBoardStore.getState().selected || 0, process);
                 }
                 break;
         }

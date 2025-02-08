@@ -12,12 +12,14 @@ export default function Tooltip() {
     const [totalPlayTime, setTotalPlayTime] = useState(room.totalPlayTime);
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        let interval: NodeJS.Timeout | undefined;
         if (room.isPlaying) {
             interval = setInterval(() => {
                 const date = new Date();
                 setTotalPlayTime(
-                    date.getTime() - new Date(room.lastTimeStarted).getTime() + room.totalPlayTime
+                    date.getTime() -
+                        new Date(room.lastTimeStarted || new Date()).getTime() +
+                        room.totalPlayTime
                 );
             }, 500);
         } else {
