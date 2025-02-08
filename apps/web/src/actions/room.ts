@@ -14,7 +14,9 @@ let socket: Socket;
 
 const getSocket = () => {
     if (!socket) {
-        socket = io("https://sudoku.soucathomas.tech");
+        socket = io("wss://api.sudoku.soucathomas.tech", {
+            transports: ["websocket"],
+        });
     }
     return socket;
 };
