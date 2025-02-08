@@ -9,7 +9,6 @@
             "env": ["NODE_ENV", "DATABASE_URL", "BETTER_AUTH_SECRET"]
         },
         "web#build": {
-            "dependsOn": ["build"],
             "cache": false,
             "env": ["NODE_ENV, DATABASE_URL, BETTER_AUTH_SECRET"]
         },
@@ -19,7 +18,6 @@
             "env": ["NODE_ENV, DATABASE_URL, BETTER_AUTH_SECRET"]
         },
         "backend#build": {
-            "dependsOn": ["build"],
             "cache": false,
             "env": ["NODE_ENV, DATABASE_URL"]
         },
