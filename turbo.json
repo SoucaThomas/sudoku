@@ -3,7 +3,7 @@
     "ui": "tui",
     "tasks": {
         "build": {
-            "dependsOn": ["^db:generate", "^build"],
+            "dependsOn": ["^db:generate", "^build", "@repo/socket.io-types#build"],
             "inputs": ["$TURBO_DEFAULT$", ".env*"],
             "outputs": [".next/**", "!.next/cache/**", "dist/**"]
         },
@@ -27,6 +27,9 @@
         },
         "db:push": {
             "cache": false
+        },
+        "@repo/socket.io-types#build": {
+            "outputs": ["dist/**"]
         }
     }
 }
