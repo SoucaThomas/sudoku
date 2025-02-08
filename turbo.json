@@ -5,8 +5,31 @@
         "build": {
             "dependsOn": ["^db:generate", "^build", "@repo/socket.io-types#build"],
             "inputs": ["$TURBO_DEFAULT$", ".env*"],
-            "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+            "outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**"],
             "env": ["NODE_ENV", "DATABASE_URL", "BETTER_AUTH_SECRET"]
+        },
+        "web#build": {
+            "dependsOn": ["build"],
+            "cache": false,
+            "env": ["NODE_ENV, DATABASE_URL, BETTER_AUTH_SECRET"]
+        },
+        "web#start": {
+            "dependsOn": ["web#build"],
+            "cache": false,
+            "env": ["NODE_ENV, DATABASE_URL, BETTER_AUTH_SECRET"]
+        },
+        "backend#build": {
+            "dependsOn": ["build"],
+            "cache": false,
+            "env": ["NODE_ENV, DATABASE_URL"]
+        },
+        "backend#start": {
+            "dependsOn": ["backend#build"],
+            "cache": false,
+            "env": ["NODE_ENV, DATABASE_URL"]
+        },
+        "globalEnv": {
+            "env": ["NODE_ENV, DATABASE_URL, BETTER_AUTH_SECRET"]
         },
         "start": {
             "dependsOn": ["build"],
