@@ -10,7 +10,7 @@
         "db:pull": "npx prisma db pull",
         "db:studio": "npx prisma studio"
     },
-    "devDependencies": {
-        "@repo/typescript-config": "workspace:*"
+    "dependencies": {
+        "@prisma/client": "5.22.0"
     }
 }
