@@ -8,6 +8,7 @@ export const auth = betterAuth({
         provider: "postgresql",
     }),
     secret: process.env.NEXT_PUBLIC_BETTER_AUTH_SECRET,
+    trustedOrigins: ["http://localhost:3000", "https://sudoku.soucathomas.tech"],
     user: {
         additionalFields: {
             gamesPlayed: {
