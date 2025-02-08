@@ -14,11 +14,11 @@
         "socket.io": "^4.8.1",
         "ts-node": "^10.4.0",
         "sudoku-gen": "^1.0.2",
-        "@repo/database": "*",
-        "@repo/socket.io-types": "*"
+        "@repo/database": "workspace:*",
+        "@repo/socket.io-types": "workspace:*"
     },
     "devDependencies": {
-        "@repo/eslint-config": "*",
+        "@repo/eslint-config": "workspace:*",
         "@types/node": "^20",
         "@types/express": "^5.0.0",
         "@types/mongoose": "^5.11.96",
