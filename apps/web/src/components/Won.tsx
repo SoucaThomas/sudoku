@@ -24,7 +24,9 @@ export default function Won() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 1 }}
                     >
-                        <Button onClick={() => (window.location.href = "/")}>Play again</Button>
+                        <Button onClick={() => (window.location.href = "/")}>
+                            Return to main screen
+                        </Button>
                     </motion.div>
                 </DialogFooter>
             </DialogContent>

@@ -9,6 +9,7 @@ import { useAuth } from "../hooks/AuthProvider";
 import { type User } from "../../auth";
 import { Input } from "./ui/input";
 import { z } from "zod";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 interface EditUserProfileProps {
     isDialogOpen?: boolean;
@@ -64,6 +65,7 @@ export default function EditUserProfile({
             </DialogTrigger>
             <DialogContent>
                 <DialogTitle>Edit Profile</DialogTitle>
+                <DialogDescription>Change your username and color</DialogDescription>
 
                 <h1>Username</h1>
                 <Input

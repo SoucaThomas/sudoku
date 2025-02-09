@@ -3,7 +3,7 @@
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Moon, Sun, Trash } from "lucide-react";
+import { Moon, Sun, Trash, SquareDashedKanban } from "lucide-react";
 import { useRoomStore } from "../lib/utils";
 import { Home, Menu, Pause, Play, Clipboard } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
@@ -14,11 +14,13 @@ import ColorSelectorDialog from "./EditUserProfile";
 import { useAuth } from "../hooks/AuthProvider";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "./ui/skeleton";
+import LeaderboardDialog from "./LeaderboardDialog";
 
 export default function Navbar() {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isEditProfileDialogOpen, setIsEditProfileDialogOpen] = useState(false);
+    const [isLeaderboardDialogOpen, setIsLeaderboardDialogOpen] = useState(false);
     const { room, startStopGame } = useRoomStore();
     const { signOut, isLoggedIn, loading } = useAuth();
     const router = useRouter();
@@ -54,6 +56,23 @@ export default function Navbar() {
                                         window.location.href = "/";
                                     }}
                                 />
+                                <SettingsComponent
+                                    text="Edit Profile"
+                                    onClick={() => {
+                                        setIsEditProfileDialogOpen(!isEditProfileDialogOpen);
+                                    }}
+                                >
+                                    <ColorSelectorDialog
+                                        isDialogOpen={isEditProfileDialogOpen}
+                                        setIsDialogOpen={setIsEditProfileDialogOpen}
+                                    />
+                                </SettingsComponent>
+                                <SettingsComponent icon={SquareDashedKanban} text="Leaderboard">
+                                    <LeaderboardDialog
+                                        isDialogOpen={isLeaderboardDialogOpen}
+                                        setIsDialogOpen={setIsLeaderboardDialogOpen}
+                                    />
+                                </SettingsComponent>
                                 {room.roomGame && (
                                     <SettingsComponent
                                         icon={Clipboard}
@@ -63,17 +82,6 @@ export default function Navbar() {
                                         }}
                                     />
                                 )}
-                                <SettingsComponent
-                                    text="Edit Profile"
-                                    onClick={() => {
-                                        setIsDialogOpen(!isDialogOpen);
-                                    }}
-                                >
-                                    <ColorSelectorDialog
-                                        isDialogOpen={isDialogOpen}
-                                        setIsDialogOpen={setIsDialogOpen}
-                                    />
-                                </SettingsComponent>
                                 {room.roomGame && (
                                     <>
                                         <SettingsComponent

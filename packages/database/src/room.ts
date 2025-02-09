@@ -43,12 +43,12 @@ export async function create({ boards, data }: { boards: Board; data: CreateRoom
     const board = await prisma.board.create({
         data: {
             roomId: room.roomId,
-            serverBoard: "123400",
-            clientBoard: "123400",
-            solution: "123456",
-            // serverBoard: boards.serverBoard,
-            // clientBoard: boards.clientBoard,
-            // solution: boards.solution || "",
+            // serverBoard: "123400",
+            // clientBoard: "123400",
+            // solution: "123456",
+            serverBoard: boards.serverBoard,
+            clientBoard: boards.clientBoard,
+            solution: boards.solution || "",
             mistakes: 0,
             score: 0,
         },

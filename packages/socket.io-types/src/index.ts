@@ -1,6 +1,6 @@
 export enum GameTypes {
     SUDOKU = "Sudoku",
-    ONE_UP = "One Up",
+    // ONE_UP = "One Up",
 }
 
 export enum GameDifficulties {

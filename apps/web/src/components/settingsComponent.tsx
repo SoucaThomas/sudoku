@@ -7,7 +7,7 @@ interface SettingsComponentProps {
     text: string;
     buttonVariant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
     disabled?: boolean;
-    onClick: () => void;
+    onClick?: () => void;
     children?: React.ReactNode;
 }
 
@@ -30,7 +30,7 @@ export default function settingsComponent({
             <Button
                 variant={buttonVariant ? buttonVariant : "outline"}
                 onClick={() => {
-                    onClick();
+                    onClick ? onClick() : () => {};
                 }}
                 disabled={disabled}
                 className="w-full m-1 flex flex-row justify-between items-center"

@@ -1,12 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardFooter, CardTitle } from "./ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
+import { Table, TableBody, TableCell, TableRow } from "./ui/table";
 import { Spinner } from "./ui/spinner";
 import { User } from "../../auth";
-import { Button } from "./ui/button";
-import { Dialog, DialogDescription, DialogContent, DialogTrigger, DialogTitle } from "./ui/dialog";
 import { getLeaderboard } from "../actions/action";
+import LeaderboardDialog from "./LeaderboardDialog";
 
 export default function Leaderboard() {
     const [loading, setLoading] = useState(false);
@@ -55,41 +54,7 @@ export default function Leaderboard() {
                                     </Table>
                                 );
                             })}
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button className="w-full" variant={"outline"}>
-                                        Show All
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="w-full h-4/5 overflow-auto">
-                                    <DialogTitle>Leaderboard</DialogTitle>
-                                    <DialogDescription>all the scores</DialogDescription>
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow className="text-center w-full">
-                                                <TableHead className="text-center">Name</TableHead>
-                                                <TableHead>Score</TableHead>
-                                                <TableHead>Games Played</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {users.map((user, index) => (
-                                                <TableRow key={index} className="text-center h-2">
-                                                    <TableCell className="text-sm">
-                                                        {user.name}
-                                                    </TableCell>
-                                                    <TableCell className="text-sm">
-                                                        {user.totalScore}
-                                                    </TableCell>
-                                                    <TableCell className="text-sm">
-                                                        {user.gamesPlayed}
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </DialogContent>
-                            </Dialog>
+                            <LeaderboardDialog />
                         </div>
                     </CardContent>
                 </>

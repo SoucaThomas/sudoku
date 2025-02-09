@@ -242,13 +242,14 @@ io.on("connection", (socket: Socket) => {
                 const totalPlayTime =
                     typeof room.totalPlayTime === "number" ? room.totalPlayTime : 0;
 
-                const gainedExperiance = Math.floor(
-                    BASE_EXPERIANCE *
-                        DIFFICULTY_MULTIPLIERS[
-                            room.roomDifficulty as keyof typeof DIFFICULTY_MULTIPLIERS
-                        ] +
-                        (Math.max(0, 100 - (totalPlayTime / 60000) * 5) - board.mistakes * 10) * 0.3
-                );
+                const gainedExperiance =
+                    Math.floor(
+                        BASE_EXPERIANCE *
+                            DIFFICULTY_MULTIPLIERS[
+                                room.roomDifficulty as keyof typeof DIFFICULTY_MULTIPLIERS
+                            ] +
+                            (Math.max(0, 100 - (totalPlayTime / 60000) * 5) - board.mistakes * 10)
+                    ) * 0.02;
                 console.log("Gained experiance", gainedExperiance);
 
                 for (const user of room.users) {

@@ -37,7 +37,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: -25 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.4 }}
-                className="order-4 hidden h-full w-full md:col-span-2 md:row-span-2 md:block lg:order-3 lg:col-span-2 lg:row-span-6 lg:block"
+                className="order-4 max-md:mt-3 h-1/2 md:h-full w-full md:col-span-2 md:row-span-2 md:block lg:order-3 lg:col-span-2 lg:row-span-6 lg:block"
             >
                 <UserStats />
             </motion.div>
