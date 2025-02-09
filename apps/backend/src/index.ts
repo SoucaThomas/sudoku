@@ -345,4 +345,9 @@ io.on("connection", (socket: Socket) => {
 });
 
 const port = process.env.PORT_BACKEND || 4001;
+
+app.get("/api", (req, res) => {
+    res.send("Hello World");
+});
+
 server.listen(port, () => console.log(`Listening on port ${port}`));

@@ -6,16 +6,20 @@
             "dependsOn": ["^db:generate", "^build", "@repo/socket.io-types#build"],
             "inputs": ["$TURBO_DEFAULT$", ".env*"],
             "outputs": [".next/**", "!.next/cache/**", "dist/**", "build/**"],
-            "env": ["NODE_ENV", "DATABASE_URL", "BETTER_AUTH_SECRET"]
+            "env": ["NODE_ENV", "DATABASE_URL", "BETTER_AUTH_SECRET, NEXT_PUBLIC_TRUSTED_ORIGINS"]
         },
         "web#build": {
             "cache": false,
-            "env": ["NODE_ENV, DATABASE_URL, BETTER_AUTH_SECRET"]
+            "env": [
+                "NODE_ENV, DATABASE_URL, BETTER_AUTH_SECRET, NEXT_PUBLIC_TRUSTED_ORIGINS, WEBSOCKET_URL"
+            ]
         },
         "web#start": {
             "dependsOn": ["web#build"],
             "cache": false,
-            "env": ["NODE_ENV, DATABASE_URL, BETTER_AUTH_SECRET"]
+            "env": [
+                "NODE_ENV, DATABASE_URL, BETTER_AUTH_SECRET, NEXT_PUBLIC_TRUSTED_ORIGINS, WEBSOCKET_URL"
+            ]
         },
         "backend#build": {
             "cache": false,
@@ -27,7 +31,9 @@
             "env": ["NODE_ENV, DATABASE_URL"]
         },
         "globalEnv": {
-            "env": ["NODE_ENV, DATABASE_URL, BETTER_AUTH_SECRET"]
+            "env": [
+                "NODE_ENV, DATABASE_URL, BETTER_AUTH_SECRET, NEXT_PUBLIC_TRUSTED_ORIGINS, WEBSOCKET_URL"
+            ]
         },
         "start": {
             "cache": false
