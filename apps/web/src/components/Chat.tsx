@@ -7,7 +7,7 @@ import { Input } from "../components/ui/input";
 import { Send } from "lucide-react";
 import { useState, useEffect } from "react";
 import { MessageType } from "@repo/socket.io-types";
-import { UserProvider, useChatStore, useRoomStore } from "../lib/utils";
+import { useChatStore, useRoomStore } from "../lib/utils";
 import { Card } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
 import {
@@ -17,10 +17,11 @@ import {
     listenForUsers,
     closeUserListener,
 } from "../actions/room";
+import { useAuth } from "../hooks/AuthProvider";
 
 export default function Chat() {
     const [message, setMessage] = useState<string>("");
-    const user = new UserProvider().user;
+    const { user } = useAuth();
     const { messages, addMessage } = useChatStore();
     const { room, addUser, removeUser } = useRoomStore();
 

@@ -39,17 +39,11 @@ export const auth = betterAuth({
     plugins: [
         anonymous({
             onLinkAccount: async ({ anonymousUser, newUser }) => {
-                console.log(
-                    "Linking anonymous user to new user",
-                    newUser.user.name,
-                    anonymousUser.user.email
-                );
-
                 const newAccount = newUser.user as User;
                 const oldAccount = anonymousUser.user as User;
 
                 if (oldAccount && newAccount) {
-                    const updatedUser = await prisma.user.update({
+                    await prisma.user.update({
                         where: { id: newAccount.id },
                         data: {
                             totalScore: (newAccount.totalScore || 0) + (oldAccount.totalScore || 0),
@@ -59,8 +53,6 @@ export const auth = betterAuth({
                             isAnonymous: false,
                         },
                     });
-
-                    console.log("Updated new user:", updatedUser);
                 }
             },
         }),

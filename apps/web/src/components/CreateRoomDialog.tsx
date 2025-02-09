@@ -7,6 +7,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
+    DialogDescription,
 } from "./ui/dialog";
 import { Input } from "./ui/input";
 import MySelector from "./ui/mySelector";
@@ -15,7 +16,7 @@ import { LockKeyhole, LockKeyholeOpen } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 import { GameTypes, GameDifficulties, CreateRoomData } from "@repo/socket.io-types";
 import { createRoom } from "../actions/room";
-import { UserProvider } from "../lib/utils";
+import { useAuth } from "../hooks/AuthProvider";
 
 interface CreateRoomDialogProps {
     children: ReactNode;
@@ -30,8 +31,7 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
     const [gameDifficulty, setGameDifficulty] = useState(GameDifficulties.EASY);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const { toast } = useToast();
-
-    const user = new UserProvider().user;
+    const { user } = useAuth();
 
     return (
         <div className={className}>
@@ -41,6 +41,9 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
                     <DialogHeader>
                         <DialogTitle>Create a game room</DialogTitle>
                     </DialogHeader>
+                    <DialogDescription>
+                        Fill in the details below to create a new game room.
+                    </DialogDescription>
                     <div>
                         <form>
                             <div className="mt-3">
@@ -137,24 +140,35 @@ export default function CreateRoomDialog({ children, className }: CreateRoomDial
                                     });
                                     return;
                                 }
-                                createRoom({
-                                    roomName: roomName,
-                                    roomPassword: roomPassword,
-                                    roomGame: gameType,
-                                    roomDifficulty: gameDifficulty,
-                                    isRoomPublic: isRoomPublic,
-                                    roomHost: user,
-                                } as CreateRoomData)
-                                    .then((roomId: string) => {
-                                        window.location.href = `/room/${roomId}`;
-                                    })
-                                    .catch((error: string) => {
-                                        toast({
-                                            variant: "destructive",
-                                            title: "Uh oh! Something went wrong.",
-                                            description: `Room creation failed: ${error}`,
+                                if (user) {
+                                    createRoom(
+                                        {
+                                            roomName: roomName,
+                                            roomPassword: roomPassword,
+                                            roomGame: gameType,
+                                            roomDifficulty: gameDifficulty,
+                                            isRoomPublic: isRoomPublic,
+                                            roomHost: user,
+                                        } as CreateRoomData,
+                                        user
+                                    )
+                                        .then((roomId: string) => {
+                                            window.location.href = `/room/${roomId}`;
+                                        })
+                                        .catch((error: string) => {
+                                            toast({
+                                                variant: "destructive",
+                                                title: "Uh oh! Something went wrong.",
+                                                description: `Room creation failed: ${error}`,
+                                            });
                                         });
+                                } else {
+                                    toast({
+                                        variant: "destructive",
+                                        title: "Uh oh! Something went wrong.",
+                                        description: "User is not authenticated.",
                                     });
+                                }
 
                                 setRoomName("");
                                 setRoomPassword("");

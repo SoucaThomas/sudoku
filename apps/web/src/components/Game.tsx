@@ -35,7 +35,6 @@ export default function Game() {
                 setServerBoard(serverBoard);
                 listenForMoves(setBoard);
 
-                console.log(clientBoard);
                 if (clientBoard?.length > 0) setIsLoading(false);
             }
         );

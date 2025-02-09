@@ -48,7 +48,6 @@ export default function SignIn() {
             },
             {
                 onSuccess: () => {
-                    console.log("Sign in successful");
                     router.push("/");
                 },
                 onError: (ctx) => {

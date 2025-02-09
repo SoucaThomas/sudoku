@@ -16,10 +16,8 @@ export default function UserStats() {
     const router = useRouter();
 
     useEffect(() => {
-        console.log("user", user?.level);
-        console.log("need", levelExperiance(user?.level ?? 0));
-        console.log("user", user?.experiance);
-    });
+        console.log(!loading && isLoggedIn);
+    }, [isLoggedIn, loading]);
 
     return (
         <Card className="w-full h-full overflow-hidden flex flex-col">
@@ -89,7 +87,9 @@ export default function UserStats() {
             </CardContent>
             <CardFooter className="w-full mt-auto self-end">
                 <div className="flex flex-col justify-center items-center w-full">
-                    {!loading && !isLoggedIn ? (
+                    {loading ? (
+                        <></>
+                    ) : !isLoggedIn ? (
                         <>
                             <p className="text-lg mb-4 text-center">You are not logged in.</p>
                             <Button

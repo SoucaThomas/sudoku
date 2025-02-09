@@ -13,13 +13,14 @@ import { clearBoard } from "../actions/room";
 import ColorSelectorDialog from "./EditUserProfile";
 import { useAuth } from "../hooks/AuthProvider";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "./ui/skeleton";
 
 export default function Navbar() {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const { room, startStopGame } = useRoomStore();
-    const { signOut, isLoggedIn } = useAuth();
+    const { signOut, isLoggedIn, loading } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
@@ -106,31 +107,32 @@ export default function Navbar() {
                     </PopoverContent>
                 </Popover>
             </div>
-            {isLoggedIn ? (
-                <Button
-                    variant="outline"
-                    onClick={() => {
-                        signOut();
-                    }}
-                    className="mr-4"
-                >
-                    sign-out
-                </Button>
-            ) : (
+            {loading ? (
+                <Skeleton className="mr-4 w-20 h-8"></Skeleton>
+            ) : !isLoggedIn ? (
                 <Button
                     variant="outline"
                     onClick={() => {
                         router.push("/sign-up");
                     }}
-                    className="mr-4"
+                    className="mr-4 w-20"
                 >
                     Sign-up
+                </Button>
+            ) : (
+                <Button
+                    variant="outline"
+                    onClick={() => {
+                        signOut();
+                    }}
+                    className="mr-4 w-20"
+                >
+                    sign-out
                 </Button>
             )}
             <Button
                 variant={"outline"}
                 onClick={() => {
-                    console.log("Theme toggled");
                     setTheme(theme === "dark" ? "light" : "dark");
                 }}
                 suppressHydrationWarning

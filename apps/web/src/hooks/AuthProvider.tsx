@@ -98,8 +98,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const updateUser = async (user: User) => {
-        console.log("Updating user", user.id);
-
         const { email, ...updatedUser } = user;
 
         setUser(user);
@@ -113,6 +111,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             {children}
         </AuthContext.Provider>
     );
+}
+
+export function useCurrentUser() {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error("useCurrentUser must be used within an AuthProvider");
+    }
+    return context.user;
 }
 
 export function useAuth() {

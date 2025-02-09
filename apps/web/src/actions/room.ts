@@ -6,7 +6,7 @@ import {
     Board,
 } from "@repo/socket.io-types";
 import { io, Socket } from "socket.io-client";
-import { UserProvider, useBoardStore, useRoomStore } from "../lib/utils";
+import { useBoardStore, useRoomStore } from "../lib/utils";
 
 import { type User } from "../../auth";
 
@@ -19,8 +19,7 @@ const getSocket = () => {
     return socket;
 };
 
-export const createRoom = (data: CreateRoomData) => {
-    const user = new UserProvider().user;
+export const createRoom = async (data: CreateRoomData, user: User) => {
     socket = getSocket();
 
     return new Promise<string>((resolve, reject) => {
@@ -224,7 +223,6 @@ export const closeListenForGameUpdate = () => {
 
 export const getBoard = async (roomId: string) => {
     socket = getSocket();
-    console.log("GET BOARD");
     return new Promise<{ serverBoard: string; clientBoard: string }>((resolve) => {
         socket.emit(SocketActionTypes.getBoard, roomId);
 
@@ -270,12 +268,10 @@ export const listenForMoves = (setBoard) => {
     });
 
     socket.on(SocketActionTypes.win, (board: Board) => {
-        console.log("WIN");
         setBoard(board);
     });
 
     socket.on(SocketActionTypes.lose, (board: Board) => {
-        console.log("LOSE");
         setBoard(board);
     });
 };
@@ -302,10 +298,9 @@ export const clearBoard = () => {
 export const updateRoomUser = () => {
     socket = getSocket();
 
-    const user = new UserProvider().user;
     const roomId = useRoomStore.getState().room.roomId;
 
     if (!roomId) return;
 
-    socket.emit(SocketActionTypes.updateUser, { roomId, user });
+    // socket.emit(SocketActionTypes.updateUser, { roomId, user });
 };

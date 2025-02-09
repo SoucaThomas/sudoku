@@ -34,7 +34,6 @@ export default function EditUserProfile({
 
     const saveUser = () => {
         const input = { name: username, color: selectedColor };
-        console.log(input);
         const userInput = zodSchema.safeParse(input);
 
         if (!userInput.success) {
