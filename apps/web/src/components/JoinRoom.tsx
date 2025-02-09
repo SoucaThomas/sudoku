@@ -11,7 +11,7 @@ import {
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import OpenGames from "./OpenGames";
-import { checkRoom } from "../actions/db";
+import { checkRoom } from "../actions/action";
 import { useRouter } from "next/navigation";
 
 interface JoinRoomProps {

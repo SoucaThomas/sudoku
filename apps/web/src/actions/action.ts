@@ -8,3 +8,11 @@ export const checkRoom = async (roomId: string) => {
         },
     });
 };
+
+export const getLeaderboard = async () => {
+    return prisma?.user.findMany({
+        orderBy: {
+            totalScore: "desc",
+        },
+    });
+};
