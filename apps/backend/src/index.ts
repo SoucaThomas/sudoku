@@ -94,12 +94,12 @@ io.on("connection", (socket: Socket) => {
             return;
         }
         socket.join(roomId);
-        await addUserToRoom({ userId: user.id, roomId: roomId });
+        const newRoom = await addUserToRoom({ userId: user.id, roomId: roomId });
 
         socketToUserMap.set(socket.id, user);
 
         console.log("Successfully joined room", roomId);
-        socket.emit(SocketActionTypes.join, room);
+        socket.emit(SocketActionTypes.join, newRoom);
     });
 
     socket.on(

@@ -67,12 +67,21 @@ export async function create({ boards, data }: { boards: Board; data: CreateRoom
 }
 
 export const addUserToRoom = async ({ userId, roomId }: { userId: string; roomId: string }) => {
-    return await prisma.room.update({
+    await prisma.room.update({
         where: { roomId },
         data: {
             users: {
                 connect: { id: userId },
             },
+        },
+    });
+
+    return await prisma.room.findUnique({
+        where: {
+            roomId,
+        },
+        include: {
+            users: true,
         },
     });
 };

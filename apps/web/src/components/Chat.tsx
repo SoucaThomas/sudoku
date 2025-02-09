@@ -35,6 +35,10 @@ export default function Chat() {
         };
     }, []);
 
+    useEffect(() => {
+        console.log(room.users);
+    }, [room]);
+
     const sendMessage = () => {
         if (message === "") {
             return;
@@ -56,7 +60,7 @@ export default function Chat() {
         <Card className="flex flex-col h-full">
             <div className="flex justify-between items-center p-3">
                 <h1>Rooms</h1>
-                <p>Players: {room && room?.users ? room.users.length : "n"}</p>
+                <p>Players: {room && room?.users ? room.users.length : "error"}</p>
             </div>
             <Separator />
             <ScrollArea className="flex-1 overflow-y-auto flex p-3 flex-col" id="chat-container">
