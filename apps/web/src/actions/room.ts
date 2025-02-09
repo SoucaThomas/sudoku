@@ -14,7 +14,7 @@ let socket: Socket;
 
 const getSocket = () => {
     if (!socket) {
-        socket = io(process.env.WEBSOCKET_URL || "http://localhost:4001");
+        socket = io(process.env.NEXT_PUBLIC_WEBSOCKET_URL || "http://localhost:4001");
     }
     return socket;
 };
