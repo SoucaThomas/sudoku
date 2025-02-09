@@ -6,6 +6,7 @@ import { Tabs } from "../components/ui/tabs";
 import { Separator } from "../components/ui/separator";
 import CreateRoomDialog from "../components/CreateRoomDialog";
 import { GameTypes } from "@repo/socket.io-types";
+import JoinRoom from "./JoinRoom";
 
 export default function PlayerLobby() {
     return (
@@ -19,7 +20,9 @@ export default function PlayerLobby() {
                             </CardTitle>
                             <Separator className="my-4" />
                             <CardFooter className="h-fit py-4 flex flex-row justify-center gap-6">
-                                <Button variant={"outline"}>Join a Room!</Button>
+                                <JoinRoom className="text-lg">
+                                    <Button variant={"outline"}>Join a Room!</Button>
+                                </JoinRoom>
                                 <CreateRoomDialog className="text-lg">
                                     <Button variant={"default"}>Create a Room!</Button>
                                 </CreateRoomDialog>

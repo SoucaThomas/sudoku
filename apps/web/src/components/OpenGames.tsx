@@ -33,7 +33,7 @@ export default function OpenGames() {
     }, []);
 
     return (
-        <Card className="h-full w-full select-none overflow-y-scroll ">
+        <Card className="h-full w-full select-none overflow-y-auto ">
             <CardContent className="h-full w-full">
                 {rooms.length === 0 ? (
                     <CardTitle className="w-full h-full flex items-center justify-center">
